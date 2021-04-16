@@ -70,7 +70,6 @@
 
 #include<bits/stdc++.h>
 #include "Symbol_table.h"
-#define YYSTYPE SymbolInfo*
 
 using namespace std;
 
@@ -98,7 +97,7 @@ void yyerror(char *s)
 
 
 
-#line 102 "y.tab.c"
+#line 101 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -220,7 +219,18 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 31 "parser.y"
+
+int ival;
+SymbolInfo* siv;
+vector<SymbolInfo*>* vecv;
+
+#line 231 "y.tab.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -596,13 +606,13 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    42,    42,    48,    49,    52,    53,    54,    57,    58,
-      61,    62,    66,    67,    68,    69,    73,    74,    77,    80,
-      81,    82,    85,    86,    87,    88,    91,    92,    95,    96,
-      97,    98,    99,   100,   101,   102,   103,   106,   107,   110,
-     111,   114,   115,   118,   119,   122,   123,   126,   127,   130,
-     131,   134,   135,   136,   139,   140,   141,   142,   143,   144,
-     145,   148,   149,   152,   153
+       0,    45,    45,    51,    52,    55,    56,    57,    60,    61,
+      64,    65,    69,    70,    71,    72,    76,    77,    80,    83,
+      84,    85,    88,    89,    90,    91,    94,    95,    98,    99,
+     100,   101,   102,   103,   104,   105,   106,   109,   110,   113,
+     114,   117,   118,   121,   122,   125,   126,   129,   130,   133,
+     134,   137,   138,   139,   142,   143,   144,   145,   146,   147,
+     148,   151,   152,   155,   156
 };
 #endif
 
@@ -1480,15 +1490,15 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 43 "parser.y"
+#line 46 "parser.y"
         {
 		//write your code in this block in all the similar blocks below
 	}
-#line 1488 "y.tab.c"
+#line 1498 "y.tab.c"
     break;
 
 
-#line 1492 "y.tab.c"
+#line 1502 "y.tab.c"
 
       default: break;
     }
@@ -1720,7 +1730,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 157 "parser.y"
+#line 160 "parser.y"
 
 int main(int argc,char *argv[])
 {

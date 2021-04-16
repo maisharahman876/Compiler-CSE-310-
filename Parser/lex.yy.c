@@ -830,7 +830,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"INCOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return INCOP;
 					}
 	YY_BREAK
@@ -840,7 +840,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"DECOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return DECOP;
 					}
 	YY_BREAK
@@ -850,7 +850,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ADDOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return ADDOP;
 					}
 	YY_BREAK
@@ -860,7 +860,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"MULOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return MULOP;
 					}
 	YY_BREAK
@@ -870,7 +870,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ASSIGNOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return ASSIGNOP;
 					}
 	YY_BREAK
@@ -880,7 +880,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"RELOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return RELOP;
 					}
 	YY_BREAK
@@ -890,7 +890,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"LOGICOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return LOGICOP;
 					}
 	YY_BREAK
@@ -963,7 +963,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ID");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return ID;
 					}					
 	YY_BREAK
@@ -973,7 +973,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_INT");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return CONST_INT;
 					}
 	YY_BREAK
@@ -983,7 +983,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_FLOAT");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return CONST_FLOAT;
 						}
 	YY_BREAK
@@ -993,7 +993,7 @@ YY_RULE_SETUP
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_CHAR");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return CONST_CHAR;
 						
 					}						

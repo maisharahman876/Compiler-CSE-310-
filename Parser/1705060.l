@@ -45,43 +45,43 @@ newline (\n|\r\n)
 (\+\+)					{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"INCOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return INCOP;
 					}
 (\-\-)					{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"DECOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return DECOP;
 					}
 [+-]					{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ADDOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return ADDOP;
 					}
 [\*/%]					{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"MULOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return MULOP;
 					}
 [=]	   				{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ASSIGNOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return ASSIGNOP;
 					}
 (<|>|<=|>=|==|!=)			{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"RELOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return RELOP;
 					}
 (&&|\|\|)				{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"LOGICOP");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return LOGICOP;
 					}
 !					{
@@ -114,26 +114,26 @@ newline (\n|\r\n)
 [a-zA-Z_]{AlphaNumeric}* 		{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ID");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return ID;
 					}					
 {digit}+ 				{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_INT");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return CONST_INT;
 					}
 ({digit}*)?(\.{digit}+)?(E[+-]?{digit}+)?	 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_FLOAT");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return CONST_FLOAT;
 						}
 
 '({chars}|{special})' 			{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_CHAR");
-						yylval = (YYSTYPE)si;
+						yylval.siv = si;
 						return CONST_CHAR;
 						
 					}						
