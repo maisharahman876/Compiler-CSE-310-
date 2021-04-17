@@ -82,7 +82,8 @@ extern int yydebug;
     ID = 288,
     CONST_INT = 289,
     CONST_CHAR = 290,
-    CONST_FLOAT = 291
+    CONST_FLOAT = 291,
+    nothing = 292
   };
 #endif
 /* Tokens.  */
@@ -120,6 +121,7 @@ extern int yydebug;
 #define CONST_INT 289
 #define CONST_CHAR 290
 #define CONST_FLOAT 291
+#define nothing 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -131,7 +133,7 @@ int ival;
 SymbolInfo* siv;
 vector<SymbolInfo*>* vecv;
 
-#line 135 "y.tab.h"
+#line 137 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

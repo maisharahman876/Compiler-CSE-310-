@@ -1,4 +1,6 @@
 %option noyywrap yylineno
+%x cmnt_single
+%x cmnt_mult
 %{
 #include<bits/stdc++.h>
 #include "Symbol_table.h"
@@ -39,7 +41,6 @@ newline (\n|\r\n)
 "char" {return CHAR;}
 "return" {return RETURN;}
 "void" {return VOID;}
-"main"	{return MAIN;}
 "default"	{return DEFAULT;}
 "printf"	{return PRINTLN;}
 (\+\+)					{
@@ -116,7 +117,11 @@ newline (\n|\r\n)
 						SymbolInfo *si= new  SymbolInfo(s,"ID");
 						yylval.siv = si;
 						return ID;
-					}					
+					}
+{digit}+[a-zA-Z_]+			{
+						cout<<"Error at line no "<<getline()<<": Invalid prefix on ID or invalid suffix on Number "<<yytext<<endl<<endl;
+						IncErr();
+					}										
 {digit}+ 				{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_INT");
@@ -129,7 +134,18 @@ newline (\n|\r\n)
 						yylval.siv = si;
 						return CONST_FLOAT;
 						}
-
+{digit}+\.    					{
+						cout<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
+						IncErr();
+						}
+({digit}*\.{digit}*)+ 				{
+						cout<<"Error at line no "<<getline()<<": Too many decimal points "<<yytext<<endl<<endl;
+						IncErr();
+						}
+(({digit}*)?(\.{digit}*)?(E[+-]?{digit}+)?)+ 	{
+						cout<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
+						IncErr();
+						}
 '({chars}|{special})' 			{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_CHAR");
@@ -137,5 +153,52 @@ newline (\n|\r\n)
 						return CONST_CHAR;
 						
 					}						
-
+\/\/						{
+						cout<<"Line no "<<getline()<<": Token <COMMENT> Lexeme //";
+						BEGIN cmnt_single;
+						}
+<cmnt_single>({chars}|{WHITESPACE})+		{
+						string s=yytext;
+						cout<<s;
+						
+						
+						}
+<cmnt_single>\\{newline}							{
+										string s=yytext;
+										cout<<s;
+										IncLine();
+										}
+<cmnt_single>{newline}		{
+					cout<<" found"<<endl<<endl;
+					IncLine();
+					BEGIN INITIAL;}
+\/\*								{
+									BEGIN cmnt_mult;
+									string s=yytext;
+									line=0;
+									l=yytext;
+								}
+<cmnt_mult>\*\/					{
+								l=l+yytext;
+								cout<<"Line no "<<getline()-line<<": Token <COMMENT> Lexeme "<<l;
+								cout<<" found"<<endl<<endl;
+								line=0;
+								l.clear();
+								BEGIN INITIAL;
+							}
+<cmnt_mult><<EOF>>					{
+							cout<<"Error at line no "<<getline()-line<<": Unterminated Comment "<<l<<endl<<endl;
+							IncErr();
+							l.clear();
+							line=0;
+							BEGIN INITIAL;
+							}
+<cmnt_mult>{newline} {l=l+yytext; IncLine();line++;}
+<cmnt_mult>. {l=l+yytext;}
+<<EOF>>	{ 
+		//cout<<endl;
+		cout<<"Total lines: "<<getline()<<endl;
+		cout<<"Total errors: "<<getErr()<<endl; 
+		return 0;}						
+. {cout<<"Error at line no "<<getline()<<": Unrecognized character "<<yytext<<endl<<endl; IncErr();}
 %%
