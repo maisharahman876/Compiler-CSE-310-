@@ -17,8 +17,8 @@ SymbolInfo()
 }
 SymbolInfo(string t,string n)
 {
-    type=t;
-    name=n;
+    type=n;
+    name=t;
 }
 string get_type()
 {
