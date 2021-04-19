@@ -13,7 +13,7 @@ extern int error;
 extern void IncLine();
 extern int getline();	
 extern void IncErr();
-	
+extern SymbolTable *st; 	
 extern int getErr();
 void yyerror(char *);
 
@@ -108,6 +108,7 @@ newline (\n|\r\n)
 					}
 \{ 					{
 						return LCURL;
+						
 					}
 \}					{
 						return RCURL;
@@ -197,8 +198,6 @@ newline (\n|\r\n)
 <cmnt_mult>. {l=l+yytext;}
 <<EOF>>	{ 
 		//cout<<endl;
-		cout<<"Total lines: "<<getline()<<endl;
-		cout<<"Total errors: "<<getErr()<<endl; 
 		return 0;}						
 . {cout<<"Error at line no "<<getline()<<": Unrecognized character "<<yytext<<endl<<endl; IncErr();}
 %%

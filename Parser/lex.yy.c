@@ -536,7 +536,7 @@ extern int error;
 extern void IncLine();
 extern int getline();	
 extern void IncErr();
-	
+extern SymbolTable *st; 	
 extern int getErr();
 void yyerror(char *);
 
@@ -994,18 +994,19 @@ YY_RULE_SETUP
 #line 109 "1705060.l"
 {
 						return LCURL;
+						
 					}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 112 "1705060.l"
+#line 113 "1705060.l"
 {
 						return RCURL;
 					}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 115 "1705060.l"
+#line 116 "1705060.l"
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"ID");
@@ -1015,7 +1016,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 121 "1705060.l"
+#line 122 "1705060.l"
 {
 						cout<<"Error at line no "<<getline()<<": Invalid prefix on ID or invalid suffix on Number "<<yytext<<endl<<endl;
 						IncErr();
@@ -1023,7 +1024,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 125 "1705060.l"
+#line 126 "1705060.l"
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_INT");
@@ -1033,7 +1034,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 131 "1705060.l"
+#line 132 "1705060.l"
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_FLOAT");
@@ -1043,7 +1044,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 137 "1705060.l"
+#line 138 "1705060.l"
 {
 						cout<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
 						IncErr();
@@ -1051,7 +1052,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 141 "1705060.l"
+#line 142 "1705060.l"
 {
 						cout<<"Error at line no "<<getline()<<": Too many decimal points "<<yytext<<endl<<endl;
 						IncErr();
@@ -1059,7 +1060,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 145 "1705060.l"
+#line 146 "1705060.l"
 {
 						cout<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
 						IncErr();
@@ -1067,7 +1068,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 149 "1705060.l"
+#line 150 "1705060.l"
 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_CHAR");
@@ -1078,7 +1079,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 156 "1705060.l"
+#line 157 "1705060.l"
 {
 						cout<<"Line no "<<getline()<<": Token <COMMENT> Lexeme //";
 						BEGIN cmnt_single;
@@ -1086,7 +1087,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 160 "1705060.l"
+#line 161 "1705060.l"
 {
 						string s=yytext;
 						cout<<s;
@@ -1096,7 +1097,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 166 "1705060.l"
+#line 167 "1705060.l"
 {
 										string s=yytext;
 										cout<<s;
@@ -1105,7 +1106,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 171 "1705060.l"
+#line 172 "1705060.l"
 {
 					cout<<" found"<<endl<<endl;
 					IncLine();
@@ -1113,7 +1114,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 175 "1705060.l"
+#line 176 "1705060.l"
 {
 									BEGIN cmnt_mult;
 									string s=yytext;
@@ -1123,7 +1124,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 181 "1705060.l"
+#line 182 "1705060.l"
 {
 								l=l+yytext;
 								cout<<"Line no "<<getline()-line<<": Token <COMMENT> Lexeme "<<l;
@@ -1134,7 +1135,7 @@ YY_RULE_SETUP
 							}
 	YY_BREAK
 case YY_STATE_EOF(cmnt_mult):
-#line 189 "1705060.l"
+#line 190 "1705060.l"
 {
 							cout<<"Error at line no "<<getline()-line<<": Unterminated Comment "<<l<<endl<<endl;
 							IncErr();
@@ -1145,34 +1146,32 @@ case YY_STATE_EOF(cmnt_mult):
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 196 "1705060.l"
+#line 197 "1705060.l"
 {l=l+yytext; IncLine();line++;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 197 "1705060.l"
+#line 198 "1705060.l"
 {l=l+yytext;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(cmnt_single):
-#line 198 "1705060.l"
+#line 199 "1705060.l"
 { 
 		//cout<<endl;
-		cout<<"Total lines: "<<getline()<<endl;
-		cout<<"Total errors: "<<getErr()<<endl; 
 		return 0;}						
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 203 "1705060.l"
+#line 202 "1705060.l"
 {cout<<"Error at line no "<<getline()<<": Unrecognized character "<<yytext<<endl<<endl; IncErr();}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 204 "1705060.l"
+#line 203 "1705060.l"
 ECHO;
 	YY_BREAK
-#line 1176 "lex.yy.c"
+#line 1175 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2058,5 +2057,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 204 "1705060.l"
+#line 203 "1705060.l"
 

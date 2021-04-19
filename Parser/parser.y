@@ -8,7 +8,8 @@ int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
 FILE* fp;
-SymbolTable *st = new SymbolTable(7);
+SymbolTable *st = new SymbolTable(31);
+
 int line_count=1;
 int error=0;
 void IncLine(){
@@ -23,10 +24,10 @@ int getErr()
 void yyerror(char *s)
 {
 	//write your code
-	cout<<"Syntax Error"<<endl;
+	cout<<"At line no: "<<getline()<<"Syntax Error"<<endl;
 }
 
-
+string type;
 %}
 %union {
 int ival;
@@ -40,7 +41,8 @@ vector<SymbolInfo*>* vecv;
 %type <vecv> start program unit var_declaration func_declaration func_definition parameter_list term rel_expression
 %type <vecv> compound_statement declaration_list statements statement expression_statement variable expression logic_expression
 %type <vecv> unary_expression factor argument_list arguments simple_expression
-%type <siv> type_specifier
+%type <siv> type_specifier 
+%type <ival> newScope
 %nonassoc nothing
 %nonassoc ELSE
 %%
@@ -57,6 +59,7 @@ start : program
 			cout<<(*i)->get_name();
 		cout<<endl;
 		cout<<endl;
+		
 	}
 	;
 
@@ -265,14 +268,15 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
  		;
 
  		
-compound_statement : LCURL statements RCURL			{
+compound_statement : LCURL newScope statements RCURL			{
 									cout<<"At line no: "<<getline()<<" compound_statement : LCURL statements RCURL"<<endl;
 									cout<<endl;
 									$$=new vector<SymbolInfo*>();
 									$$->push_back(new SymbolInfo("{","LCURL"));
+									
 									$$->push_back(new SymbolInfo("\n","newline"));
 									vector<SymbolInfo*>::iterator i;
-									for (i = $2->begin(); i != $2->end(); ++i) 
+									for (i = $3->begin(); i != $3->end(); ++i) 
 										$$->push_back((*i));
       									$$->push_back(new SymbolInfo("}","RCURL"));
       									$$->push_back(new SymbolInfo("\n","newline"));
@@ -280,15 +284,18 @@ compound_statement : LCURL statements RCURL			{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									st->print_all();
+      									st->exitScope();
 										
 								}
- 		    | LCURL RCURL				{
+ 		    | LCURL newScope RCURL				{
 									cout<<"At line no: "<<getline()<<" compound_statement : LCURL  RCURL"<<endl;
 									cout<<endl;
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
 
 									$$->push_back(new SymbolInfo("{","LCURL"));
+									
 									$$->push_back(new SymbolInfo("\n","newline"));
       									$$->push_back(new SymbolInfo("}","RCURL"));
       									$$->push_back(new SymbolInfo("\n","newline"));
@@ -296,19 +303,34 @@ compound_statement : LCURL statements RCURL			{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									st->print_all();
+      									st->exitScope();
 										
 								}
  		    ;
- 		    
+newScope : 	{
+			$$=-1;
+			st->enterScope();
+		}
+;		    
 var_declaration : type_specifier declaration_list SEMICOLON	{
 									cout<<"At line no: "<<getline()<<" var_declaration : type_specifier declaration_list SEMICOLON"<<endl;
 									cout<<endl;
 									$$=new vector<SymbolInfo*>();
 									$$->push_back($1);
+									type=$1->get_name();
 									$$->push_back(new SymbolInfo(" ","space"));
 									vector<SymbolInfo*>::iterator i;
 									for (i = $2->begin(); i != $2->end(); ++i) 
+									{
+										if((*i)->get_type()=="ID")
+										{
+											(*i)->set_dType(type);
+											st->insert_symbol((*i));
+										}
 										$$->push_back((*i));
+									}
+									type.clear();
       									$$->push_back(new SymbolInfo(";","SEMICOLON"));
       									$$->push_back(new SymbolInfo("\n","newline"));
 									for (i = $$->begin(); i != $$->end(); ++i) 
@@ -365,6 +387,7 @@ declaration_list : declaration_list COMMA ID			{
 										for (i = $1->begin(); i != $1->end(); ++i) 
 											$$->push_back((*i));
       										$$->push_back(new SymbolInfo(",","COMMA"));
+      										$3->set_varSize(stoi($5->get_name()));
       										$$->push_back($3);
       										$$->push_back(new SymbolInfo("[","LTHIRD"));
       										$$->push_back($5);
@@ -392,7 +415,7 @@ declaration_list : declaration_list COMMA ID			{
  		  							cout<<endl;
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
-									
+									$1->set_varSize(stoi($3->get_name()));
 									$$->push_back($1);
 									$$->push_back(new SymbolInfo("[","LTHIRD"));
       									$$->push_back($3);

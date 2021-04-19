@@ -94,7 +94,7 @@ At line no: 5 parameter_list  : parameter_list COMMA type_specifier ID
 
 int a,int b
 
-At line no: 6 variable : ID
+jhamela hereAt line no: 6 variable : ID
 
 a
 
@@ -106,7 +106,7 @@ At line no: 6 unary_expression : factor
 
 a
 
-At line no: 6 term :	unary_expression
+At line no: 6 term : unary_expression
 
 a
 
@@ -126,15 +126,15 @@ At line no: 6 unary_expression : factor
 
 b
 
-At line no: 6 term :	unary_expression
+At line no: 6 term : unary_expression
 
 b
 
-At line no: 6simple_expression : simple_expression ADDOP term 
+At line no: 6 simple_expression : simple_expression ADDOP term 
 
 a+b
 
-At line no: 6 rel_expression	: simple_expression
+At line no: 6 rel_expression : simple_expression
 
 a+b
 
@@ -163,6 +163,15 @@ return a+b;
 }
 
 
+ScopeTable # 1.1
+
+ScopeTable # 1
+ 4 --> < a : ID> 
+ 27 --> < x : ID> 
+ 28 --> < y : ID> 
+ 29 --> < z : ID> 
+
+ScopeTable with id 1.1 removed
 At line no: 7 func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
 
 int var(int a,int b){
@@ -191,7 +200,7 @@ At line no: 9 type_specifier : VOID
 
 void
 
-At line no: 10 variable : ID
+jhamela hereAt line no: 10 variable : ID
 
 x
 
@@ -203,7 +212,7 @@ At line no: 10 unary_expression : factor
 
 2
 
-At line no: 10 term :	unary_expression
+At line no: 10 term : unary_expression
 
 2
 
@@ -211,7 +220,7 @@ At line no: 10 simple_expression : term
 
 2
 
-At line no: 10 rel_expression	: simple_expression
+At line no: 10 rel_expression : simple_expression
 
 2
 
@@ -223,7 +232,7 @@ At line no: 10 expression : variable ASSIGNOP logic_expression
 
 x=2
 
-At line no: 10 expression_statement 	: expression SEMICOLON
+At line no: 10 expression_statement : expression SEMICOLON
 
 x=2;
 
@@ -254,7 +263,7 @@ At line no: 11 unary_expression : factor
 
 x
 
-At line no: 11 term :	unary_expression
+At line no: 11 term : unary_expression
 
 x
 
@@ -270,15 +279,15 @@ At line no: 11 unary_expression : factor
 
 5
 
-At line no: 11 term :	unary_expression
+At line no: 11 term : unary_expression
 
 5
 
-At line no: 11simple_expression : simple_expression ADDOP term 
+At line no: 11 simple_expression : simple_expression ADDOP term 
 
 x-5
 
-At line no: 11 rel_expression	: simple_expression
+At line no: 11 rel_expression : simple_expression
 
 x-5
 
@@ -290,7 +299,7 @@ At line no: 11 expression : variable ASSIGNOP logic_expression
 
 y=x-5
 
-At line no: 11 expression_statement 	: expression SEMICOLON
+At line no: 11 expression_statement : expression SEMICOLON
 
 y=x-5;
 
@@ -314,6 +323,15 @@ y=x-5;
 }
 
 
+ScopeTable # 1.2
+
+ScopeTable # 1
+ 4 --> < a : ID> 
+ 27 --> < x : ID> 
+ 28 --> < y : ID> 
+ 29 --> < z : ID> 
+
+ScopeTable with id 1.2 removed
 At line no: 12 func_definition : type_specifier ID LPAREN RPAREN compound_statement
 
 void foo(){
@@ -348,7 +366,7 @@ At line no: 14 type_specifier : INT
 
 int
 
-At line no: 15 type_specifier : INT
+jhamela hereAt line no: 15 type_specifier : INT
 
 int
 
@@ -415,7 +433,7 @@ At line no: 16 unary_expression : factor
 
 0
 
-At line no: 16 term :	unary_expression
+At line no: 16 term : unary_expression
 
 0
 
@@ -423,7 +441,7 @@ At line no: 16 simple_expression : term
 
 0
 
-At line no: 16 rel_expression	: simple_expression
+At line no: 16 rel_expression : simple_expression
 
 0
 
@@ -447,7 +465,7 @@ At line no: 16 unary_expression : factor
 
 1
 
-At line no: 16 term :	unary_expression
+At line no: 16 term : unary_expression
 
 1
 
@@ -455,7 +473,7 @@ At line no: 16 simple_expression : term
 
 1
 
-At line no: 16 rel_expression	: simple_expression
+At line no: 16 rel_expression : simple_expression
 
 1
 
@@ -467,7 +485,7 @@ At line no: 16 expression : variable ASSIGNOP logic_expression
 
 a[0]=1
 
-At line no: 16 expression_statement 	: expression SEMICOLON
+At line no: 16 expression_statement : expression SEMICOLON
 
 a[0]=1;
 
@@ -492,7 +510,7 @@ At line no: 17 unary_expression : factor
 
 1
 
-At line no: 17 term :	unary_expression
+At line no: 17 term : unary_expression
 
 1
 
@@ -500,7 +518,7 @@ At line no: 17 simple_expression : term
 
 1
 
-At line no: 17 rel_expression	: simple_expression
+At line no: 17 rel_expression : simple_expression
 
 1
 
@@ -524,7 +542,7 @@ At line no: 17 unary_expression : factor
 
 5
 
-At line no: 17 term :	unary_expression
+At line no: 17 term : unary_expression
 
 5
 
@@ -532,7 +550,7 @@ At line no: 17 simple_expression : term
 
 5
 
-At line no: 17 rel_expression	: simple_expression
+At line no: 17 rel_expression : simple_expression
 
 5
 
@@ -544,7 +562,7 @@ At line no: 17 expression : variable ASSIGNOP logic_expression
 
 a[1]=5
 
-At line no: 17 expression_statement 	: expression SEMICOLON
+At line no: 17 expression_statement : expression SEMICOLON
 
 a[1]=5;
 
@@ -574,7 +592,7 @@ At line no: 18 unary_expression : factor
 
 0
 
-At line no: 18 term :	unary_expression
+At line no: 18 term : unary_expression
 
 0
 
@@ -582,7 +600,7 @@ At line no: 18 simple_expression : term
 
 0
 
-At line no: 18 rel_expression	: simple_expression
+At line no: 18 rel_expression : simple_expression
 
 0
 
@@ -606,7 +624,7 @@ At line no: 18 unary_expression : factor
 
 a[0]
 
-At line no: 18 term :	unary_expression
+At line no: 18 term : unary_expression
 
 a[0]
 
@@ -622,7 +640,7 @@ At line no: 18 unary_expression : factor
 
 1
 
-At line no: 18 term :	unary_expression
+At line no: 18 term : unary_expression
 
 1
 
@@ -630,7 +648,7 @@ At line no: 18 simple_expression : term
 
 1
 
-At line no: 18 rel_expression	: simple_expression
+At line no: 18 rel_expression : simple_expression
 
 1
 
@@ -654,15 +672,15 @@ At line no: 18 unary_expression : factor
 
 a[1]
 
-At line no: 18 term :	unary_expression
+At line no: 18 term : unary_expression
 
 a[1]
 
-At line no: 18simple_expression : simple_expression ADDOP term 
+At line no: 18 simple_expression : simple_expression ADDOP term 
 
 a[0]+a[1]
 
-At line no: 18 rel_expression	: simple_expression
+At line no: 18 rel_expression : simple_expression
 
 a[0]+a[1]
 
@@ -674,7 +692,7 @@ At line no: 18 expression : variable ASSIGNOP logic_expression
 
 i=a[0]+a[1]
 
-At line no: 18 expression_statement 	: expression SEMICOLON
+At line no: 18 expression_statement : expression SEMICOLON
 
 i=a[0]+a[1];
 
@@ -705,7 +723,7 @@ At line no: 19 unary_expression : factor
 
 2
 
-At line no: 19 term :	unary_expression
+At line no: 19 term : unary_expression
 
 2
 
@@ -733,7 +751,7 @@ At line no: 19 unary_expression : factor
 
 5
 
-At line no: 19 term :	unary_expression
+At line no: 19 term : unary_expression
 
 5
 
@@ -761,7 +779,7 @@ At line no: 19 unary_expression : factor
 
 4
 
-At line no: 19 term :	unary_expression
+At line no: 19 term : unary_expression
 
 4
 
@@ -769,7 +787,7 @@ At line no: 19 simple_expression : term
 
 4
 
-At line no: 19 rel_expression	: simple_expression RELOP simple_expression
+At line no: 19 rel_expression : simple_expression RELOP simple_expression
 
 5%3<4
 
@@ -781,7 +799,7 @@ At line no: 19 unary_expression : factor
 
 8
 
-At line no: 19 term :	unary_expression
+At line no: 19 term : unary_expression
 
 8
 
@@ -789,7 +807,7 @@ At line no: 19 simple_expression : term
 
 8
 
-At line no: 19 rel_expression	: simple_expression
+At line no: 19 rel_expression : simple_expression
 
 8
 
@@ -809,15 +827,15 @@ At line no: 19 unary_expression : factor
 
 (5%3<4&&8)
 
-At line no: 19 term :	unary_expression
+At line no: 19 term : unary_expression
 
 (5%3<4&&8)
 
-At line no: 19simple_expression : simple_expression ADDOP term 
+At line no: 19 simple_expression : simple_expression ADDOP term 
 
 2*3+(5%3<4&&8)
 
-At line no: 19 rel_expression	: simple_expression
+At line no: 19 rel_expression : simple_expression
 
 2*3+(5%3<4&&8)
 
@@ -829,7 +847,7 @@ At line no: 19 unary_expression : factor
 
 2
 
-At line no: 19 term :	unary_expression
+At line no: 19 term : unary_expression
 
 2
 
@@ -837,7 +855,7 @@ At line no: 19 simple_expression : term
 
 2
 
-At line no: 19 rel_expression	: simple_expression
+At line no: 19 rel_expression : simple_expression
 
 2
 
@@ -849,7 +867,7 @@ At line no: 19 expression : variable ASSIGNOP logic_expression
 
 j=2*3+(5%3<4&&8)||2
 
-At line no: 19 expression_statement 	: expression SEMICOLON
+At line no: 19 expression_statement : expression SEMICOLON
 
 j=2*3+(5%3<4&&8)||2;
 
@@ -881,7 +899,7 @@ At line no: 20 unary_expression : factor
 
 1
 
-At line no: 20 term :	unary_expression
+At line no: 20 term : unary_expression
 
 1
 
@@ -889,7 +907,7 @@ At line no: 20 simple_expression : term
 
 1
 
-At line no: 20 rel_expression	: simple_expression
+At line no: 20 rel_expression : simple_expression
 
 1
 
@@ -909,7 +927,7 @@ At line no: 20 unary_expression : factor
 
 2
 
-At line no: 20 term :	unary_expression
+At line no: 20 term : unary_expression
 
 2
 
@@ -929,7 +947,7 @@ At line no: 20 simple_expression : term
 
 2*3
 
-At line no: 20 rel_expression	: simple_expression
+At line no: 20 rel_expression : simple_expression
 
 2*3
 
@@ -953,7 +971,7 @@ At line no: 20 unary_expression : factor
 
 var(1,2*3)
 
-At line no: 20 term :	unary_expression
+At line no: 20 term : unary_expression
 
 var(1,2*3)
 
@@ -969,7 +987,7 @@ At line no: 20 unary_expression : factor
 
 3.5
 
-At line no: 20 term :	unary_expression
+At line no: 20 term : unary_expression
 
 3.5
 
@@ -985,11 +1003,11 @@ At line no: 20 term : term MULOP unary_expression
 
 3.5*2
 
-At line no: 20simple_expression : simple_expression ADDOP term 
+At line no: 20 simple_expression : simple_expression ADDOP term 
 
 var(1,2*3)+3.5*2
 
-At line no: 20 rel_expression	: simple_expression
+At line no: 20 rel_expression : simple_expression
 
 var(1,2*3)+3.5*2
 
@@ -1001,7 +1019,7 @@ At line no: 20 expression : variable ASSIGNOP logic_expression
 
 d=var(1,2*3)+3.5*2
 
-At line no: 20 expression_statement 	: expression SEMICOLON
+At line no: 20 expression_statement : expression SEMICOLON
 
 d=var(1,2*3)+3.5*2;
 
@@ -1030,7 +1048,7 @@ At line no: 21 unary_expression : factor
 
 0
 
-At line no: 21 term :	unary_expression
+At line no: 21 term : unary_expression
 
 0
 
@@ -1038,7 +1056,7 @@ At line no: 21 simple_expression : term
 
 0
 
-At line no: 21 rel_expression	: simple_expression
+At line no: 21 rel_expression : simple_expression
 
 0
 
@@ -1081,81 +1099,19 @@ return 0;
 }
 
 
+ScopeTable # 1.3
+ 4 --> < a : ID> 
+ 6 --> < c : ID> 
+ 7 --> < d : ID> 
+ 12 --> < i : ID> 
+ 13 --> < j : ID> 
+
+ScopeTable # 1
+ 4 --> < a : ID> 
+ 27 --> < x : ID> 
+ 28 --> < y : ID> 
+ 29 --> < z : ID> 
+
+ScopeTable with id 1.3 removed
 At line no: 22 func_definition : type_specifier ID LPAREN RPAREN compound_statement
-
-int main(){
-int a[2],c,i,j;
-float d;
-a[0]=1;
-a[1]=5;
-i=a[0]+a[1];
-j=2*3+(5%3<4&&8)||2;
-d=var(1,2*3)+3.5*2;
-return 0;
-}
-
-
-At line no: 22 unit : func_definition
-
-int main(){
-int a[2],c,i,j;
-float d;
-a[0]=1;
-a[1]=5;
-i=a[0]+a[1];
-j=2*3+(5%3<4&&8)||2;
-d=var(1,2*3)+3.5*2;
-return 0;
-}
-
-
-At line no: 22 program : program unit
-
-int x,y,z;
-float a;
-void foo();
-int var(int a,int b){
-return a+b;
-}
-void foo(){
-x=2;
-y=x-5;
-}
-int main(){
-int a[2],c,i,j;
-float d;
-a[0]=1;
-a[1]=5;
-i=a[0]+a[1];
-j=2*3+(5%3<4&&8)||2;
-d=var(1,2*3)+3.5*2;
-return 0;
-}
-
-
-Total lines: 23
-Total errors: 0
-At line no: 23 start : program
-
-int x,y,z;
-float a;
-void foo();
-int var(int a,int b){
-return a+b;
-}
-void foo(){
-x=2;
-y=x-5;
-}
-int main(){
-int a[2],c,i,j;
-float d;
-a[0]=1;
-a[1]=5;
-i=a[0]+a[1];
-j=2*3+(5%3<4&&8)||2;
-d=var(1,2*3)+3.5*2;
-return 0;
-}
-
 

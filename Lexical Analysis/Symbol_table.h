@@ -347,8 +347,6 @@ void enterScope()
     str1 << pos;
     ScopeTable* sc=new ScopeTable(n);
     sc->set_parent(current);
-    cout<<"jhamela here";
-    
     if(ex)
         sc->set_id(str1.str());
     else
@@ -382,7 +380,6 @@ void exitScope()
     ScopeTable* temp=current;
     current=current->get_parent();
     delete temp;
-    return;
 
 
 }
