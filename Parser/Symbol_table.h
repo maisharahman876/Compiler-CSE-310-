@@ -95,10 +95,12 @@ string get_dType()
 void set_name(string n)
 {
     name=n;
+    return;
 }
 void set_dType(string n)
 {
     data_type=n;
+    return;
 }
 SymbolInfo* get_next()
 {
@@ -119,6 +121,7 @@ int get_varSize()
 void set_varSize(int n)
 {
     size=n;
+    return;
 }
 void addParam(string param_type, string param_name) {
         param* p=new param(param_type,param_name);
@@ -347,7 +350,6 @@ void enterScope()
     str1 << pos;
     ScopeTable* sc=new ScopeTable(n);
     sc->set_parent(current);
-    cout<<"jhamela here";
     
     if(ex)
         sc->set_id(str1.str());

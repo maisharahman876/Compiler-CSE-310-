@@ -59,7 +59,7 @@ start : program
 			cout<<(*i)->get_name();
 		cout<<endl;
 		cout<<endl;
-		
+		$1->clear();
 	}
 	;
 
@@ -76,6 +76,8 @@ program : program unit 	{
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
+					$1->clear();
+					$2->clear();
 				}
 	| unit			{
 					$$=new vector<SymbolInfo*>();
@@ -88,6 +90,7 @@ program : program unit 	{
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
+					$1->clear();
 				}
 	;
 	
@@ -102,6 +105,7 @@ unit : var_declaration		{
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
+					$1->clear();
 				}
      | func_declaration	{
      					$$=new vector<SymbolInfo*>();
@@ -114,6 +118,7 @@ unit : var_declaration		{
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
+					$1->clear();
      				}
      | func_definition		{
      					$$=new vector<SymbolInfo*>();
@@ -126,6 +131,7 @@ unit : var_declaration		{
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
+					$1->clear();
      				}
      ;
      
@@ -147,7 +153,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON	{
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
-											
+											$4->clear();
 		
 										}
 		| type_specifier ID LPAREN RPAREN SEMICOLON			{
@@ -178,6 +184,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statem
 											$$->push_back($1);
 											$$->push_back(new SymbolInfo(" ","space"));
 											$$->push_back($2);
+											
 											$$->push_back(new SymbolInfo("(","LPAREN"));
 											vector<SymbolInfo*>::iterator i;
 											for (i = $4->begin(); i != $4->end(); ++i) 
@@ -189,6 +196,8 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statem
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
+      											$4->clear();
+      											$6->clear();
 											}
 		| type_specifier ID LPAREN RPAREN compound_statement			{
 											cout<<"At line no: "<<getline()<<" func_definition : type_specifier ID LPAREN RPAREN compound_statement"<<endl;
@@ -197,11 +206,13 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statem
 											$$->push_back($1);
 											$$->push_back(new SymbolInfo(" ","space"));
 											$$->push_back($2);
+											
 											$$->push_back(new SymbolInfo("(","LPAREN"));
 											$$->push_back(new SymbolInfo(")","RPAREN"));
 											vector<SymbolInfo*>::iterator i;
 											for (i = $5->begin(); i != $5->end(); ++i) 
 												$$->push_back((*i));
+											$5->clear();
 											for (i = $$->begin(); i != $$->end(); ++i) 
 												cout<<(*i)->get_name();
       											cout<<endl;
@@ -224,7 +235,8 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl;
-      									cout<<endl;	
+      									cout<<endl;
+      									$1->clear();	
 								}
 		| parameter_list COMMA type_specifier		{
 									cout<<"At line no: "<<getline()<<" parameter_list  : parameter_list COMMA type_specifier"<<endl;
@@ -239,6 +251,7 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
 										
 								}
  		| type_specifier ID				{
@@ -286,6 +299,7 @@ compound_statement : LCURL newScope statements RCURL			{
       									cout<<endl;
       									st->print_all();
       									st->exitScope();
+      									$3->clear();
 										
 								}
  		    | LCURL newScope RCURL				{
@@ -325,8 +339,13 @@ var_declaration : type_specifier declaration_list SEMICOLON	{
 									{
 										if((*i)->get_type()=="ID")
 										{
-											(*i)->set_dType(type);
-											st->insert_symbol((*i));
+											//(*i)->set_dType(type);
+											SymbolInfo* si=new SymbolInfo((*i)->get_name(),"ID",type);
+											if((*i)->get_varSize()!=-1)
+											   si->set_varSize((*i)->get_varSize());
+											st->insert_symbol(si);
+											
+											
 										}
 										$$->push_back((*i));
 									}
@@ -337,6 +356,7 @@ var_declaration : type_specifier declaration_list SEMICOLON	{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$2->clear();
 										
 								}
  		 ;
@@ -377,6 +397,7 @@ declaration_list : declaration_list COMMA ID			{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
 										
 								}
  		  | declaration_list COMMA ID LTHIRD CONST_INT RTHIRD	{
@@ -396,6 +417,7 @@ declaration_list : declaration_list COMMA ID			{
 										cout<<(*i)->get_name();
       										cout<<endl;
       										cout<<endl;
+      										$1->clear();
 										
 										}
  		  | ID						{
@@ -438,6 +460,7 @@ statements : statement						{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
  		  						}		
 	   | statements statement				{
  		  							cout<<"At line no: "<<getline()<<" statements : statements statement"<<endl;
@@ -453,6 +476,8 @@ statements : statement						{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
+      									$2->clear();
  		  						}
 	   ;
 	   
@@ -467,6 +492,7 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
  		  						}
 	  | expression_statement				{
  		  							cout<<"At line no: "<<getline()<<" statement : expression_statement"<<endl;
@@ -479,6 +505,7 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
  		  						}
 	  | compound_statement					{
  		  							cout<<"At line no: "<<getline()<<" statement : compound_statement"<<endl;
@@ -491,6 +518,7 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$1->clear();
  		  						}
 	  | FOR LPAREN expression_statement expression_statement expression RPAREN statement	{
 	  													cout<<"At line no: "<<getline()<<" statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement"<<endl;
@@ -513,7 +541,10 @@ statement : var_declaration					{
 														for (i = $$->begin(); i != $$->end(); ++i) 
 														cout<<(*i)->get_name();
       														cout<<endl;
-      														cout<<endl;	
+      														cout<<endl;
+      														$3->clear();
+      														$4->clear();
+      														$5->clear();	
 	  												}
 	  | IF LPAREN expression RPAREN statement %prec nothing		{
  		  							cout<<"At line no: "<<getline()<<" statement : IF LPAREN expression RPAREN statement"<<endl;
@@ -531,6 +562,8 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$3->clear();
+      									$5->clear();
  		  						}
 	  | IF LPAREN expression RPAREN statement ELSE statement	{
  		  							cout<<"At line no: "<<getline()<<" statement : IF LPAREN expression RPAREN statement ELSE statement"<<endl;
@@ -553,6 +586,9 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$3->clear();
+      									$5->clear();
+      									$7->clear();
  		  							}
 	  | WHILE LPAREN expression RPAREN statement		{
  		  							cout<<"At line no: "<<getline()<<" statement : WHILE LPAREN expression RPAREN statement"<<endl;
@@ -571,6 +607,8 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$3->clear();
+      									$5->clear();
  		  						}
 	  | PRINTLN LPAREN ID RPAREN SEMICOLON		{
  		  							cout<<"At line no: "<<getline()<<" statement : PRINTLN LPAREN ID RPAREN SEMICOLON"<<endl;
@@ -604,6 +642,7 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									$2->clear();
  		  						}
 	  ;
 	  
@@ -628,6 +667,7 @@ expression_statement 	: SEMICOLON				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 			;
 	  
@@ -652,6 +692,7 @@ variable : ID 							{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$3->clear();
  		  						}
 	 ;
 	 
@@ -664,6 +705,7 @@ variable : ID 							{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 	   | variable ASSIGNOP logic_expression 		{
  		  							cout<<"At line no: "<<getline()<<" expression : variable ASSIGNOP logic_expression"<<endl<<endl;
@@ -677,6 +719,8 @@ variable : ID 							{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
+      									$3->clear();
  		  						}
 	   ;
 			
@@ -689,6 +733,7 @@ logic_expression : rel_expression 				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 		 | rel_expression LOGICOP rel_expression 	{
  		  							cout<<"At line no: "<<getline()<<" logic_expression : rel_expression "<<endl<<endl;
@@ -702,6 +747,8 @@ logic_expression : rel_expression 				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
+      									$3->clear();
  		  						}
 		 ;
 			
@@ -714,6 +761,7 @@ rel_expression	: simple_expression 				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 		| simple_expression RELOP simple_expression	{
  		  							cout<<"At line no: "<<getline()<<" rel_expression : simple_expression RELOP simple_expression"<<endl<<endl;
@@ -727,6 +775,8 @@ rel_expression	: simple_expression 				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
+      									$3->clear();
  		  						}
 		;
 				
@@ -739,6 +789,7 @@ simple_expression : term 					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 		  | simple_expression ADDOP term 		{
  		  							cout<<"At line no: "<<getline()<<" simple_expression : simple_expression ADDOP term "<<endl<<endl;
@@ -752,6 +803,8 @@ simple_expression : term 					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
+      									$3->clear();
  		  						}
 		  ;
 					
@@ -764,6 +817,7 @@ term :	unary_expression					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
      |  term MULOP unary_expression				{
  		  							cout<<"At line no: "<<getline()<<" term : term MULOP unary_expression"<<endl<<endl;
@@ -777,6 +831,8 @@ term :	unary_expression					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
+      									$3->clear();
  		  						}
      ;
 
@@ -790,6 +846,7 @@ unary_expression : ADDOP unary_expression  			{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$2->clear();
  		  						}
 		 | NOT unary_expression 			{
  		  							cout<<"At line no: "<<getline()<<" unary_expression : NOT unary_expression"<<endl<<endl;
@@ -801,6 +858,7 @@ unary_expression : ADDOP unary_expression  			{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$2->clear();
  		  						}
 		 | factor 					{
  		  							cout<<"At line no: "<<getline()<<" unary_expression : factor"<<endl<<endl;
@@ -811,6 +869,7 @@ unary_expression : ADDOP unary_expression  			{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 		 ;
 	
@@ -823,6 +882,7 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 	| ID LPAREN argument_list RPAREN			{
  		  							cout<<"At line no: "<<getline()<<" factor : ID LPAREN argument_list RPAREN"<<endl<<endl;
@@ -838,6 +898,7 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$3->clear();
  		  						}
 	| LPAREN expression RPAREN				{
  		  							cout<<"At line no: "<<getline()<<" factor : LPAREN expression RPAREN"<<endl<<endl;
@@ -852,6 +913,7 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$2->clear();
  		  						}
 	| CONST_INT 						{
  		  							cout<<"At line no: "<<getline()<<" factor : CONST_INT"<<endl<<endl;
@@ -881,6 +943,7 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 	| variable DECOP					{
  		  							cout<<"At line no: "<<getline()<<" factor : variable DECOP"<<endl<<endl;
@@ -892,6 +955,7 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 	;
 	
@@ -904,6 +968,7 @@ argument_list : arguments					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 		|						{
  		  							cout<<"At line no: "<<getline()<<" argument_list : "<<endl<<endl;
@@ -928,6 +993,8 @@ arguments : arguments COMMA logic_expression			{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
+      									$3->clear();
  		  						}
 	      | logic_expression				{
  		  							cout<<"At line no: "<<getline()<<" arguments : logic_expression"<<endl<<endl;
@@ -938,6 +1005,7 @@ arguments : arguments COMMA logic_expression			{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									$1->clear();
  		  						}
 	      ;
  
