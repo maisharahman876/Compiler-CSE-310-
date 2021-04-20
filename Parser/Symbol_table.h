@@ -424,7 +424,7 @@ SymbolInfo* lookup_symbol(string name)
 
         temp=temp->get_parent();
     }
-    cout<<"Not found"<<endl;
+    //cout<<"Not found"<<endl;
     return NULL;
 }
 void print_current()

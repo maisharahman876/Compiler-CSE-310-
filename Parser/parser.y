@@ -26,8 +26,10 @@ void yyerror(char *s)
 	//write your code
 	cout<<"At line no: "<<getline()<<"Syntax Error"<<endl;
 }
-
+bool func=false;
 string type;
+vector<param*>plist;
+vector<SymbolInfo*>vlist;
 %}
 %union {
 int ival;
@@ -138,6 +140,15 @@ unit : var_declaration		{
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON	{
 											cout<<"At line no: "<<getline()<<" func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON"<<endl;
 											cout<<endl;
+											SymbolInfo* si=new SymbolInfo($2->get_name(),"ID",$1->get_name());
+											vector<param*>::iterator j;
+											for (j = plist.begin(); j != plist.end(); ++j)
+											{
+											  si->addParam((*j)->get_ptype(),(*j)->get_pname());
+											  delete (*j);
+											}
+											plist.clear();
+											st->insert_symbol(si);
 											$$=new vector<SymbolInfo*>();
 											$$->push_back($1);
 											$$->push_back(new SymbolInfo(" ","space"));
@@ -159,6 +170,8 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON	{
 		| type_specifier ID LPAREN RPAREN SEMICOLON			{
 											cout<<"At line no: "<<getline()<<" func_declaration : type_specifier ID LPAREN RPAREN SEMICOLON"<<endl;
 											cout<<endl;
+											SymbolInfo* si=new SymbolInfo($2->get_name(),"ID",$1->get_name());
+											st->insert_symbol(si);
 											vector<SymbolInfo*>::iterator i;
 					
 											$$=new vector<SymbolInfo*>();
@@ -176,28 +189,43 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON	{
 		
 										}
 		;
+in_func : {
+		func=true;
+		}
+;
 		 
-func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement	{
+func_definition : type_specifier ID LPAREN parameter_list RPAREN in_func compound_statement	{
 												cout<<"At line no: "<<getline()<<" func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement"<<endl;
 											cout<<endl;
 											$$=new vector<SymbolInfo*>();
 											$$->push_back($1);
 											$$->push_back(new SymbolInfo(" ","space"));
 											$$->push_back($2);
-											
+											if(st->lookup_symbol($2->get_name())==NULL)
+											{
+											SymbolInfo* si=new SymbolInfo($2->get_name(),"ID",$1->get_name());
+											vector<param*>::iterator j;
+											for (j = plist.begin(); j != plist.end(); ++j)
+											{
+											  si->addParam((*j)->get_ptype(),(*j)->get_pname());
+											  delete (*j);
+											}
+											plist.clear();
+											st->insert_symbol(si);
+											}
 											$$->push_back(new SymbolInfo("(","LPAREN"));
 											vector<SymbolInfo*>::iterator i;
 											for (i = $4->begin(); i != $4->end(); ++i) 
 												$$->push_back((*i));
 											$$->push_back(new SymbolInfo(")","RPAREN"));
-											for (i = $6->begin(); i != $6->end(); ++i) 
+											for (i = $7->begin(); i != $7->end(); ++i) 
 												$$->push_back((*i));
 											for (i = $$->begin(); i != $$->end(); ++i) 
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
       											$4->clear();
-      											$6->clear();
+      											$7->clear();
 											}
 		| type_specifier ID LPAREN RPAREN compound_statement			{
 											cout<<"At line no: "<<getline()<<" func_definition : type_specifier ID LPAREN RPAREN compound_statement"<<endl;
@@ -232,6 +260,10 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
 									$$->push_back($3);
 									$$->push_back(new SymbolInfo(" ","space"));
 									$$->push_back($4);
+									param* p=new param($3->get_name(),$4->get_name());
+									plist.push_back(p);
+									SymbolInfo* si=new SymbolInfo($4->get_name(),"ID",$3->get_name());
+									vlist.push_back(si);
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl;
@@ -242,6 +274,8 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
 									cout<<"At line no: "<<getline()<<" parameter_list  : parameter_list COMMA type_specifier"<<endl;
 									cout<<endl;
 									$$=new vector<SymbolInfo*>();
+									param* p=new param($3->get_name(),"");
+									plist.push_back(p);
 									vector<SymbolInfo*>::iterator i;
 									for (i = $1->begin(); i != $1->end(); ++i) 
 										$$->push_back((*i));
@@ -259,7 +293,10 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
 									cout<<endl;
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
-									
+									param* p=new param($1->get_name(),$2->get_name());
+									plist.push_back(p);
+									SymbolInfo* si=new SymbolInfo($2->get_name(),"ID",$1->get_name());
+									vlist.push_back(si);
 									$$->push_back($1);
 									$$->push_back(new SymbolInfo(" ","space"));
 									$$->push_back($2);
@@ -270,6 +307,8 @@ parameter_list  : parameter_list COMMA type_specifier ID	{
 								}
 		| type_specifier				{
 									cout<<"At line no: "<<getline()<<" parameter_list  : type_specifier"<<endl;
+									param* p=new param($1->get_name(),"");
+									plist.push_back(p);
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
 									$$->push_back($1);
@@ -325,6 +364,21 @@ compound_statement : LCURL newScope statements RCURL			{
 newScope : 	{
 			$$=-1;
 			st->enterScope();
+			if(func)
+			{
+		
+			  vector<SymbolInfo*>::iterator j;
+			  for ( j=vlist.begin(); j !=vlist.end(); ++j) 
+			  {
+			  	SymbolInfo* si=new SymbolInfo((*j)->get_name(),(*j)->get_type());
+			  	st->insert_symbol(si);
+			  	delete (*j);
+			  }
+			  vlist.clear();
+			  func=false;
+			}
+			
+			
 		}
 ;		    
 var_declaration : type_specifier declaration_list SEMICOLON	{
