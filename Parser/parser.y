@@ -31,6 +31,7 @@ void yyerror(char *s)
 bool func=false;
 string type,name,namef,typef;
 vector<param*>plist;
+vector<string>arglist;
 vector<SymbolInfo*>vlist;
 %}
 %union {
@@ -177,6 +178,7 @@ func_declaration : type_specifier id in_func LPAREN parameter_list RPAREN lookup
 											$$->push_back(new SymbolInfo("\n","newline"));
 											for (i = $$->begin(); i != $$->end(); ++i) 
 											cout<<(*i)->get_name();
+											func=false;
       											cout<<endl;
 											cout<<endl;
 		
@@ -199,6 +201,7 @@ lookup: {
 	 	if(st->lookup_symbol(namef)==NULL)
 		{
 		SymbolInfo* si=new SymbolInfo(namef,"ID",typef);
+		si->set_func();
 		vector<param*>::iterator j;
 		for (j = plist.begin(); j != plist.end(); ++j)
 		{
@@ -379,8 +382,17 @@ newScope : 	{
 			  vector<SymbolInfo*>::iterator j;
 			  for ( j=vlist.begin(); j !=vlist.end(); ++j) 
 			  {
+			  	if(st->lookup_symbol((*j)->get_name())==NULL)
+			  	{
 			  	SymbolInfo* si=new SymbolInfo((*j)->get_name(),(*j)->get_type());
 			  	st->insert_symbol(si);
+			  	}
+			  	else
+			  	{
+			  	cout<<"Error at line no "<<getline()<<": Multiple declaration of "<<(*j)->get_name()<<" in parameter"<<endl<<endl;
+				error<<"Error at line no "<<getline()<<": Multiple declaration of "<<(*j)->get_name()<<" in parameter"<<endl<<endl;
+				IncErr();
+			  	}
 			  	delete (*j);
 			  }
 			  vlist.clear();
@@ -393,21 +405,42 @@ newScope : 	{
 var_declaration : type_specifier declaration_list SEMICOLON	{
 									cout<<"At line no: "<<getline()<<" var_declaration : type_specifier declaration_list SEMICOLON"<<endl;
 									cout<<endl;
+									bool a=true;
 									$$=new vector<SymbolInfo*>();
 									$$->push_back($1);
 									type=$1->get_name();
 									$$->push_back(new SymbolInfo(" ","space"));
 									vector<SymbolInfo*>::iterator i;
+									if(type=="void")
+									{
+										cout<<"Error at line no "<<getline()<<": Variable type cannot be void"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Variable type cannot be void"<<endl<<endl;
+									
+										IncErr();
+										a=false;
+										
+									}
 									for (i = $2->begin(); i != $2->end(); ++i) 
 									{
-										if((*i)->get_type()=="ID")
+										
+										
+										if(((*i)->get_type()=="ID")&&a)
 										{
 											//(*i)->set_dType(type);
+											if(st->lookup_symbol((*i)->get_name())==NULL)
+											{
 											SymbolInfo* si=new SymbolInfo((*i)->get_name(),"ID",type);
 											if((*i)->get_varSize()!=-1)
 											   si->set_varSize((*i)->get_varSize());
 											st->insert_symbol(si);
-											
+											}
+											else
+											{
+											cout<<"Error at line no "<<getline()<<": Multiple declaration of "<<(*i)->get_name()<<endl<<endl;
+											error<<"Error at line no "<<getline()<<": Multiple declaration of "<<(*i)->get_name()<<endl<<endl;
+									
+											IncErr();
+											}
 											
 										}
 										$$->push_back((*i));
@@ -742,9 +775,19 @@ variable : id 							{
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
 									SymbolInfo* v=lookup_symbol($1->get_name());
-      									
+      									if(v!=NULL)
+      									{
       									$1->set_dType(v->get_dType());
       									$1->set_varSize(v->get_varSize());
+      									}
+      									else
+      									{
+      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<$1->get_name()<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Undeclared variable "<<$1->get_name()<<endl<<endl;
+									
+									IncErr();
+									$1->set_dType("int");
+      									}
       									$$->push_back($1);
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -755,6 +798,8 @@ variable : id 							{
 									$$=new vector<SymbolInfo*>();
       									SymbolInfo* v=lookup_symbol($1->get_name());
       									
+      									if(v!=NULL)
+      									{
       									$1->set_dType(v->get_dType());
       									$1->set_varSize(v->get_varSize());
       									if($1->get_varSize()==-1)
@@ -764,6 +809,16 @@ variable : id 							{
 									
 									IncErr();
       									}
+      									}
+      									else
+      									{
+      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<$1->get_name()<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Undeclared variable "<<$1->get_name()<<endl<<endl;
+									
+									IncErr();
+									$1->set_dType("int");
+      									}
+      									
       									$$->push_back($1);
       									$$->push_back(new SymbolInfo("[","LTHIRD"));
       									vector<SymbolInfo*>::iterator i;
@@ -772,8 +827,7 @@ variable : id 							{
 									{
 									 $$->push_back((*i));
 									 t=(*i)->get_dType();
-									  }
-									  }
+									 }
 									if(t!="int")
 									{
 									cout<<"Error at line no "<<getline()<<": Expression inside third brackets not an integer"<<endl<<endl;
@@ -831,7 +885,14 @@ variable : id 							{
 									 $$->push_back((*i));
 									  t1=(*i)->get_dType();
 									}
-									if((v->get_varSize()!=-1)&&($1->size()==1))
+									if(t1=="void")
+									{
+									 	cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									
+										IncErr();
+									}
+									else if((v->get_varSize()!=-1)&&($1->size()==1))
 									{
 										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
 										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
@@ -982,6 +1043,8 @@ simple_expression : term 					{
 									}
 									if(t1==t)
 									tf=t;
+									else if(t1=="void")
+									tf=t;
 									else 
 									tf="float";
 									for (i = $$->begin(); i != $$->end(); ++i) 
@@ -1030,6 +1093,8 @@ term :	unary_expression					{
 									  t1=(*i)->get_dType();
 									}
 									if(t1==t)
+									tf=t;
+									else if(t1=="void")
 									tf=t;
 									else 
 									tf="float";
@@ -1140,15 +1205,65 @@ factor	: variable 						{
  		  							cout<<"At line no: "<<getline()<<" factor : ID LPAREN argument_list RPAREN"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
 									$$->push_back($1);
+									SymbolInfo* f=st->lookup_symbol($1->get_name())
+									string t="int";
+									if(f==NULL)
+									{
+									cout<<"Error at line no "<<getline()<<":  Undeclared function "<<$1->get_name()<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Undeclared function "<<$1->get_name()<<endl<<endl;
+									IncErr();
+									
+									}
+									else{
+									if(f->isFunc())
+									{
+										t=f->get_dType();
+										if(f->get_listSize()!=arglist.size())
+										{
+										cout<<"Error at line no "<<getline()<<": Total number of arguments mismatch in function "<<$1->get_name()<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Total number of arguments mismatch in function "<<$1->get_name()<<endl<<endl;
+										IncErr();
+										}
+										else
+										{
+										for(int j=0;j<arglist.size())
+										
+										
+										if((f->getParam(j))->get_ptype()!=arglist[j])
+										{
+										cout<<"Error at line no "<<getline()<<":  argument mismatch in function "<<$1->get_name()<<endl<<endl;
+										error<<"Error at line no "<<getline()<<":  argument mismatch in function "<<$1->get_name()<<endl<<endl;
+										for(int j=0;j<arglist.size())
+										delete arglist[j];
+										arglist.clear();
+										IncErr();
+										break;
+										}
+										}
+										
+										
+										
+									}
+									else
+									{
+									cout<<"Error at line no "<<getline()<<":  function  with non-function type identifier"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": function  with non-function type identifier"<<endl<<endl;
+									IncErr();
+									}
+									}
       									$$->push_back(new SymbolInfo("(","LPAREN"));
 									
       									vector<SymbolInfo*>::iterator i;
+      									
 									for (i = $3->begin(); i != $3->end(); ++i) 
 										$$->push_back((*i));
       									
       									$$->push_back(new SymbolInfo(")","RPAREN"));
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$3->clear();
  		  						}
@@ -1165,7 +1280,7 @@ factor	: variable 						{
 									 t=(*i)->get_dType();
 									}
       									$$->push_back(new SymbolInfo(")","RPAREN"));
-									ffor (i = $$->begin(); i != $$->end(); ++i) 
+									for (i = $$->begin(); i != $$->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
 									(*i)->set_dType(t);
@@ -1262,6 +1377,7 @@ argument_list : arguments					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									
  		  						}
 			  ;
 	
@@ -1269,11 +1385,16 @@ arguments : arguments COMMA logic_expression			{
  		  							cout<<"At line no: "<<getline()<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+      									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
 										$$->push_back((*i));
       									$$->push_back(new SymbolInfo(",","COMMA"));
 									for (i = $3->begin(); i != $3->end(); ++i) 
-										$$->push_back((*i));
+									{
+									$$->push_back((*i));
+									t=(*i)->get_dType();
+									}
+									arglist.push_back(t);	
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
@@ -1284,8 +1405,13 @@ arguments : arguments COMMA logic_expression			{
  		  							cout<<"At line no: "<<getline()<<" arguments : logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+      									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									$$->push_back((*i));
+									t=(*i)->get_dType();
+									}
+									arglist.push_back(t);	
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;

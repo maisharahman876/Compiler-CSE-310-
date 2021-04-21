@@ -34,6 +34,7 @@ private:
     string name;
     SymbolInfo* next;
     string data_type;
+    bool func;
     int size;
     vector<param*> param_list;
     
@@ -43,8 +44,17 @@ SymbolInfo()
     type="";
     name="";
     next=NULL;
-    
+    func=false;
     data_type="";
+}
+void set_func()
+{
+func=true;
+return;
+}
+bool isFunc()
+{
+return func;
 }
 SymbolInfo(string t,string n)
 {
@@ -52,7 +62,7 @@ SymbolInfo(string t,string n)
     name=t;
     size=-1;
     next=NULL;
-    
+    func=false;
     data_type="";
     
 }
@@ -61,6 +71,7 @@ SymbolInfo(string t,string n,string d)
     type=n;
     name=t;
     size=-1;
+    func=false;
     data_type=d;
     next=NULL;
     
@@ -72,6 +83,7 @@ SymbolInfo(string t,string n,string d,int s)
     name=t;
     size=s;
     data_type=d;
+    func=false;
     next=NULL;
     
     
