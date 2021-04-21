@@ -8,6 +8,7 @@
 using namespace std;
 string t,l;
 int line;
+extern ofstream error;
 extern int line_count;
 extern int error;
 extern void IncLine();
@@ -121,6 +122,7 @@ newline (\n|\r\n)
 					}
 {digit}+[a-zA-Z_]+			{
 						cout<<"Error at line no "<<getline()<<": Invalid prefix on ID or invalid suffix on Number "<<yytext<<endl<<endl;
+						error<<"Error at line no "<<getline()<<": Invalid prefix on ID or invalid suffix on Number "<<yytext<<endl<<endl;
 						IncErr();
 					}										
 {digit}+ 				{
@@ -137,14 +139,17 @@ newline (\n|\r\n)
 						}
 {digit}+\.    					{
 						cout<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
+						error<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
 						IncErr();
 						}
 ({digit}*\.{digit}*)+ 				{
 						cout<<"Error at line no "<<getline()<<": Too many decimal points "<<yytext<<endl<<endl;
+						error<<"Error at line no "<<getline()<<": Too many decimal points "<<yytext<<endl<<endl;
 						IncErr();
 						}
 (({digit}*)?(\.{digit}*)?(E[+-]?{digit}+)?)+ 	{
 						cout<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
+						error<<"Error at line no "<<getline()<<": Ill formed number "<<yytext<<endl<<endl;
 						IncErr();
 						}
 '({chars}|{special})' 			{
@@ -189,6 +194,7 @@ newline (\n|\r\n)
 							}
 <cmnt_mult><<EOF>>					{
 							cout<<"Error at line no "<<getline()-line<<": Unterminated Comment "<<l<<endl<<endl;
+							error<<"Error at line no "<<getline()-line<<": Unterminated Comment "<<l<<endl<<endl;
 							IncErr();
 							l.clear();
 							line=0;
@@ -199,5 +205,7 @@ newline (\n|\r\n)
 <<EOF>>	{ 
 		//cout<<endl;
 		return 0;}						
-. {cout<<"Error at line no "<<getline()<<": Unrecognized character "<<yytext<<endl<<endl; IncErr();}
+. {cout<<"Error at line no "<<getline()<<": Unrecognized character "<<yytext<<endl<<endl; 
+	error<<"Error at line no "<<getline()<<": Unrecognized character "<<yytext<<endl<<endl;
+	IncErr();}
 %%

@@ -3,7 +3,7 @@
 #include "Symbol_table.h"
 
 using namespace std;
-
+ofstream error;
 int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
@@ -24,7 +24,9 @@ int getErr()
 void yyerror(char *s)
 {
 	//write your code
-	cout<<"At line no: "<<getline()<<"Syntax Error"<<endl;
+	cout<<"At line no :"<<getline()<<" Syntax Error"<<endl;
+	error<<"At line no :"<<getline()<<" Syntax Error"<<endl;
+	IncErr();
 }
 bool func=false;
 string type,name,namef,typef;
@@ -739,6 +741,10 @@ variable : id 							{
  		  							cout<<"At line no: "<<getline()<<" variable : ID"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
+									SymbolInfo* v=lookup_symbol($1->get_name());
+      									
+      									$1->set_dType(v->get_dType());
+      									$1->set_varSize(v->get_varSize());
       									$$->push_back($1);
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -747,11 +753,34 @@ variable : id 							{
 	 | id LTHIRD expression RTHIRD 			{
  		  							cout<<"At line no: "<<getline()<<" variable : ID LTHIRD expression RTHIRD "<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
+      									SymbolInfo* v=lookup_symbol($1->get_name());
+      									
+      									$1->set_dType(v->get_dType());
+      									$1->set_varSize(v->get_varSize());
+      									if($1->get_varSize()==-1)
+      									{
+      									cout<<"Error at line no "<<getline()<<": "<<$1->get_name()<<" not an array"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": "<<$1->get_name()<<" not an array"<<endl<<endl;
+									
+									IncErr();
+      									}
       									$$->push_back($1);
       									$$->push_back(new SymbolInfo("[","LTHIRD"));
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $3->begin(); i != $3->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									 t=(*i)->get_dType();
+									  }
+									  }
+									if(t!="int")
+									{
+									cout<<"Error at line no "<<getline()<<": Expression inside third brackets not an integer"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Expression inside third brackets not an integer"<<endl<<endl;
+									
+									IncErr();
+									}
       									$$->push_back(new SymbolInfo("]","RTHIRD"));
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -764,10 +793,17 @@ variable : id 							{
  		  							cout<<"At line no: "<<getline()<<" expression : logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+      									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -775,13 +811,45 @@ variable : id 							{
  		  							cout<<"At line no: "<<getline()<<" expression : variable ASSIGNOP logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+      									SymbolInfo* v;
+									string t,t1;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  if((*i)->get_type()=="ID")
+									  {
+									  t=(*i)->get_dType();
+									  v=(*i);
+									  }
+									}
+									i=$1->begin();
+									t=(*i)->get_dType();
+									v=(*i);
       									$$->push_back($2);
 									for (i = $3->begin(); i != $3->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t1=(*i)->get_dType();
+									}
+									if((v->get_varSize()!=-1)&&($1->size()==1))
+									{
+										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
+									
+										IncErr();
+									}
+									else if(t!=t1)
+									{
+									cout<<"Error at line no "<<getline()<<": Type Mismatch"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Type Mismatch"<<endl<<endl;
+									
+									IncErr();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType("int");
+									}
       									cout<<endl<<endl;
       									$1->clear();
       									$3->clear();
@@ -792,10 +860,17 @@ logic_expression : rel_expression 				{
  		  							cout<<"At line no: "<<getline()<<" logic_expression : rel_expression "<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -809,7 +884,10 @@ logic_expression : rel_expression 				{
 									for (i = $3->begin(); i != $3->end(); ++i) 
 										$$->push_back((*i));
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType("int");
+									}
       									cout<<endl<<endl;
       									$1->clear();
       									$3->clear();
@@ -820,10 +898,17 @@ rel_expression	: simple_expression 				{
  		  							cout<<"At line no: "<<getline()<<" rel_expression : simple_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -831,13 +916,30 @@ rel_expression	: simple_expression 				{
  		  							cout<<"At line no: "<<getline()<<" rel_expression : simple_expression RELOP simple_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t,t1;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
       									$$->push_back($2);
 									for (i = $3->begin(); i != $3->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t1=(*i)->get_dType();
+									}
+									if(t!=t1)
+									{
+									cout<<"Error at line no "<<getline()<<": RELOP doesn't have same type at the both side"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": RELOP doesn't have same type at the both side"<<endl<<endl;
+									
+									IncErr();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType("int");
+									}
       									cout<<endl<<endl;
       									$1->clear();
       									$3->clear();
@@ -848,10 +950,17 @@ simple_expression : term 					{
  		  							cout<<"At line no: "<<getline()<<" simple_expression : term "<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -859,13 +968,27 @@ simple_expression : term 					{
  		  							cout<<"At line no: "<<getline()<<" simple_expression : simple_expression ADDOP term "<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t,t1,tf;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
       									$$->push_back($2);
 									for (i = $3->begin(); i != $3->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t1=(*i)->get_dType();
+									}
+									if(t1==t)
+									tf=t;
+									else 
+									tf="float";
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(tf);
+									}
       									cout<<endl<<endl;
       									$1->clear();
       									$3->clear();
@@ -876,10 +999,17 @@ term :	unary_expression					{
  		  							cout<<"At line no: "<<getline()<<" term : unary_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -887,13 +1017,45 @@ term :	unary_expression					{
  		  							cout<<"At line no: "<<getline()<<" term : term MULOP unary_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t,t1,tf;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
       									$$->push_back($2);
 									for (i = $3->begin(); i != $3->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t1=(*i)->get_dType();
+									}
+									if(t1==t)
+									tf=t;
+									else 
+									tf="float";
+									if(($2->get_name()=="%")&&tf="float")
+									{
+									cout<<"Error at line no "<<getline()<<": Non-Integer operand on modulus operator"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Non-Integer operand on modulus operator"<<endl<<endl;
+									tf="int";
+									IncErr();
+									}
+									if(($3->size()==1))
+									{
+									 i=$3->begin();
+									 if((*i)->get_name()=="0")
+									 {
+									 cout<<"Error at line no "<<getline()<<": Modulus by Zero"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Modulus by Zero"<<endl<<endl;
+									tf="int";
+									IncErr();
+									 }
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(tf);
+									}
       									cout<<endl<<endl;
       									$1->clear();
       									$3->clear();
@@ -905,10 +1067,17 @@ unary_expression : ADDOP unary_expression  			{
 									$$=new vector<SymbolInfo*>();
       									$$->push_back($1);
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $2->begin(); i != $2->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$2->clear();
  		  						}
@@ -920,7 +1089,10 @@ unary_expression : ADDOP unary_expression  			{
 									for (i = $2->begin(); i != $2->end(); ++i) 
 										$$->push_back((*i));
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType("int");
+									}
       									cout<<endl<<endl;
       									$2->clear();
  		  						}
@@ -928,10 +1100,17 @@ unary_expression : ADDOP unary_expression  			{
  		  							cout<<"At line no: "<<getline()<<" unary_expression : factor"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									  t=(*i)->get_dType();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -941,10 +1120,19 @@ factor	: variable 						{
  		  							cout<<"At line no: "<<getline()<<" factor : variable "<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
+      									string t;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									 $$->push_back((*i));
+									 
+									}
+									i=$1->begin();
+									t=(*i)->get_dType();
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -970,12 +1158,18 @@ factor	: variable 						{
       									$$->push_back(new SymbolInfo("(","LPAREN"));
 									
       									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $2->begin(); i != $2->end(); ++i) 
-										$$->push_back((*i));
-      									
+									{
+									 $$->push_back((*i));
+									 t=(*i)->get_dType();
+									}
       									$$->push_back(new SymbolInfo(")","RPAREN"));
-									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									ffor (i = $$->begin(); i != $$->end(); ++i) 
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType(t);
+									}
       									cout<<endl<<endl;
       									$2->clear();
  		  						}
@@ -983,6 +1177,7 @@ factor	: variable 						{
  		  							cout<<"At line no: "<<getline()<<" factor : CONST_INT"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
+									$1->set_dType("int");
       									$$->push_back($1);
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -992,6 +1187,7 @@ factor	: variable 						{
  		  							cout<<"At line no: "<<getline()<<" factor : CONST_FLOAT "<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
 									vector<SymbolInfo*>::iterator i;
+									$1->set_dType("float");
       									$$->push_back($1);
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -1002,10 +1198,23 @@ factor	: variable 						{
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									$$->push_back((*i));
+									}
+									i=$1->begin();
+									if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									cout<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
+									IncErr();
+									}
+										
       									$$->push_back($2);
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType("int");
+									}
+										
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -1014,10 +1223,21 @@ factor	: variable 						{
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
 									for (i = $1->begin(); i != $1->end(); ++i) 
-										$$->push_back((*i));
+									{
+									$$->push_back((*i));
+									}
+									i=$1->begin();
+									if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									cout<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
+									IncErr();
+									}
       									$$->push_back($2);
 									for (i = $$->begin(); i != $$->end(); ++i) 
-										cout<<(*i)->get_name();
+									{
+									cout<<(*i)->get_name();
+									(*i)->set_dType("int");
+									}
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -1083,7 +1303,7 @@ int main(int argc,char *argv[])
 		printf("Cannot Open Input File.\n");
 		exit(1);
 	}
-
+	error.open("error.txt",ios::out);
 	freopen("log.txt","w",stdout);
 	yyin=fp;
 	yyparse();
