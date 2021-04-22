@@ -1,0 +1,6 @@
+Error at line no 34: RELOP doesn't have same type at the both side
+
+Error at line no 37: RELOP doesn't have same type at the both side
+
+Error at line no 44: RELOP doesn't have same type at the both side
+

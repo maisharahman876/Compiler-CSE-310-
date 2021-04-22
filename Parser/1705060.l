@@ -10,7 +10,7 @@ string t,l;
 int line;
 extern ofstream error;
 extern int line_count;
-extern int error;
+extern int err;
 extern void IncLine();
 extern int getline();	
 extern void IncErr();
