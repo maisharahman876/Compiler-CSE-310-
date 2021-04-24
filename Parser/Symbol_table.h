@@ -368,7 +368,7 @@ void enterScope()
     else
         sc->set_id("1");
     current=sc;
-    //cout<<"New ScopeTable with id "<<current->get_id()<<" created"<<endl;
+    cout<<"New ScopeTable with id "<<current->get_id()<<" created"<<endl;
     ex=false;
     return;
 
