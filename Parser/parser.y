@@ -269,11 +269,14 @@ lookup1: {
 		for (j = plist.begin(); j != plist.end(); ++j)
 		{
 		si->addParam((*j)->get_ptype(),(*j)->get_pname());
+		
 		delete (*j);
 		}
 		si->set_func();
+		//error<<namef<<" "<<si->get_listSize()<<endl;
 		st->insert_symbol(si);
 		plist.clear();
+		
 		}
 		else
 		{
@@ -313,7 +316,9 @@ lookup1: {
 		delete (*j);
 		}
 		plist.clear();
+		//error<<namef<<" "<<f->get_listSize();
 		}
+		
 	}
 ;		 
 func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN lookup1 compound_statement	{
@@ -339,7 +344,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
       											$5->clear();
       											$8->clear();
 											}
-		| type_specifier id in_func LPAREN RPAREN lookup compound_statement			{
+		| type_specifier id in_func LPAREN RPAREN lookup1 compound_statement			{
 											cout<<"Line "<<getline()<<":"<<" func_definition : type_specifier ID LPAREN RPAREN compound_statement"<<endl;
 											cout<<endl;
 											$$=new vector<SymbolInfo*>();
@@ -732,8 +737,18 @@ statement : var_declaration					{
       														
 														for (i = $4->begin(); i != $4->end(); ++i) 
 															$$->push_back((*i));
-      														for (i = $5->begin(); i != $5->end(); ++i) 
-															$$->push_back((*i));
+      														string t;
+									for (i = $5->begin(); i != $5->end(); ++i) 
+									{
+										t=(*i)->get_dType();
+										$$->push_back((*i));
+									}
+									if(t=="void")
+									{
+									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
       														$$->push_back(new SymbolInfo(")","RPAREN"));
       														
 														for (i = $7->begin(); i != $7->end(); ++i) 
@@ -753,8 +768,18 @@ statement : var_declaration					{
 									$$->push_back(new SymbolInfo("if","IF"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
 									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $3->begin(); i != $3->end(); ++i) 
+									{
+										t=(*i)->get_dType();
 										$$->push_back((*i));
+									}
+									if(t=="void")
+									{
+									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
       									$$->push_back(new SymbolInfo(")","RPAREN"));
 									for (i = $5->begin(); i != $5->end(); ++i) 
 										$$->push_back((*i));
@@ -772,8 +797,18 @@ statement : var_declaration					{
 									$$->push_back(new SymbolInfo("if","IF"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
 									vector<SymbolInfo*>::iterator i;
+									string t;
 									for (i = $3->begin(); i != $3->end(); ++i) 
+									{
+										t=(*i)->get_dType();
 										$$->push_back((*i));
+									}
+									if(t=="void")
+									{
+									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
       									$$->push_back(new SymbolInfo(")","RPAREN"));
       									
 									for (i = $5->begin(); i != $5->end(); ++i) 
@@ -794,11 +829,21 @@ statement : var_declaration					{
  		  							cout<<"Line "<<getline()<<":"<<" statement : WHILE LPAREN expression RPAREN statement"<<endl;
  		  							cout<<endl;
 									$$=new vector<SymbolInfo*>();
+									string t;
 									$$->push_back(new SymbolInfo("while","WHILE"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
 									vector<SymbolInfo*>::iterator i;
 									for (i = $3->begin(); i != $3->end(); ++i) 
+									{
+										t=(*i)->get_dType();
 										$$->push_back((*i));
+									}
+									if(t=="void")
+									{
+									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
       									$$->push_back(new SymbolInfo(")","RPAREN"));
       									
 									for (i = $5->begin(); i != $5->end(); ++i) 
@@ -814,6 +859,15 @@ statement : var_declaration					{
  		  							cout<<"Line "<<getline()<<":"<<" statement : PRINTLN LPAREN ID RPAREN SEMICOLON"<<endl;
  		  							cout<<endl;
 									$$=new vector<SymbolInfo*>();
+									SymbolInfo* v=st->lookup_symbol($3->get_name());
+      									if(v==NULL)
+      									{
+      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<$1->get_name()<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Undeclared variable "<<$1->get_name()<<endl<<endl;
+									
+									IncErr();
+      									}
+      						
 									$$->push_back(new SymbolInfo("print","PRINTLN"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
 									
@@ -845,6 +899,12 @@ statement : var_declaration					{
 									{
 									cout<<"Error at line no "<<getline()<<":  Return type mismatch with function declaration in function "<<namef<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Return type mismatch with function declaration in function "<<namef<<endl<<endl;
+									IncErr();
+									}
+									if(t=="void")
+									{
+									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									}
       									$$->push_back(new SymbolInfo(";","SEMICOLON"));
@@ -1403,6 +1463,8 @@ factor	: variable 						{
 										t=f->get_dType();
 										if(f->get_listSize()!=arglist.size())
 										{
+										//error<<f->get_name()<<" ";
+										//error<<f->get_listSize()<<" "<<arglist.size()<<endl;
 										cout<<"Error at line no "<<getline()<<": Total number of arguments mismatch in function "<<$1->get_name()<<endl<<endl;
 										error<<"Error at line no "<<getline()<<": Total number of arguments mismatch in function "<<$1->get_name()<<endl<<endl;
 										IncErr();
@@ -1426,9 +1488,7 @@ factor	: variable 						{
 										IncErr();
 										break;
 										}
-										for(int j=0;j<arglist.size();j++)
-										delete arglist[j];
-										arglist.clear();
+										
 										}
 										
 										
@@ -1454,6 +1514,9 @@ factor	: variable 						{
 									cout<<(*i)->get_name();
 									(*i)->set_dType(t);
 									}
+									for(int j=0;j<arglist.size();j++)
+										delete arglist[j];
+										arglist.clear();
       									cout<<endl<<endl;
       									$3->clear();
  		  						}
