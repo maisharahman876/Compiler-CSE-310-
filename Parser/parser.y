@@ -31,7 +31,7 @@ void yyerror(char *s)
 bool func=false;
 string type,name,namef,typef;
 vector<param*>plist;
-vector<param*>arglist;
+vector<string>arglist;
 vector<SymbolInfo*>vlist;
 %}
 %union {
@@ -862,8 +862,8 @@ statement : var_declaration					{
 									SymbolInfo* v=st->lookup_symbol($3->get_name());
       									if(v==NULL)
       									{
-      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<$1->get_name()<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Undeclared variable "<<$1->get_name()<<endl<<endl;
+      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<$3->get_name()<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Undeclared variable "<<$3->get_name()<<endl<<endl;
 									
 									IncErr();
       									}
@@ -895,16 +895,17 @@ statement : var_declaration					{
 										t=(*i)->get_dType();
 									}
 									//error<<t<<" "<<typef;
-									if(t!=typef)
-									{
-									cout<<"Error at line no "<<getline()<<":  Return type mismatch with function declaration in function "<<namef<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Return type mismatch with function declaration in function "<<namef<<endl<<endl;
-									IncErr();
-									}
+									
 									if(t=="void")
 									{
 									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
+									else if(t!=typef)
+									{
+									cout<<"Error at line no "<<getline()<<":  Return type mismatch with function declaration in function "<<namef<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Return type mismatch with function declaration in function "<<namef<<endl<<endl;
 									IncErr();
 									}
       									$$->push_back(new SymbolInfo(";","SEMICOLON"));
@@ -950,8 +951,12 @@ variable : id 							{
       									if(v!=NULL)
       									{
       									$1->set_dType(v->get_dType());
-      									cout<<v->get_dType()<<" ";
+      									//cout<<v->get_dType()<<" ";
       									$1->set_varSize(v->get_varSize());
+      									if(v->get_varSize()>-1)
+      									{
+      									$1->set_dType(v->get_dType()+"arr");
+      									}
       									}
       									else
       									{
@@ -1039,15 +1044,11 @@ variable : id 							{
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
       									SymbolInfo* v;
+      									SymbolInfo* e;
 									string t,t1;
 									for (i = $1->begin(); i != $1->end(); ++i) 
 									{
 									 $$->push_back((*i));
-									  if((*i)->get_type()=="ID")
-									  {
-									  t=(*i)->get_dType();
-									  v=(*i);
-									  }
 									}
 									i=$1->begin();
 									t=(*i)->get_dType();
@@ -1058,17 +1059,12 @@ variable : id 							{
 									 $$->push_back((*i));
 									  t1=(*i)->get_dType();
 									}
+									i=$3->begin();
+									e=(*i);
 									if(t1=="void")
 									{
 									 	cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 										error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									
-										IncErr();
-									}
-									else if((v->get_varSize()!=-1)&&($1->size()==1))
-									{
-										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
-										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
 									
 										IncErr();
 									}
@@ -1078,6 +1074,20 @@ variable : id 							{
 									error<<"Error at line no "<<getline()<<": Type Mismatch"<<endl<<endl;
 									
 									IncErr();
+									}
+									else if(t!=t1&&(t1=="intarr"||t1=="floatarr"))
+									{
+										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<e->get_name()<<"is an array"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<e->get_name()<<"is an array"<<endl<<endl;
+									
+										IncErr();
+									}
+									else if(t!=t1&&(t=="intarr"||t=="floatarr"))
+									{
+										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
+									
+										IncErr();
 									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
 									{
@@ -1128,6 +1138,15 @@ logic_expression : rel_expression 				{
 									{
 									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
+									else if(t=="intarr"||t=="floatarr"||t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									//tf=t1;
+									
 									IncErr();
 									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
@@ -1181,6 +1200,15 @@ rel_expression	: simple_expression 				{
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									}
+									else if(t=="intarr"||t=="floatarr"||t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									//tf=t1;
+									
+									IncErr();
+									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -1226,29 +1254,34 @@ simple_expression : term 					{
 									 $$->push_back((*i));
 									  t1=(*i)->get_dType();
 									}
-									if((t==t1)&&(t1=="void"))
+									if((t=="void")||(t1=="void"))
 									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									 cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									tf="int";
 									}
+									
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t1;
+									
+									IncErr();
+									}
+									else if(t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t;
+									
+									IncErr();
+									}
 									else if(t1==t)
 									tf=t;
-									else if((t1=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									tf=t;
-									IncErr();
-									}
-									else if((t=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									tf=t1;
-									IncErr();
-									}
 									else 
 									tf="float";
 									for (i = $$->begin(); i != $$->end(); ++i) 
@@ -1297,29 +1330,34 @@ term :	unary_expression					{
 									  t1=(*i)->get_dType();
 									}
 									
-									if((t==t1)&&(t1=="void"))
+									if((t=="void")||(t1=="void"))
 									{
 									 cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									tf="int";
 									}
+									
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t1;
+									
+									IncErr();
+									}
+									else if(t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t;
+									
+									IncErr();
+									}
 									else if(t1==t)
 									tf=t;
-									else if((t1=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									IncErr();
-									tf=t;
-									}
-									else if((t=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									tf=t1;
-									IncErr();
-									}
 									else 
 									tf="float";
 									if(($2->get_name()=="%")&&(tf=="float"))
@@ -1369,6 +1407,16 @@ unary_expression : ADDOP unary_expression  			{
 									t="int";
 									IncErr();
 									}
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									t="int";
+									
+									IncErr();
+									}
+									
 									for (i = $$->begin(); i != $$->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -1393,6 +1441,14 @@ unary_expression : ADDOP unary_expression  			{
 									 cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									t="int";
+									IncErr();
+									}
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									
 									IncErr();
 									}
 									for (i = $$->begin(); i != $$->end(); ++i) 
@@ -1473,14 +1529,7 @@ factor	: variable 						{
 										else
 										{
 										for(int j=0;j<arglist.size();j++)
-										if((arglist[j]->get_ptype()=="intarr")||(arglist[j]->get_ptype()=="floatarr"))
-										{
-										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<arglist[j]->get_pname()<<" is an array"<<endl<<endl;
-										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<arglist[j]->get_pname()<<" is an array"<<endl<<endl;
-									
-										IncErr();
-										}
-										else if((f->getParam(j))->get_ptype()!=arglist[j]->get_ptype())
+										if((f->getParam(j))->get_ptype()!=arglist[j])
 										{
 										cout<<"Error at line no "<<getline()<<":  Argument mismatch in function "<<$1->get_name()<<endl<<endl;
 										error<<"Error at line no "<<getline()<<":  Argument mismatch in function "<<$1->get_name()<<endl<<endl;
@@ -1515,7 +1564,7 @@ factor	: variable 						{
 									(*i)->set_dType(t);
 									}
 									for(int j=0;j<arglist.size();j++)
-										delete arglist[j];
+										arglist[j].clear();
 										arglist.clear();
       									cout<<endl<<endl;
       									$3->clear();
@@ -1570,9 +1619,15 @@ factor	: variable 						{
 									$$->push_back((*i));
 									}
 									i=$1->begin();
-									if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									if(((*i)->get_type()=="ID")&&((*i)->get_dType()=="float")){
 									cout<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
+									IncErr();
+									}
+									else if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									
 									IncErr();
 									}
 										
@@ -1595,9 +1650,15 @@ factor	: variable 						{
 									$$->push_back((*i));
 									}
 									i=$1->begin();
-									if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									if(((*i)->get_type()=="ID")&&((*i)->get_dType()=="float")){
 									cout<<"Error at line no "<<getline()<<": Can't decrement float number"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Can't decrement float number"<<endl<<endl;
+									IncErr();
+									}
+									else if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									
 									IncErr();
 									}
       									$$->push_back($2);
@@ -1638,8 +1699,8 @@ arguments : arguments COMMA logic_expression			{
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
-      									string t,t1,n;
-      									n="";
+      									string t;
+      									
 									for (i = $1->begin(); i != $1->end(); ++i) 
 										$$->push_back((*i));
       									$$->push_back(new SymbolInfo(",","COMMA"));
@@ -1647,15 +1708,10 @@ arguments : arguments COMMA logic_expression			{
 									{
 									$$->push_back((*i));
 									t=(*i)->get_dType();
-									if(((*i)->get_type()=="ID")&&((*i)->get_varSize()!=-1))
-									{
-									t1="arr";
-									n=(*i)->get_name();
+									
 									}
-									else
-									t1="";
-									}
-									arglist.push_back(new param(t+t1,n));
+									
+									arglist.push_back(t);
 									
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -1667,21 +1723,14 @@ arguments : arguments COMMA logic_expression			{
  		  							cout<<"Line "<<getline()<<":"<<" arguments : logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
-      									string t,t1,n;
-      									n="";
+      									string t;
+      									
 									for (i = $1->begin(); i != $1->end(); ++i) 
 									{
 									$$->push_back((*i));
 									t=(*i)->get_dType();
-									if(((*i)->get_type()=="ID")&&((*i)->get_varSize()!=-1))
-									{
-									t1="arr";
-									n=(*i)->get_name();
 									}
-									else
-									t1="";
-									}
-									arglist.push_back(new param(t+t1,n));	
+									arglist.push_back(t);	
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;

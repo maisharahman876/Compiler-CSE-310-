@@ -100,7 +100,7 @@ void yyerror(char *s)
 bool func=false;
 string type,name,namef,typef;
 vector<param*>plist;
-vector<param*>arglist;
+vector<string>arglist;
 vector<SymbolInfo*>vlist;
 
 #line 107 "y.tab.c"
@@ -618,9 +618,9 @@ static const yytype_int16 yyrline[] =
      208,   214,   220,   262,   324,   347,   369,   390,   408,   425,
      440,   461,   481,   510,   565,   573,   581,   591,   607,   628,
      640,   657,   670,   689,   702,   715,   728,   764,   793,   828,
-     858,   884,   920,   930,   945,   969,  1019,  1037,  1093,  1111,
-    1144,  1162,  1195,  1213,  1265,  1283,  1354,  1380,  1406,  1426,
-    1446,  1523,  1544,  1554,  1564,  1589,  1614,  1625,  1637,  1666
+     858,   884,   921,   931,   946,   974,  1024,  1042,  1103,  1121,
+    1163,  1181,  1223,  1241,  1298,  1316,  1392,  1428,  1462,  1482,
+    1502,  1572,  1593,  1603,  1613,  1644,  1675,  1686,  1698,  1722
 };
 #endif
 
@@ -2474,8 +2474,8 @@ yyreduce:
 									SymbolInfo* v=st->lookup_symbol((yyvsp[-2].siv)->get_name());
       									if(v==NULL)
       									{
-      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Undeclared variable "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
+      									cout<<"Error at line no "<<getline()<<": Undeclared variable  "<<(yyvsp[-2].siv)->get_name()<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Undeclared variable "<<(yyvsp[-2].siv)->get_name()<<endl<<endl;
 									
 									IncErr();
       									}
@@ -2512,16 +2512,17 @@ yyreduce:
 										t=(*i)->get_dType();
 									}
 									//error<<t<<" "<<typef;
-									if(t!=typef)
-									{
-									cout<<"Error at line no "<<getline()<<":  Return type mismatch with function declaration in function "<<namef<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Return type mismatch with function declaration in function "<<namef<<endl<<endl;
-									IncErr();
-									}
+									
 									if(t=="void")
 									{
 									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									IncErr();
+									}
+									else if(t!=typef)
+									{
+									cout<<"Error at line no "<<getline()<<":  Return type mismatch with function declaration in function "<<namef<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Return type mismatch with function declaration in function "<<namef<<endl<<endl;
 									IncErr();
 									}
       									(yyval.vecv)->push_back(new SymbolInfo(";","SEMICOLON"));
@@ -2532,11 +2533,11 @@ yyreduce:
       									cout<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2536 "y.tab.c"
+#line 2537 "y.tab.c"
     break;
 
   case 42:
-#line 920 "parser.y"
+#line 921 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : SEMICOLON"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2547,11 +2548,11 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
  		  						}
-#line 2551 "y.tab.c"
+#line 2552 "y.tab.c"
     break;
 
   case 43:
-#line 930 "parser.y"
+#line 931 "parser.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : expression SEMICOLON"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2565,11 +2566,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2569 "y.tab.c"
+#line 2570 "y.tab.c"
     break;
 
   case 44:
-#line 945 "parser.y"
+#line 946 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2578,8 +2579,12 @@ yyreduce:
       									if(v!=NULL)
       									{
       									(yyvsp[0].siv)->set_dType(v->get_dType());
-      									cout<<v->get_dType()<<" ";
+      									//cout<<v->get_dType()<<" ";
       									(yyvsp[0].siv)->set_varSize(v->get_varSize());
+      									if(v->get_varSize()>-1)
+      									{
+      									(yyvsp[0].siv)->set_dType(v->get_dType()+"arr");
+      									}
       									}
       									else
       									{
@@ -2594,11 +2599,11 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
  		  						}
-#line 2598 "y.tab.c"
+#line 2603 "y.tab.c"
     break;
 
   case 45:
-#line 969 "parser.y"
+#line 974 "parser.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID LTHIRD expression RTHIRD "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2647,11 +2652,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2651 "y.tab.c"
+#line 2656 "y.tab.c"
     break;
 
   case 46:
-#line 1019 "parser.y"
+#line 1024 "parser.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" expression : logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2670,25 +2675,21 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2674 "y.tab.c"
+#line 2679 "y.tab.c"
     break;
 
   case 47:
-#line 1037 "parser.y"
+#line 1042 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" expression : variable ASSIGNOP logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
       									SymbolInfo* v;
+      									SymbolInfo* e;
 									string t,t1;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
 									 (yyval.vecv)->push_back((*i));
-									  if((*i)->get_type()=="ID")
-									  {
-									  t=(*i)->get_dType();
-									  v=(*i);
-									  }
 									}
 									i=(yyvsp[-2].vecv)->begin();
 									t=(*i)->get_dType();
@@ -2699,17 +2700,12 @@ yyreduce:
 									 (yyval.vecv)->push_back((*i));
 									  t1=(*i)->get_dType();
 									}
+									i=(yyvsp[0].vecv)->begin();
+									e=(*i);
 									if(t1=="void")
 									{
 									 	cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 										error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									
-										IncErr();
-									}
-									else if((v->get_varSize()!=-1)&&((yyvsp[-2].vecv)->size()==1))
-									{
-										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
-										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
 									
 										IncErr();
 									}
@@ -2720,6 +2716,20 @@ yyreduce:
 									
 									IncErr();
 									}
+									else if(t!=t1&&(t1=="intarr"||t1=="floatarr"))
+									{
+										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<e->get_name()<<"is an array"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<e->get_name()<<"is an array"<<endl<<endl;
+									
+										IncErr();
+									}
+									else if(t!=t1&&(t=="intarr"||t=="floatarr"))
+									{
+										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
+										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<v->get_name()<<"is an array"<<endl<<endl;
+									
+										IncErr();
+									}
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -2729,11 +2739,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2733 "y.tab.c"
+#line 2743 "y.tab.c"
     break;
 
   case 48:
-#line 1093 "parser.y"
+#line 1103 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" logic_expression : rel_expression "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2752,11 +2762,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2756 "y.tab.c"
+#line 2766 "y.tab.c"
     break;
 
   case 49:
-#line 1111 "parser.y"
+#line 1121 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" logic_expression : rel_expression "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2779,6 +2789,15 @@ yyreduce:
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									}
+									else if(t=="intarr"||t=="floatarr"||t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									//tf=t1;
+									
+									IncErr();
+									}
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -2788,11 +2807,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2792 "y.tab.c"
+#line 2811 "y.tab.c"
     break;
 
   case 50:
-#line 1144 "parser.y"
+#line 1163 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" rel_expression : simple_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2811,11 +2830,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2815 "y.tab.c"
+#line 2834 "y.tab.c"
     break;
 
   case 51:
-#line 1162 "parser.y"
+#line 1181 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" rel_expression : simple_expression RELOP simple_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2838,6 +2857,15 @@ yyreduce:
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									}
+									else if(t=="intarr"||t=="floatarr"||t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									//tf=t1;
+									
+									IncErr();
+									}
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -2847,11 +2875,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2851 "y.tab.c"
+#line 2879 "y.tab.c"
     break;
 
   case 52:
-#line 1195 "parser.y"
+#line 1223 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" simple_expression : term "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2870,11 +2898,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2874 "y.tab.c"
+#line 2902 "y.tab.c"
     break;
 
   case 53:
-#line 1213 "parser.y"
+#line 1241 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" simple_expression : simple_expression ADDOP term "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2891,29 +2919,34 @@ yyreduce:
 									 (yyval.vecv)->push_back((*i));
 									  t1=(*i)->get_dType();
 									}
-									if((t==t1)&&(t1=="void"))
+									if((t=="void")||(t1=="void"))
 									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
+									 cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									tf="int";
 									}
+									
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t1;
+									
+									IncErr();
+									}
+									else if(t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t;
+									
+									IncErr();
+									}
 									else if(t1==t)
 									tf=t;
-									else if((t1=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									tf=t;
-									IncErr();
-									}
-									else if((t=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									tf=t1;
-									IncErr();
-									}
 									else 
 									tf="float";
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
@@ -2925,11 +2958,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2929 "y.tab.c"
+#line 2962 "y.tab.c"
     break;
 
   case 54:
-#line 1265 "parser.y"
+#line 1298 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" term : unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2948,11 +2981,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2952 "y.tab.c"
+#line 2985 "y.tab.c"
     break;
 
   case 55:
-#line 1283 "parser.y"
+#line 1316 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" term : term MULOP unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2970,29 +3003,34 @@ yyreduce:
 									  t1=(*i)->get_dType();
 									}
 									
-									if((t==t1)&&(t1=="void"))
+									if((t=="void")||(t1=="void"))
 									{
 									 cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
 									IncErr();
 									tf="int";
 									}
+									
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t1;
+									
+									IncErr();
+									}
+									else if(t1=="intarr"||t1=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									tf=t;
+									
+									IncErr();
+									}
 									else if(t1==t)
 									tf=t;
-									else if((t1=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									IncErr();
-									tf=t;
-									}
-									else if((t=="void"))
-									{
-									cout<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									error<<"Error at line no "<<getline()<<": Void function used in expression"<<endl<<endl;
-									tf=t1;
-									IncErr();
-									}
 									else 
 									tf="float";
 									if(((yyvsp[-1].siv)->get_name()=="%")&&(tf=="float"))
@@ -3022,11 +3060,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3026 "y.tab.c"
+#line 3064 "y.tab.c"
     break;
 
   case 56:
-#line 1354 "parser.y"
+#line 1392 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : ADDOP unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3045,6 +3083,16 @@ yyreduce:
 									t="int";
 									IncErr();
 									}
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									t="int";
+									
+									IncErr();
+									}
+									
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -3053,11 +3101,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3057 "y.tab.c"
+#line 3105 "y.tab.c"
     break;
 
   case 57:
-#line 1380 "parser.y"
+#line 1428 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : NOT unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3076,6 +3124,14 @@ yyreduce:
 									t="int";
 									IncErr();
 									}
+									else if(t=="intarr"||t=="floatarr")
+									{
+									
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									
+									IncErr();
+									}
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 									{
 									cout<<(*i)->get_name();
@@ -3084,11 +3140,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3088 "y.tab.c"
+#line 3144 "y.tab.c"
     break;
 
   case 58:
-#line 1406 "parser.y"
+#line 1462 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : factor"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3107,11 +3163,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3111 "y.tab.c"
+#line 3167 "y.tab.c"
     break;
 
   case 59:
-#line 1426 "parser.y"
+#line 1482 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3132,11 +3188,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3136 "y.tab.c"
+#line 3192 "y.tab.c"
     break;
 
   case 60:
-#line 1446 "parser.y"
+#line 1502 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : ID LPAREN argument_list RPAREN"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3167,14 +3223,7 @@ yyreduce:
 										else
 										{
 										for(int j=0;j<arglist.size();j++)
-										if((arglist[j]->get_ptype()=="intarr")||(arglist[j]->get_ptype()=="floatarr"))
-										{
-										cout<<"Error at line no "<<getline()<<": Type Mismatch,"<<arglist[j]->get_pname()<<" is an array"<<endl<<endl;
-										error<<"Error at line no "<<getline()<<": Type Mismatch,"<<arglist[j]->get_pname()<<" is an array"<<endl<<endl;
-									
-										IncErr();
-										}
-										else if((f->getParam(j))->get_ptype()!=arglist[j]->get_ptype())
+										if((f->getParam(j))->get_ptype()!=arglist[j])
 										{
 										cout<<"Error at line no "<<getline()<<":  Argument mismatch in function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
 										error<<"Error at line no "<<getline()<<":  Argument mismatch in function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
@@ -3209,16 +3258,16 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
 									for(int j=0;j<arglist.size();j++)
-										delete arglist[j];
+										arglist[j].clear();
 										arglist.clear();
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3218 "y.tab.c"
+#line 3267 "y.tab.c"
     break;
 
   case 61:
-#line 1523 "parser.y"
+#line 1572 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : LPAREN expression RPAREN"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3240,11 +3289,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3244 "y.tab.c"
+#line 3293 "y.tab.c"
     break;
 
   case 62:
-#line 1544 "parser.y"
+#line 1593 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_INT"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3255,11 +3304,11 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
  		  						}
-#line 3259 "y.tab.c"
+#line 3308 "y.tab.c"
     break;
 
   case 63:
-#line 1554 "parser.y"
+#line 1603 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_FLOAT "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3270,11 +3319,11 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
  		  						}
-#line 3274 "y.tab.c"
+#line 3323 "y.tab.c"
     break;
 
   case 64:
-#line 1564 "parser.y"
+#line 1613 "parser.y"
                                                                 {
  		  							cout<<"At line no : "<<getline()<<" factor : variable INCOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3284,9 +3333,15 @@ yyreduce:
 									(yyval.vecv)->push_back((*i));
 									}
 									i=(yyvsp[-1].vecv)->begin();
-									if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									if(((*i)->get_type()=="ID")&&((*i)->get_dType()=="float")){
 									cout<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Can't increment float number"<<endl<<endl;
+									IncErr();
+									}
+									else if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									
 									IncErr();
 									}
 										
@@ -3300,11 +3355,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3304 "y.tab.c"
+#line 3359 "y.tab.c"
     break;
 
   case 65:
-#line 1589 "parser.y"
+#line 1644 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable DECOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3314,9 +3369,15 @@ yyreduce:
 									(yyval.vecv)->push_back((*i));
 									}
 									i=(yyvsp[-1].vecv)->begin();
-									if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									if(((*i)->get_type()=="ID")&&((*i)->get_dType()=="float")){
 									cout<<"Error at line no "<<getline()<<": Can't decrement float number"<<endl<<endl;
 									error<<"Error at line no "<<getline()<<": Can't decrement float number"<<endl<<endl;
+									IncErr();
+									}
+									else if(((*i)->get_type()=="ID")&&((*i)->get_dType()!="int")){
+									cout<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									error<<"Error at line no "<<getline()<<": Array used in expression"<<endl<<endl;
+									
 									IncErr();
 									}
       									(yyval.vecv)->push_back((yyvsp[0].siv));
@@ -3328,11 +3389,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3332 "y.tab.c"
+#line 3393 "y.tab.c"
     break;
 
   case 66:
-#line 1614 "parser.y"
+#line 1675 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : arguments"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3344,11 +3405,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3348 "y.tab.c"
+#line 3409 "y.tab.c"
     break;
 
   case 67:
-#line 1625 "parser.y"
+#line 1686 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3359,17 +3420,17 @@ yyreduce:
       									cout<<endl<<endl;
       									
  		  						}
-#line 3363 "y.tab.c"
+#line 3424 "y.tab.c"
     break;
 
   case 68:
-#line 1637 "parser.y"
+#line 1698 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
-      									string t,t1,n;
-      									n="";
+      									string t;
+      									
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 										(yyval.vecv)->push_back((*i));
       									(yyval.vecv)->push_back(new SymbolInfo(",","COMMA"));
@@ -3377,15 +3438,10 @@ yyreduce:
 									{
 									(yyval.vecv)->push_back((*i));
 									t=(*i)->get_dType();
-									if(((*i)->get_type()=="ID")&&((*i)->get_varSize()!=-1))
-									{
-									t1="arr";
-									n=(*i)->get_name();
+									
 									}
-									else
-									t1="";
-									}
-									arglist.push_back(new param(t+t1,n));
+									
+									arglist.push_back(t);
 									
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
@@ -3393,40 +3449,33 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3397 "y.tab.c"
+#line 3453 "y.tab.c"
     break;
 
   case 69:
-#line 1666 "parser.y"
+#line 1722 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
       									vector<SymbolInfo*>::iterator i;
-      									string t,t1,n;
-      									n="";
+      									string t;
+      									
 									for (i = (yyvsp[0].vecv)->begin(); i != (yyvsp[0].vecv)->end(); ++i) 
 									{
 									(yyval.vecv)->push_back((*i));
 									t=(*i)->get_dType();
-									if(((*i)->get_type()=="ID")&&((*i)->get_varSize()!=-1))
-									{
-									t1="arr";
-									n=(*i)->get_name();
 									}
-									else
-									t1="";
-									}
-									arglist.push_back(new param(t+t1,n));	
+									arglist.push_back(t);	
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3426 "y.tab.c"
+#line 3475 "y.tab.c"
     break;
 
 
-#line 3430 "y.tab.c"
+#line 3479 "y.tab.c"
 
       default: break;
     }
@@ -3658,7 +3707,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1693 "parser.y"
+#line 1742 "parser.y"
 
 int main(int argc,char *argv[])
 {
