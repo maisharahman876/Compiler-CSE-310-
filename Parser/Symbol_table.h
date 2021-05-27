@@ -124,7 +124,7 @@ void set_next(SymbolInfo *n)
 }
 void printSymbol()
 {
-    cout<<"< "<<name<<" : "<<type<<" > ";
+    cout<<"< "<<name<<" , "<<type<<" > ";
 }
 int get_varSize()
 {
@@ -368,7 +368,7 @@ void enterScope()
     else
         sc->set_id("1");
     current=sc;
-    cout<<"New ScopeTable with id "<<current->get_id()<<" created"<<endl;
+    //cout<<"New ScopeTable with id "<<current->get_id()<<" created"<<endl;
     ex=false;
     return;
 
@@ -381,7 +381,7 @@ void exitScope()
         cout<<"Can't exit."<<endl;
         return;
     }
-    cout<<"ScopeTable with id "<<current->get_id()<<" removed"<<endl<<endl;;
+    //cout<<"ScopeTable with id "<<current->get_id()<<" removed"<<endl<<endl;;
     string id=current->get_id();
     string p;
     for(int i=id.length()-1; i>=0; i--)
