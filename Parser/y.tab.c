@@ -93,8 +93,8 @@ int getErr()
 void yyerror(char *s)
 {
 	//write your code
-	cout<<"At line no :"<<getline()<<" Syntax Error"<<endl;
-	error<<"At line no :"<<getline()<<" Syntax Error"<<endl;
+	cout<<"Error at line "<<getline()<<": Syntax Error"<<endl;
+	error<<"Error at line "<<getline()<<": Syntax Error"<<endl;
 	IncErr();
 }
 bool func=false;
@@ -1802,7 +1802,7 @@ yyreduce:
 		if(typef!=f->get_dType())
 		{
 		cout<<"Error at line "<<getline()<<":  Return type mismatch with function declaration in function "<<namef<<endl<<endl;
-		error<<"Error at line "<<getline()<<" : Return type mismatch with function declaration in function "<<namef<<endl<<endl;
+		error<<"Error at line "<<getline()<<": Return type mismatch with function declaration in function "<<namef<<endl<<endl;
 		IncErr();
 		}
 		for (j = plist.begin(); j != plist.end(); ++j)

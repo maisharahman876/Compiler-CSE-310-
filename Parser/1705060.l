@@ -131,7 +131,7 @@ newline (\n|\r\n)
 						yylval.siv = si;
 						return CONST_INT;
 					}
-({digit}*)?(\.{digit}+)?(E[+-]?{digit}+)?	 {
+({digit}*)?(\.{digit}+)?(E[+-]?({digit}*)?(\.)?{digit}+)?	 {
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"CONST_FLOAT");
 						yylval.siv = si;
