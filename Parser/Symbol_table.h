@@ -36,6 +36,7 @@ private:
     string data_type;
     bool func;
     int size;
+    string code;
     vector<param*> param_list;
     
 public:
@@ -46,6 +47,7 @@ SymbolInfo()
     next=NULL;
     func=false;
     data_type="";
+    code="";
 }
 void set_func()
 {
@@ -64,6 +66,7 @@ SymbolInfo(string t,string n)
     next=NULL;
     func=false;
     data_type="";
+    code="";
     
 }
 SymbolInfo(string t,string n,string d)
@@ -74,6 +77,7 @@ SymbolInfo(string t,string n,string d)
     func=false;
     data_type=d;
     next=NULL;
+    code="";
     
     
 }
@@ -85,8 +89,17 @@ SymbolInfo(string t,string n,string d,int s)
     data_type=d;
     func=false;
     next=NULL;
+    code="";
     
     
+}
+string get_code()
+{
+    return code;
+}
+void set_code(string c)
+{
+    code=c;
 }
 string get_type()
 {
@@ -154,6 +167,7 @@ void addParam(string param_type, string param_name) {
     name.clear();
     data_type.clear();
     param_list.clear();
+    code.clear();
 
 } 
 };
@@ -400,7 +414,17 @@ void exitScope()
 
 
 }
-
+string get_Currid()
+{
+	string str=current->get_id();
+	for(int i=0;i<str.size();i++)
+	{
+		if(str[i]=='.')
+			str[i]='_';
+			
+	}
+	return str;
+}
 bool insert_symbol(SymbolInfo* s)
 {
     if(current->insertSymbol(s))

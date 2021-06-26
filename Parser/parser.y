@@ -4,6 +4,9 @@
 
 using namespace std;
 ofstream error;
+ofstream code;
+string data_seg;
+string code_seg,temp;
 int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
@@ -63,6 +66,7 @@ start : program
 		cout<<endl;
 		cout<<endl;
 		$1->clear();
+		//code<<full_code;
 	}
 	;
 
@@ -537,7 +541,12 @@ var_declaration : type_specifier declaration_list SEMICOLON	{
 											if(st->insert_symbol(si))
 											{
 											if((*i)->get_varSize()!=-1)
+											{
 											   si->set_varSize((*i)->get_varSize());
+											   data_seg+=(*i)->get_name()+st->get_Currid()+" db "+to_string((*i)->get_varSize())+" dup (?)\n";
+											 }
+											 else
+											   data_seg+=(*i)->get_name()+st->get_Currid()+" db ?\n";
 											}
 											else
 											{
@@ -974,10 +983,17 @@ variable : id 							{
 									IncErr();
 									$1->set_dType("int");
       									}
+      									
       									$$->push_back($1);
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									i = $$->begin();
+      									
+      									
+      									
+      									(*i)->set_code("\nmov ah,"+$1->get_name()+st->get_Currid());
+      									temp="ah";
  		  						}
 	 | id LTHIRD expression RTHIRD 			{
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID LTHIRD expression RTHIRD "<<endl<<endl;
@@ -1025,6 +1041,8 @@ variable : id 							{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									(*i)->set_code("\ndec "temp+"\nmov ah,"+$1->get_name()+st->get_Currid()+"+"+"["+temp+"]");
+  									temp="ah";
       									$3->clear();
  		  						}
 	 ;
@@ -1607,6 +1625,8 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									i = $$->begin();
+      									(*i)->set_code($1->get_name());
  		  						}
 	| CONST_FLOAT						{
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_FLOAT "<<endl<<endl;
@@ -1617,6 +1637,8 @@ factor	: variable 						{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									i = $$->begin();
+      									(*i)->set_code($1->get_name());
  		  						}
 	| variable INCOP 					{
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable INCOP"<<endl<<endl;
@@ -1764,8 +1786,11 @@ int main(int argc,char *argv[])
 	cout<<endl;
 	cout<<"Total lines: "<<getline()<<endl;
 	cout<<"Total errors: "<<getErr()<<endl;
-
-	
+	code.open("code.asm",ios::out);
+	if(getErr()==0)
+	{
+		code<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<code_seg<<endl<<"end main";
+	}
 	return 0;
 }
 
