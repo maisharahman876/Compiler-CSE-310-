@@ -417,7 +417,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 											if($2->get_name()!="main")
 											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
 											else
-											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
+											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
 											}
  		;				
 
@@ -554,7 +554,7 @@ newScope : 	{
 			  	if(st->insert_symbol(si))
 			  	{
 			  		data_seg+=si->get_name()+st->get_Currid()+" db ?\n";
-			  		func_init="\nmov ch,p"+to_string(k)+"_"+namef+"\nmov "+si->get_name()+st->get_Currid()+",ch";
+			  		func_init+="\nmov ch,p"+to_string(k)+"_"+namef+"\nmov "+si->get_name()+st->get_Currid()+",ch";
 			  		
 			  	}
 			  	else
@@ -822,7 +822,7 @@ statement : var_declaration					{
 														$$=new vector<SymbolInfo*>();
 														$$->push_back(new SymbolInfo("for","FOR"));
 														$$->push_back(new SymbolInfo("(","LPAREN"));
-														vector<SymbolInfo*>::iterator i;
+														vector<SymbolInfo*>::iterator i,i1,i2,i3,i4;
 														for (i = $3->begin(); i != $3->end(); ++i) 
 														if((*i)->get_name()!="\n")
 															$$->push_back((*i));
@@ -852,8 +852,14 @@ statement : var_declaration					{
 														cout<<(*i)->get_name();
       														cout<<endl;
       														cout<<endl;
+      														string l=newLabel();
+      														string l2=newLabel();
       														i = $$->begin();
-														(*i)->set_code((*i)->get_code());
+      														i1 = $3->begin();
+      														i2 = $4->begin();
+      														i3 = $7->begin();
+      														i4 = $5->begin();
+														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp bh,1\jne "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
       														$3->clear();
       														$4->clear();
       														$5->clear();	
@@ -865,7 +871,7 @@ statement : var_declaration					{
 									$$->push_back(new SymbolInfo("if","IF"));
 									$$->push_back(new SymbolInfo(" ","newline"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
-									vector<SymbolInfo*>::iterator i;
+									vector<SymbolInfo*>::iterator i,i1,i2;
 									string t;
 									for (i = $3->begin(); i != $3->end(); ++i) 
 									{
@@ -885,8 +891,11 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									string l=newLabel();
       									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+      									i1 = $3->begin();
+      									i2 = $5->begin();
+									(*i)->set_code((*i1)->get_code()+"\ncmp bh,1\njne "+l+(*i2)->get_code()+"\n"+l+":");
       									$3->clear();
       									$5->clear();
  		  						}
@@ -897,7 +906,7 @@ statement : var_declaration					{
 									$$->push_back(new SymbolInfo("if","IF"));
 									$$->push_back(new SymbolInfo(" ","newline"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
-									vector<SymbolInfo*>::iterator i;
+									vector<SymbolInfo*>::iterator i,i1,i3,i2;
 									string t;
 									for (i = $3->begin(); i != $3->end(); ++i) 
 									{
@@ -923,8 +932,13 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									string l=newLabel();
+      									//string l2=newLable();
       									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+      									i1 = $3->begin();
+      									i2= $5->begin();
+      									i3 = $7->begin();
+									(*i)->set_code((*i1)->get_code()+"\ncmp bh,1\njne "+l+(*i2)->get_code()+"\n"+l+":"+(*i3)->get_code());
       									$3->clear();
       									$5->clear();
       									$7->clear();
@@ -937,7 +951,7 @@ statement : var_declaration					{
 									$$->push_back(new SymbolInfo("while","WHILE"));
 									$$->push_back(new SymbolInfo(" ","space"));
 									$$->push_back(new SymbolInfo("(","LPAREN"));
-									vector<SymbolInfo*>::iterator i;
+									vector<SymbolInfo*>::iterator i,i2,i1;
 									for (i = $3->begin(); i != $3->end(); ++i) 
 									{
 										t=(*i)->get_dType();
@@ -957,8 +971,13 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
+      									
+      									string l=newLabel();
+      									string l1=newLabel();
       									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+      									i1 = $3->begin();
+      									i2 = $5->begin();
+									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp bh,1\njne "+l1+"\n"+(*i2)->get_code()+"\njmp"+l+"\n"+l1+":");
       									$3->clear();
       									$5->clear();
  		  						}
@@ -988,7 +1007,7 @@ statement : var_declaration					{
       									cout<<endl;
       									cout<<endl;
       									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+									(*i)->set_code("\nmov ah,0\nmov al,"+$3->get_name()+"\ncall output");
  		  						}
 	  | RETURN expression SEMICOLON			{
  		  							cout<<"Line "<<getline()<<":"<<" statement : RETURN expression SEMICOLON"<<endl;
@@ -996,7 +1015,7 @@ statement : var_declaration					{
 									$$=new vector<SymbolInfo*>();
 									$$->push_back(new SymbolInfo("return","RETURN"));
 									$$->push_back(new SymbolInfo(" ","space"));
-									vector<SymbolInfo*>::iterator i;
+									vector<SymbolInfo*>::iterator i,i1;
 									string t;
 									for (i = $2->begin(); i != $2->end(); ++i)
 									{ 
@@ -1024,7 +1043,8 @@ statement : var_declaration					{
       									cout<<endl;
       									cout<<endl;
       									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+      									i1 = $2->begin();
+									(*i)->set_code((*i1)->get_code()+"\nmov ret_"+namef+",bh");
       									$2->clear();
  		  						}
 	  ;
@@ -1038,7 +1058,7 @@ expression_statement 	: SEMICOLON				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
 									i = $$->begin();
-									(*i)->set_code("");
+									(*i)->set_code("\mov bh,1");
       									cout<<endl<<endl;
  		  						}
 			| expression SEMICOLON 		{
@@ -1296,9 +1316,9 @@ logic_expression : rel_expression 				{
       									i = $$->begin();
       									i1 = $3->begin();
       									string label=newLabel();
-      									if((*i)->get_name()=="&&")
+      									if($2->get_name()=="&&")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bh"+(*i1)->get_code()+"\nand al,bh\nmov dl,al");
-      									else if((*i)->get_name()=="||")
+      									else if($2->get_name()=="||")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bh"+(*i1)->get_code()+"\nor al,bh\nmov dl,al");
       								
       									temp="dl";
@@ -1372,17 +1392,17 @@ rel_expression	: simple_expression 				{
       									i = $$->begin();
       									i1 = $3->begin();
       									string label=newLabel();
-      									if((*i)->get_name()=="<")
+      									if($2->get_name()=="<")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bl"+(*i1)->get_code()+"\ncmp al,bl\njnl "+label+"\nmov bh,1\n"+label+":\nmov bh,0");
-      									else if((*i)->get_name()==">")
+      									else if($2->get_name()==">")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bl"+(*i1)->get_code()+"\ncmp al,bl\njng "+label+"\nmov bh,1\n"+label+":\nmov bh,0");
-      									else if((*i)->get_name()==">=")
+      									else if($2->get_name()==">=")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bl"+(*i1)->get_code()+"\ncmp al,bl\njl "+label+"\nmov bh,1\n"+label+":\nmov bh,0");
-      									else if((*i)->get_name()=="<=")
+      									else if($2->get_name()=="<=")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bl"+(*i1)->get_code()+"\ncmp al,bl\njg "+label+"\nmov bh,1\n"+label+":\nmov bh,0");
-      									else if((*i)->get_name()=="==")
+      									else if($2->get_name()=="==")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bl"+(*i1)->get_code()+"\ncmp al,bl\njne "+label+"\nmov bh,1\n"+label+":\nmov bh,0");
-      									else if((*i)->get_name()=="!=")
+      									else if($2->get_name()=="!=")
       									(*i)->set_code((*i)->get_code()+"\nmov al,bl"+(*i1)->get_code()+"\ncmp al,bl\nje "+label+"\nmov bh,1\n"+label+":\nmov bh,0");
       									temp="bh";
       									
@@ -1467,9 +1487,9 @@ simple_expression : term 					{
       									cout<<endl<<endl;
       									i = $$->begin();
       									i = $3->begin();
-      									if((*i)->get_name()=="+")
+      									if($2->get_name()=="+")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nadd bl,"+temp);
-      									else if((*i)->get_name()=="-")
+      									else if($2->get_name()=="-")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nsub bl,"+temp);
       								
       									temp="bl";
@@ -1573,11 +1593,11 @@ term :	unary_expression					{
       									cout<<endl<<endl;
       									i = $$->begin();
       									i1 = $3->begin();
-      									if((*i)->get_name()=="*")
+      									if($2->get_name()=="*")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nimul "+temp);
-      									else if((*i)->get_name()=="/")
+      									else if($2->get_name()=="/")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\ncbw \nidiv "+temp);
-      									else if((*i)->get_name()=="%")
+      									else if($2->get_name()=="%")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\ncbw \nidiv "+temp+"\nmov al,ah");
       									temp="al";
       									$1->clear();
@@ -1621,7 +1641,7 @@ unary_expression : ADDOP unary_expression  			{
       									cout<<endl<<endl;
       									i = $$->begin();
       									i1 = $2->begin();
-      									if((*i)->get_name()=="-")
+      									if($1->get_name()=="-")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nneg bl");
       									else
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code());
@@ -1823,6 +1843,7 @@ factor	: variable 						{
       									cout<<endl<<endl;
       									i = $$->begin();
       									(*i)->set_code((*i)->get_code()+"\nmov al,"+$1->get_name());
+      									temp="al";
  		  						}
 	| CONST_FLOAT						{
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_FLOAT "<<endl<<endl;
@@ -1835,6 +1856,7 @@ factor	: variable 						{
       									cout<<endl<<endl;
       									i = $$->begin();
       									(*i)->set_code((*i)->get_code()+"\nmov al,"+$1->get_name());
+      									temp="al";
  		  						}
 	| variable INCOP 					{
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable INCOP"<<endl<<endl;
@@ -2004,6 +2026,7 @@ int main(int argc,char *argv[])
 	if(getErr()==0)
 	{
 		code<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<code_seg<<endl<<"end main";
+		
 	}
 	return 0;
 }

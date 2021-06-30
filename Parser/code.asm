@@ -27,6 +27,8 @@ push ax
 push bx
 push cx
 push dx
+mov ch,p0_var
+mov a1_1,ch
 mov ch,p1_var
 mov b1_1,ch
 pop dx
@@ -39,6 +41,8 @@ push ax
 push bx
 push cx
 push dx
+mov ch,p0_var1
+mov a1_2,ch
 mov ch,p1_var1
 mov b1_2,ch
 pop dx
@@ -53,7 +57,7 @@ push cx
 push dx
 mov ah,x1_3
 mov al,2
-mov bl,ah
+mov bl,al
 mov al,bl
 mov bl,al
 mov bh,bl
@@ -80,7 +84,7 @@ mov  ax, @data
 mov  ds, ax
 mov ah,j1_4
 mov al,2
-mov bl,ah
+mov bl,al
 mov al,bl
 mov bl,al
 mov bh,bl
@@ -88,14 +92,14 @@ mov bh,1
 mov j1_4,dl
 mov ah,d1_4
 mov al,1
-mov bl,ah
+mov bl,al
 mov al,bl
 mov bl,al
 mov bh,bl
 mov dl,bh
 mov p0_var,dl
 mov al,2
-mov bl,dl
+mov bl,al
 mov al,bl
 mov bl,al
 mov bh,bl
@@ -110,5 +114,7 @@ mov bh,bl
 mov dl,bh
 mov bh,1
 mov d1_4,dl
+mov ah,4ch
+int 21h
 main endp
 end main

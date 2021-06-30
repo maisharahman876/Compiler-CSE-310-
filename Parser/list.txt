@@ -1,5 +1,6 @@
 variable-ah
 factor+term-al
 u_exp+s_exp-bl
-rel exp+EXP-bh
+rel exp+EXP+exp_st-bh
 l_ex-dl
+code<<"output proc\nxor cx,cx \n ;count=0 and dx=0\nxor dx,dx\ncmp ax,0\nje printt \nbegin1:\ncmp ax,0\n; if ax is zero\nje repeat1\nmov bx,10 ; extract the last digit and push it to stack\ndiv bx\npush dx\ninc cx  \n;count++             \nxor dx,dx   \n; dx=0\njmp begin1\nrepeat1: \ncmp cx,0 \n;check if count>0 \nje return\npop dx   \n;pop the top of stack\nadd dx,48 \n;print the digit \nmov ah,2 \nint 21h  \ndec cx       \n;count--\njmp repeat1 \nreturn:\nret \nprintt:\nmov dx,48\nmov ah,2\nint 21h\njmp return\noutput endp";
