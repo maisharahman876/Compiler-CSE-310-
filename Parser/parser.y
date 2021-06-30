@@ -74,7 +74,7 @@ start : program
 		cout<<endl;
 		$1->clear();
 		i = $$->begin();
-		code_seg=(*i)->get_code();
+		code_seg=(*i)->get_code()+"output proc\nxor cx,cx \n ;count=0 and dx=0\nxor dx,dx\ncmp ax,0\nje printt \nbegin1:\ncmp ax,0\n; if ax is zero\nje repeat1\nmov bx,10 ; extract the last digit and push it to stack\ndiv bx\npush dx\ninc cx  \n;count++             \nxor dx,dx   \n; dx=0\njmp begin1\nrepeat1: \ncmp cx,0 \n;check if count>0 \nje return\npop dx   \n;pop the top of stack\nadd dx,48 \n;print the digit \nmov ah,2 \nint 21h  \ndec cx       \n;count--\njmp repeat1 \nreturn:\nret \nprintt:\nmov dx,48\nmov ah,2\nint 21h\njmp return\noutput endp";
 		//code<<full_code;
 	}
 	;
@@ -417,7 +417,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 											if($2->get_name()!="main")
 											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
 											else
-											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
+											(*i)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
 											}
  		;				
 
@@ -1007,7 +1007,7 @@ statement : var_declaration					{
       									cout<<endl;
       									cout<<endl;
       									i = $$->begin();
-									(*i)->set_code("\nmov ah,0\nmov al,"+$3->get_name()+"\ncall output");
+									(*i)->set_code("\nmov ah,0\nmov al,"+$3->get_name()+st->get_Currid()+"\ncall output");
  		  						}
 	  | RETURN expression SEMICOLON			{
  		  							cout<<"Line "<<getline()<<":"<<" statement : RETURN expression SEMICOLON"<<endl;
@@ -1058,7 +1058,7 @@ expression_statement 	: SEMICOLON				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
 									i = $$->begin();
-									(*i)->set_code("\mov bh,1");
+									(*i)->set_code("\nmov bh,1");
       									cout<<endl<<endl;
  		  						}
 			| expression SEMICOLON 		{
@@ -1486,7 +1486,7 @@ simple_expression : term 					{
 									}
       									cout<<endl<<endl;
       									i = $$->begin();
-      									i = $3->begin();
+      									i1 = $3->begin();
       									if($2->get_name()=="+")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nadd bl,"+temp);
       									else if($2->get_name()=="-")
@@ -1948,6 +1948,7 @@ argument_list : arguments					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									(*i)->set_code((*i)->get_code());
       									
       									
  		  						}

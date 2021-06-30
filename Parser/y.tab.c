@@ -630,8 +630,8 @@ static const yytype_int16 yyrline[] =
      718,   737,   752,   774,   789,   804,   819,   867,   902,   946,
      984,  1012,  1052,  1064,  1081,  1116,  1170,  1191,  1258,  1279,
     1333,  1355,  1415,  1436,  1502,  1523,  1608,  1651,  1689,  1713,
-    1736,  1736,  1810,  1835,  1848,  1861,  1895,  1929,  1943,  1956,
-    1984
+    1736,  1736,  1810,  1835,  1848,  1861,  1895,  1929,  1943,  1957,
+    1985
 };
 #endif
 
@@ -1529,7 +1529,7 @@ yyreduce:
 		cout<<endl;
 		(yyvsp[0].vecv)->clear();
 		i = (yyval.vecv)->begin();
-		code_seg=(*i)->get_code();
+		code_seg=(*i)->get_code()+"output proc\nxor cx,cx \n ;count=0 and dx=0\nxor dx,dx\ncmp ax,0\nje printt \nbegin1:\ncmp ax,0\n; if ax is zero\nje repeat1\nmov bx,10 ; extract the last digit and push it to stack\ndiv bx\npush dx\ninc cx  \n;count++             \nxor dx,dx   \n; dx=0\njmp begin1\nrepeat1: \ncmp cx,0 \n;check if count>0 \nje return\npop dx   \n;pop the top of stack\nadd dx,48 \n;print the digit \nmov ah,2 \nint 21h  \ndec cx       \n;count--\njmp repeat1 \nreturn:\nret \nprintt:\nmov dx,48\nmov ah,2\nint 21h\njmp return\noutput endp";
 		//code<<full_code;
 	}
 #line 1536 "y.tab.c"
@@ -1925,7 +1925,7 @@ yyreduce:
 											if((yyvsp[-5].siv)->get_name()!="main")
 											(*i1)->set_code("\n"+(yyvsp[-5].siv)->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+(yyvsp[-5].siv)->get_name()+" endp");
 											else
-											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
+											(*i)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
 											}
 #line 1931 "y.tab.c"
     break;
@@ -2624,7 +2624,7 @@ yyreduce:
       									cout<<endl;
       									cout<<endl;
       									i = (yyval.vecv)->begin();
-									(*i)->set_code("\nmov ah,0\nmov al,"+(yyvsp[-2].siv)->get_name()+"\ncall output");
+									(*i)->set_code("\nmov ah,0\nmov al,"+(yyvsp[-2].siv)->get_name()+st->get_Currid()+"\ncall output");
  		  						}
 #line 2630 "y.tab.c"
     break;
@@ -2664,9 +2664,9 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									/*i = $$->begin();
-      									i1 = $2->begin();
-									(*i)->set_code((*i1)->get_code()+"\nmov ret_"+namef+",bh");/*/
+      									i = (yyval.vecv)->begin();
+      									i1 = (yyvsp[-1].vecv)->begin();
+									(*i)->set_code((*i1)->get_code()+"\nmov ret_"+namef+",bh");
       									(yyvsp[-1].vecv)->clear();
  		  						}
 #line 2673 "y.tab.c"
@@ -2683,7 +2683,7 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
 									i = (yyval.vecv)->begin();
-									(*i)->set_code("\mov bh,1");
+									(*i)->set_code("\nmov bh,1");
       									cout<<endl<<endl;
  		  						}
 #line 2690 "y.tab.c"
@@ -3154,7 +3154,7 @@ yyreduce:
 									}
       									cout<<endl<<endl;
       									i = (yyval.vecv)->begin();
-      									i = (yyvsp[0].vecv)->begin();
+      									i1 = (yyvsp[0].vecv)->begin();
       									if((yyvsp[-1].siv)->get_name()=="+")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nadd bl,"+temp);
       									else if((yyvsp[-1].siv)->get_name()=="-")
@@ -3683,14 +3683,15 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									(*i)->set_code((*i)->get_code());
       									
       									
  		  						}
-#line 3690 "y.tab.c"
+#line 3691 "y.tab.c"
     break;
 
   case 69:
-#line 1956 "parser.y"
+#line 1957 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3719,11 +3720,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3723 "y.tab.c"
+#line 3724 "y.tab.c"
     break;
 
   case 70:
-#line 1984 "parser.y"
+#line 1985 "parser.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3745,11 +3746,11 @@ yyreduce:
       									arg_count++;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3749 "y.tab.c"
+#line 3750 "y.tab.c"
     break;
 
 
-#line 3753 "y.tab.c"
+#line 3754 "y.tab.c"
 
       default: break;
     }
@@ -3981,7 +3982,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2008 "parser.y"
+#line 2009 "parser.y"
 
 int main(int argc,char *argv[])
 {
