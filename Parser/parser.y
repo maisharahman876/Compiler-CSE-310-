@@ -6,7 +6,7 @@ using namespace std;
 ofstream error;
 ofstream code;
 string data_seg;
-string code_seg,temp,dummy,func_init;
+string code_seg,temp,dummy,func_init,func_name;
 int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
@@ -38,6 +38,7 @@ void yyerror(char *s)
 	IncErr();
 }
 bool func=false,declared=false;
+int arg_count=0;
 string type,name,namef,typef;
 vector<param*>plist;
 vector<string>arglist;
@@ -372,7 +373,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 											$$->push_back($2);
 											
 											$$->push_back(new SymbolInfo("(","LPAREN"));
-											vector<SymbolInfo*>::iterator i;
+											vector<SymbolInfo*>::iterator i,i1;
 											for (i = $5->begin(); i != $5->end(); ++i) 
 												$$->push_back((*i));
 											
@@ -383,12 +384,12 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
-      											
+      											i1 = $$->begin();
       											i = $8->begin();
       											if($2->get_name()!="main")
-											(*i)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
+											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
 											else
-											(*i)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
+											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
 											func_init="";
       											$5->clear();
       											$8->clear();
@@ -403,7 +404,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 											
 											$$->push_back(new SymbolInfo("(","LPAREN"));
 											$$->push_back(new SymbolInfo(")","RPAREN"));
-											vector<SymbolInfo*>::iterator i;
+											vector<SymbolInfo*>::iterator i,i1;
 											for (i = $7->begin(); i != $7->end(); ++i) 
 												$$->push_back((*i));
 											$7->clear();
@@ -411,11 +412,12 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
+      											i1 = $$->begin();
       											i = $7->begin();
 											if($2->get_name()!="main")
-											(*i)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
+											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
 											else
-											(*i)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
+											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
 											}
  		;				
 
@@ -439,8 +441,7 @@ parameter_list  : parameter_list COMMA type_specifier id	{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+      									
       									$1->clear();	
 								}
 		| parameter_list COMMA type_specifier		{
@@ -500,7 +501,7 @@ compound_statement : LCURL newScope statements RCURL			{
 									$$->push_back(new SymbolInfo("{","LCURL"));
 									
 									$$->push_back(new SymbolInfo("\n","newline"));
-									vector<SymbolInfo*>::iterator i;
+									vector<SymbolInfo*>::iterator i,i1;
 									for (i = $3->begin(); i != $3->end(); ++i) 
 										$$->push_back((*i));
       									$$->push_back(new SymbolInfo("}","RCURL"));
@@ -511,6 +512,9 @@ compound_statement : LCURL newScope statements RCURL			{
       									cout<<endl;
       									st->print_all();
       									st->exitScope();
+      									i = $$->begin();
+      									i1 = $3->begin();
+									(*i)->set_code((*i1)->get_code());
       									$3->clear();
 										
 								}
@@ -550,7 +554,7 @@ newScope : 	{
 			  	if(st->insert_symbol(si))
 			  	{
 			  		data_seg+=si->get_name()+st->get_Currid()+" db ?\n";
-			  		func_init="\nmov ch,p"+to_string(k)+namef+"\nmov "+si->get_name()+",ch";
+			  		func_init="\nmov ch,p"+to_string(k)+"_"+namef+"\nmov "+si->get_name()+st->get_Currid()+",ch";
 			  		
 			  	}
 			  	else
@@ -777,7 +781,7 @@ statement : var_declaration					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
 									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+									(*i)->set_code("");
       									cout<<endl;
       									cout<<endl;
       									$1->clear();
@@ -1034,7 +1038,7 @@ expression_statement 	: SEMICOLON				{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
 									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+									(*i)->set_code("");
       									cout<<endl<<endl;
  		  						}
 			| expression SEMICOLON 		{
@@ -1684,6 +1688,7 @@ unary_expression : ADDOP unary_expression  			{
       									$1->clear();
  		  						}
 		 ;
+
 	
 factor	: variable 						{
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable "<<endl<<endl;
@@ -1708,7 +1713,7 @@ factor	: variable 						{
       									temp="al";
       									$1->clear();
  		  						}
-	| id LPAREN argument_list RPAREN			{
+	| id {func_name=name;} LPAREN argument_list RPAREN			{
  		  							cout<<"Line "<<getline()<<":"<<" factor : ID LPAREN argument_list RPAREN"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
 									$$->push_back($1);
@@ -1761,9 +1766,9 @@ factor	: variable 						{
 									}
       									$$->push_back(new SymbolInfo("(","LPAREN"));
 									
-      									vector<SymbolInfo*>::iterator i;
+      									vector<SymbolInfo*>::iterator i,i1;
       									
-									for (i = $3->begin(); i != $3->end(); ++i) 
+									for (i = $4->begin(); i != $4->end(); ++i) 
 										$$->push_back((*i));
       									
       									$$->push_back(new SymbolInfo(")","RPAREN"));
@@ -1776,14 +1781,18 @@ factor	: variable 						{
 										arglist[j].clear();
 										arglist.clear();
       									cout<<endl<<endl;
-      									$3->clear();
+      									i = $$->begin();
+      									i1 = $4->begin();
+      									(*i)->set_code((*i1)->get_code()+"\ncall "+func_name+"\nmov al,ret_"+func_name);
+      									temp="al";
+      									$4->clear();
  		  						}
 	| LPAREN expression RPAREN				{
  		  							cout<<"Line "<<getline()<<":"<<" factor : LPAREN expression RPAREN"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
       									$$->push_back(new SymbolInfo("(","LPAREN"));
 									
-      									vector<SymbolInfo*>::iterator i;
+      									vector<SymbolInfo*>::iterator i,i1;
 									string t;
 									for (i = $2->begin(); i != $2->end(); ++i) 
 									{
@@ -1798,7 +1807,8 @@ factor	: variable 						{
 									}
       									cout<<endl<<endl;
       									i = $$->begin();
-      									(*i)->set_code((*i)->get_code()+"\mov al,"+temp);
+      									i1 = $2->begin();
+      									(*i)->set_code((*i1)->get_code()+"\nmov al,"+temp);
       									temp="al";
       									$2->clear();
  		  						}
@@ -1903,7 +1913,10 @@ argument_list : arguments					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									i = $$->begin();
+      									(*i)->set_code((*i)->get_code());
       									$1->clear();
+      									arg_count=0;
  		  						}
 		|						{
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : "<<endl<<endl;
@@ -1914,13 +1927,14 @@ argument_list : arguments					{
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
       									
+      									
  		  						}
 			  ;
 	
 arguments : arguments COMMA logic_expression			{
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i;
+      									vector<SymbolInfo*>::iterator i,i1;
       									string t;
       									
 									for (i = $1->begin(); i != $1->end(); ++i) 
@@ -1938,6 +1952,10 @@ arguments : arguments COMMA logic_expression			{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									i = $$->begin();
+      									i1 = $3->begin();
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov p"+to_string(arg_count)+"_"+func_name+","+temp);
+      									arg_count++;
       									$1->clear();
       									$3->clear();
  		  						}
@@ -1952,10 +1970,14 @@ arguments : arguments COMMA logic_expression			{
 									$$->push_back((*i));
 									t=(*i)->get_dType();
 									}
-									arglist.push_back(t);	
+									arglist.push_back(t);
+										
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
+      									i = $$->begin();
+      									(*i)->set_code((*i)->get_code()+"\nmov p"+to_string(arg_count)+"_"+func_name+","+temp);
+      									arg_count++;
       									$1->clear();
  		  						}
 	      ;
