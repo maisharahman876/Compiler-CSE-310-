@@ -6,7 +6,7 @@ using namespace std;
 ofstream error;
 ofstream code;
 string data_seg;
-string code_seg,temp,dummy,temp1,dummy1,temp2;
+string code_seg,temp,dummy,func_init;
 int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
@@ -37,7 +37,7 @@ void yyerror(char *s)
 	error<<"Error at line "<<getline()<<": Syntax Error"<<endl;
 	IncErr();
 }
-bool func=false;
+bool func=false,declared=false;
 string type,name,namef,typef;
 vector<param*>plist;
 vector<string>arglist;
@@ -79,7 +79,7 @@ start : program
 	;
 
 program : program unit 	{
-					vector<SymbolInfo*>::iterator i;
+					vector<SymbolInfo*>::iterator i,i1;
 					$$=new vector<SymbolInfo*>();
 					for (i = $1->begin(); i != $1->end(); ++i) 
 						$$->push_back((*i));
@@ -92,7 +92,8 @@ program : program unit 	{
 					cout<<endl;
 					cout<<endl;
 					i = $$->begin();
-					(*i)->set_code((*i)->get_code());
+					i1 = $2->begin();
+					(*i)->set_code((*i)->get_code()+(*i1)->get_code());
 					$1->clear();
 					$2->clear();
 				}
@@ -125,7 +126,7 @@ unit : var_declaration		{
 					cout<<endl;
 					cout<<endl;
 					i = $$->begin();
-					(*i)->set_code((*i)->get_code());
+					(*i)->set_code("");
 					$1->clear();
 				}
      | func_declaration	{
@@ -140,7 +141,7 @@ unit : var_declaration		{
 					cout<<endl;
 					cout<<endl;
 					i = $$->begin();
-					(*i)->set_code((*i)->get_code());
+					(*i)->set_code("");
 					$1->clear();
      				}
      | func_definition		{
@@ -180,18 +181,24 @@ func_declaration : type_specifier id in_func LPAREN parameter_list RPAREN lookup
       											cout<<endl;
       											cout<<endl;
       											func=false;
+      											int k=0;
 											for (j = plist.begin(); j != plist.end(); ++j)
 											{
+											data_seg+="p"+to_string(k)+"_"+ $2->get_name()+" db ?\n";
 											delete (*j);
+											k++;
 											}
 											plist.clear();
+											if($1->get_name()!="void")
+											data_seg+="ret"+ $2->get_name()+" db ?\n";
 											for (i= vlist.begin(); i != vlist.end(); ++i)
 											{
 											delete (*i);
 											}
 											vlist.clear();
 											i = $$->begin();
-											(*i)->set_code((*i)->get_code());
+											declared=true;
+											//(*i)->set_code((*i)->get_code());
 											$5->clear();
 		
 										}
@@ -212,8 +219,10 @@ func_declaration : type_specifier id in_func LPAREN parameter_list RPAREN lookup
 											for (i = $$->begin(); i != $$->end(); ++i) 
 											cout<<(*i)->get_name();
 											func=false;
+											//int j=0;
 											for (j = plist.begin(); j != plist.end(); ++j)
 											{
+											
 											delete (*j);
 											}
 											plist.clear();
@@ -222,11 +231,13 @@ func_declaration : type_specifier id in_func LPAREN parameter_list RPAREN lookup
 											delete (*i);
 											}
 											vlist.clear();
-											
+											if($1->get_name()!="void")
+											data_seg+="ret_"+ $2->get_name()+" db ?\n";
       											cout<<endl;
 											cout<<endl;
 											i = $$->begin();
 											(*i)->set_code((*i)->get_code());
+											declared=true;
 		
 										}
 		;
@@ -289,14 +300,17 @@ lookup1: {
 	 	vector<param*>::iterator j;
 	 	if(st->lookup_symbol(namef)==NULL)
 		{
+		if(typef!="void")
+		data_seg+="ret_"+ namef+" db ?\n";
 		SymbolInfo* si=new SymbolInfo(namef,"ID",typef);
 		si->set_func();
-		
+		int h=0;
 		for (j = plist.begin(); j != plist.end(); ++j)
 		{
 		si->addParam((*j)->get_ptype(),(*j)->get_pname());
-		
+		data_seg+="p"+to_string(h)+"_"+ namef+" db ?\n";
 		delete (*j);
+		h++;
 		}
 		si->set_func();
 		//error<<namef<<" "<<si->get_listSize()<<endl;
@@ -320,8 +334,10 @@ lookup1: {
 		IncErr();
 		}
 		else {
+		
 		for(int k=0;k<plist.size();k++)
 		{
+		
 		if((f->getParam(k))->get_ptype()!=plist[k]->get_ptype())
 		{
 		cout<<"Error at line "<<getline()<<":  Argument mismatch with declaration in function "<<namef<<endl<<endl;
@@ -367,8 +383,13 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
-      											i = $$->begin();
-											(*i)->set_code((*i)->get_code());
+      											
+      											i = $8->begin();
+      											if($2->get_name()!="main")
+											(*i)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
+											else
+											(*i)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
+											func_init="";
       											$5->clear();
       											$8->clear();
 											}
@@ -390,8 +411,11 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
-      											i = $$->begin();
-											(*i)->set_code((*i)->get_code());
+      											i = $7->begin();
+											if($2->get_name()!="main")
+											(*i)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
+											else
+											(*i)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
 											}
  		;				
 
@@ -517,19 +541,25 @@ newScope : 	{
 			{
 		
 			  vector<SymbolInfo*>::iterator j;
+			  int k=0;
 			  for ( j=vlist.begin(); j !=vlist.end(); ++j) 
 			  {
 			  	
 			  	SymbolInfo* si=new SymbolInfo((*j)->get_name(),(*j)->get_type(),(*j)->get_dType());
 			  	
 			  	if(st->insert_symbol(si))
-			  	{}
+			  	{
+			  		data_seg+=si->get_name()+st->get_Currid()+" db ?\n";
+			  		func_init="\nmov ch,p"+to_string(k)+namef+"\nmov "+si->get_name()+",ch";
+			  		
+			  	}
 			  	else
 			  	{
 			  	cout<<"Error at line "<<getline()<<": Multiple declaration of "<<(*j)->get_name()<<" in parameter"<<endl<<endl;
 				error<<"Error at line "<<getline()<<": Multiple declaration of "<<(*j)->get_name()<<" in parameter"<<endl<<endl;
 				IncErr();
 			  	}
+			  	k++;
 			  	delete (*j);
 			  }
 			  vlist.clear();
@@ -1293,7 +1323,7 @@ rel_expression	: simple_expression 				{
 									}
       									cout<<endl<<endl;
       									i = $$->begin();
-      									(*i)->set_code((*i)->get_code()+dummy1+"\nmov bh,"+temp);
+      									(*i)->set_code((*i)->get_code()+"\nmov bh,"+temp);
       									temp="bh";
       									//dummy1="";
       									$1->clear();

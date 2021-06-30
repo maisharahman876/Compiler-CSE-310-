@@ -5,7 +5,9 @@ void foo();
 int var(int a, int b){
 	return a+b;
 }
-
+void var1(int a, int b){
+	
+}
 void foo(){
 	x=2;
 	y=x-5;
