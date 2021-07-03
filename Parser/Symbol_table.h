@@ -36,7 +36,7 @@ private:
     string data_type;
     bool func;
     int size;
-    string code;
+    string code,temp;
     vector<param*> param_list;
     
 public:
@@ -48,6 +48,7 @@ SymbolInfo()
     func=false;
     data_type="";
     code="";
+    temp="";
 }
 void set_func()
 {
@@ -67,6 +68,7 @@ SymbolInfo(string t,string n)
     func=false;
     data_type="";
     code="";
+     temp="";
     
 }
 SymbolInfo(string t,string n,string d)
@@ -78,6 +80,7 @@ SymbolInfo(string t,string n,string d)
     data_type=d;
     next=NULL;
     code="";
+     temp="";
     
     
 }
@@ -90,8 +93,17 @@ SymbolInfo(string t,string n,string d,int s)
     func=false;
     next=NULL;
     code="";
+     temp="";
     
     
+}
+string get_temp()
+{
+    return temp;
+}
+void set_temp(string c)
+{
+    temp=c;
 }
 string get_code()
 {

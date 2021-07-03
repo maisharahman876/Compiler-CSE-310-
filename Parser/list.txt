@@ -1,5 +1,6 @@
 variable-ah
-factor+term-al
+factor-al
+term-cl
 u_exp+s_exp-bl
 rel exp+EXP+exp_st-bh
 l_ex-dl
