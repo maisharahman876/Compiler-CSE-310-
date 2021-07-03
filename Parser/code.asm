@@ -1,218 +1,194 @@
 .model small
 .stack 100h
 .data
-x1 dw ?
-y1 dw ?
-z1 dw ?
-ret_var dw ?
-p0_var dw ?
-p1_var dw ?
-a1_1 dw ?
-b1_1 dw ?
-p0_var1 dw ?
-p1_var1 dw ?
-a1_2 dw ?
-b1_2 dw ?
 ret_main dw ?
-c1_4 dw ?
-i1_4 dw ?
-j1_4 dw ?
-d1_4 dw ?
-e1_4 dw 4 dup (?)
+c1_1 dw ?
+i1_1 dw ?
+j1_1 dw ?
+d1_1 dw ?
+e1_1 dw 4 dup (?)
+T0 dw ?
+T1 dw ?
+T2 dw ?
+T3 dw ?
+T4 dw ?
+T5 dw ?
+T6 dw ?
+T7 dw ?
+T8 dw ?
+T9 dw ?
+T10 dw ?
+T11 dw ?
+T12 dw ?
+T13 dw ?
+T14 dw ?
+T15 dw ?
+T16 dw ?
+T17 dw ?
+T18 dw ?
+T19 dw ?
+T20 dw ?
+T21 dw ?
+T22 dw ?
+T23 dw ?
+T24 dw ?
+T25 dw ?
+T26 dw ?
+T27 dw ?
+T28 dw ?
+T29 dw ?
+T30 dw ?
 
 temp dw ?
 .code
 
-var proc
-push ax
-push bx
-push cx
-push dx
-mov ch,p0_var
-mov a1_1,ch
-mov ch,p1_var
-mov b1_1,ch
-mov ah,a1_1
-mov al,ah
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov ah,b1_1
-mov al,ah
-mov bl,al
-mov cl,bl
-add bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,dl
-mov ret_var,bh
-pop dx
-pop cx
-pop bx
-pop ax
-var endp
-var1 proc
-push ax
-push bx
-push cx
-push dx
-mov ch,p0_var1
-mov a1_2,ch
-mov ch,p1_var1
-mov b1_2,ch
-pop dx
-pop cx
-pop bx
-pop ax
-var1 endp
-foo proc
-push ax
-push bx
-push cx
-push dx
-mov ah,x1
-mov al,2
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,1
-mov x1,dl
-mov ah,y1
-mov ah,x1
-mov al,ah
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov al,5
-mov bl,al
-mov cl,bl
-sub bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,1
-mov y1,dl
-pop dx
-pop cx
-pop bx
-pop ax
-foo endp
 main proc
 mov  ax, @data
 mov  ds, ax
-mov ah,c1_4
-mov al,2
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,1
-mov c1_4,dl
-mov ah,j1_4
-mov al,2
-mov bl,al
-mov cl,bl
-mov al,3
-mov bl,al
-mov temp,ax
-mov al,cl
-imul bl
-mov cl,al
-mov ax,temp
-mov bl,cl
-mov al,5
-mov bl,al
-mov cl,bl
-mov al,3
-mov bl,al
-mov temp,ax
-mov al,cl
-cbw 
-idiv bl
-mov cl,ah
-mov ax,temp
-mov bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,dl
-mov al,bh
-mov bl,al
-mov cl,bl
-add bl,cl
-mov al,2
-mov bl,al
-mov cl,bl
-add bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,1
-mov j1_4,dl
-mov ah,i1_4
-mov ah,c1_4
-mov al,ah
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov al,2
-mov bl,al
-mov cl,bl
-add bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,1
-mov i1_4,dl
-mov ah,d1_4
-mov al,1
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov bh,bl
-mov dl,bh
-mov p0_var,dl
-mov al,2
-mov bl,al
-mov cl,bl
-mov al,3
-mov bl,al
-mov temp,ax
-mov al,cl
-imul bl
-mov cl,al
-mov ax,temp
-mov bl,cl
-mov bh,bl
-mov dl,bh
-mov p1_var,dl
-call var
-mov al,ret_var
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov al,3
-mov bl,al
-mov cl,bl
-mov al,2
-mov bl,al
-mov temp,ax
-mov al,cl
-imul bl
-mov cl,al
-mov ax,temp
-add bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,1
-mov d1_4,dl
-mov al,0
-mov bl,al
-mov cl,bl
-mov bl,cl
-mov bh,bl
-mov dl,bh
-mov bh,dl
-mov ret_main,bh
+mov T0,0
+mov bx,T0
+inc bx
+mov ax,e1_1[bx]
+mov T1,ax
+mov T2,2
+mov bx,T0
+inc bx
+mov ax,T2
+mov e1_1[bx],ax
+mov T1,1
+mov T3,1
+mov bx,T3
+inc bx
+mov ax,e1_1[bx]
+mov T4,ax
+mov T5,3
+mov bx,T3
+inc bx
+mov ax,T5
+mov e1_1[bx],ax
+mov T4,1
+mov ax,j1_1
+mov T6,ax
+mov T7,1
+mov bx,T7
+inc bx
+mov ax,e1_1[bx]
+mov T8,ax
+mov T9,5
+mov ax,T8
+cmp ax,T9
+jng L0
+mov T8,1
+jmp L1
+L0:
+mov T8,0
+L1:
+mov ax,T8
+mov j1_1,ax
+mov T6,1
+mov ax,c1_1
+mov T10,ax
+mov T11,2
+mov ax,T11
+mov c1_1,ax
+mov T10,1
+mov ax,j1_1
+mov T12,ax
+mov T13,2
+mov T14,3
+mov ax, T13
+imul T14
+mov T13,ax
+mov T15,5
+mov T16,3
+mov ax,T15
+and ax,T16
+cmp ax,0
+je L2
+mov T15,1
+jmp L3
+L2:
+mov T15,0
+L3:
+mov ax,T15
+add T13,ax
+mov T17,2
+mov ax,T17
+add T13,ax
+mov ax,T13
+mov j1_1,ax
+mov T12,1
+mov ax,d1_1
+mov T18,ax
+mov ax,i1_1
+mov T19,ax
+mov T20,1
+mov ax,T19
+cmp ax,T20
+jnl L4
+mov T19,1
+jmp L5
+L4:
+mov T19,0
+L5:
+mov ax,T19
+mov d1_1,ax
+mov T18,1
+mov ax,i1_1
+mov T21,ax
+mov ax,d1_1
+mov T22,ax
+mov T23,0
+mov ax,T22
+or ax,T23
+cmp ax,0
+je L6
+mov T22,1
+jmp L7
+L6:
+mov T22,0
+L7:
+mov ax,T22
+mov i1_1,ax
+mov T21,1
+mov ax,d1_1
+mov T24,ax
+mov ax,c1_1
+mov T25,ax
+mov ax,d1_1
+mov T26,ax
+mov T27,1
+mov ax,T26
+cmp ax,T27
+je L8
+mov T26,1
+jmp L9
+L8:
+mov T26,0
+L9:
+mov ax,T25
+and ax,T26
+cmp ax,0
+je L10
+mov T25,1
+jmp L11
+L10:
+mov T25,0
+L11:
+mov ax,T25
+mov d1_1,ax
+mov T24,1
+mov ax,j1_1
+mov T28,ax
+mov T29,50
+mov ax,T29
+mov j1_1,ax
+mov T28,1
+mov ax,j1_1
+call output
+mov T30,0
+mov bx,T30
+mov ret_main,bx
 mov ah,4ch
 int 21h
 main endp

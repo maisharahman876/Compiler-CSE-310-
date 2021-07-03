@@ -416,7 +416,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
       											i1 = $$->begin();
       											i = $8->begin();
       											if($2->get_name()!="main")
-											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
+											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax\nret"+"\n"+$2->get_name()+" endp");
 											else
 											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
 											func_init="";
@@ -444,7 +444,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
       											i1 = $$->begin();
       											i = $7->begin();
 											if($2->get_name()!="main")
-											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax"+"\n"+$2->get_name()+" endp");
+											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax\nret"+"\n"+$2->get_name()+" endp");
 											else
 											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
 											}
@@ -1099,6 +1099,7 @@ expression_statement 	: SEMICOLON				{
 										cout<<(*i)->get_name();
 									i = $$->begin();
 									string temp=newTemp();
+									data_seg+=temp+" dw ?\n";
 									(*i)->set_code("\mov "+temp+",1");
 									(*i)->set_temp(temp);
       									cout<<endl<<endl;
@@ -1149,6 +1150,7 @@ variable : id 							{
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
       									string temp=newTemp();
+      									data_seg+=temp+" dw ?\n";
       									i = $$->begin();
       									string n;
       									if(isSubstring($1->get_name()+st->get_Currid(),data_seg)!=-1)
@@ -1211,12 +1213,13 @@ variable : id 							{
       									i1 = $3->begin();
       									string n;
       									string temp=newTemp();
+      									data_seg+=temp+" dw ?\n";
       									if(isSubstring($1->get_name()+st->get_Currid(),data_seg)!=-1)
       									n=$1->get_name()+st->get_Currid();
       									else
       									n=$1->get_name()+"1";
       									dummy=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+(*i1)->get_temp()+"\ninc bx\nmov ax,"+n+"[bx]\nmov"+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+(*i1)->get_temp()+"\ninc bx\nmov ax,"+n+"[bx]\nmov "+temp+",ax");
       									(*i)->set_temp(temp);
   									//temp="ah";
       									$3->clear();
@@ -1310,7 +1313,7 @@ variable : id 							{
       									i1 = $3->begin();
       									string temp=(*i)->get_temp();
       									string temp1=(*i1)->get_temp();
-      									if(t=="intarr")
+      									if($1->size()!=1)
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+dummy+"\ninc bx\nmov ax,"+temp1+"\nmov "+n+"[bx],ax\nmov "+temp+",1");
       									else
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp1+"\nmov "+n+",ax\nmov "+temp+",1");
@@ -1385,9 +1388,9 @@ logic_expression : rel_expression 				{
       									string label=newLabel();
       									string label1=newLabel();
       									if($2->get_name()=="&&")
-      									(*i)->set_code((*i)->get_code()+temp+(*i1)->get_code()+"\nmov ax,"+temp+"\nand ax,"+temp1+"\ncmp ax,0"+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nand ax,"+temp1+"\ncmp ax,0"+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
       									else if($2->get_name()=="||")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nor ax,"+temp1+"\ncmp ax,0"+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nor ax,"+temp1+"\ncmp ax,0"+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
       									
       								
       									//temp="dl";
@@ -1475,7 +1478,7 @@ rel_expression	: simple_expression 				{
       									else if($2->get_name()=="==")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\njne "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
       									else if($2->get_name()=="!=")
-      									(*i)->set_code((*i)->get_code()+temp+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
       									//temp="bh";
       									
       									
@@ -1671,11 +1674,11 @@ term :	unary_expression					{
       									string temp=(*i)->get_temp();
       									string temp1=(*i1)->get_temp();
       									if($2->get_name()=="*")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov "+temp+",ax\nimul "+temp1+"\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax, "+temp+"\nimul "+temp1+"\nmov "+temp+",ax");
       									else if($2->get_name()=="/")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov "+temp+",ax\ncwd\nidiv "+temp1+"\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax, "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+",ax");
       									else if($2->get_name()=="%")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov "+temp+",ax\ncwd\nidiv "+temp1+"\nmov "+temp+",dx");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax, "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+",dx");
       									
       									//temp="cl";
       									(*i)->set_temp(temp);
@@ -1887,8 +1890,10 @@ factor	: variable 						{
       									cout<<endl<<endl;
       									i = $$->begin();
       									i1 = $4->begin();
-      									(*i)->set_code((*i1)->get_code()+"\ncall "+func_name+"\nmov al,ret_"+func_name);
-      									temp="al";
+      									string temp=newTemp();
+      									data_seg+=temp+" dw ?\n";
+      									(*i)->set_code((*i1)->get_code()+"\ncall "+func_name+"\nmov ax,ret_"+func_name+"\nmov "+temp+",ax");
+      									(*i)->set_temp(temp);
       									$4->clear();
  		  						}
 	| LPAREN expression RPAREN				{
@@ -1926,6 +1931,7 @@ factor	: variable 						{
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
       									string temp=newTemp();
+      									data_seg+=temp+" dw ?\n";
       									i = $$->begin();
       									(*i)->set_code((*i)->get_code()+"\nmov "+temp+","+$1->get_name());
       									(*i)->set_temp(temp);
@@ -1942,6 +1948,7 @@ factor	: variable 						{
       									cout<<endl<<endl;
       									i = $$->begin();
       									string temp=newTemp();
+      									data_seg+=temp+" dw ?\n";
       									(*i)->set_code((*i)->get_code()+"\nmov "+temp+","+$1->get_name());
       									(*i)->set_temp(temp);
  		  						}
@@ -2064,7 +2071,8 @@ arguments : arguments COMMA logic_expression			{
       									cout<<endl<<endl;
       									i = $$->begin();
       									i1 = $3->begin();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov p"+to_string(arg_count)+"_"+func_name+","+temp);
+      									string temp=(*i1)->get_temp();
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+",ax");
       									arg_count++;
       									$1->clear();
       									$3->clear();
@@ -2086,7 +2094,8 @@ arguments : arguments COMMA logic_expression			{
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
       									i = $$->begin();
-      									(*i)->set_code((*i)->get_code()+"\nmov p"+to_string(arg_count)+"_"+func_name+","+temp);
+      									string temp=(*i)->get_temp();
+      									(*i)->set_code((*i)->get_code()+"\nmov ax,"+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+",ax");
       									arg_count++;
       									$1->clear();
  		  						}
