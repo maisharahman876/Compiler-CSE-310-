@@ -102,7 +102,7 @@ start : program
 		cout<<endl;
 		$1->clear();
 		i = $$->begin();
-		data_seg+="\ntemp dw ?";
+		//data_seg+="\ntemp dw ?";
 		code_seg=(*i)->get_code()+"\noutput proc\nxor cx,cx \n ;count=0 and dx=0\nxor dx,dx\ncmp ax,0\nje printt \nbegin1:\ncmp ax,0\n; if ax is zero\nje repeat1\nmov bx,10 ; extract the last digit and push it to stack\ndiv bx\npush dx\ninc cx  \n;count++             \nxor dx,dx   \n; dx=0\njmp begin1\nrepeat1: \ncmp cx,0 \n;check if count>0 \nje return\npop dx   \n;pop the top of stack\nadd dx,48 \n;print the digit \nmov ah,2 \nint 21h  \ndec cx       \n;count--\njmp repeat1 \nreturn:\nret \nprintt:\nmov dx,48\nmov ah,2\nint 21h\njmp return\noutput endp";
 		//code<<full_code;
 	}
@@ -889,7 +889,7 @@ statement : var_declaration					{
       														i3 = $7->begin();
       														i4 = $5->begin();
       														string temp=(*i2)->get_temp();
-														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\jne "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
+														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\njne "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
       														$3->clear();
       														$4->clear();
       														$5->clear();	
@@ -1010,7 +1010,7 @@ statement : var_declaration					{
       									i1 = $3->begin();
       									i2 = $5->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njne "+l1+"\n"+(*i2)->get_code()+"\njmp"+l+"\n"+l1+":");
+									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njne "+l1+"\n"+(*i2)->get_code()+"\njmp "+l+"\n"+l1+":");
       									$3->clear();
       									$5->clear();
  		  						}
@@ -1039,11 +1039,17 @@ statement : var_declaration					{
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									string n;
-      									if(isSubstring($3->get_name()+st->get_Currid(),data_seg)!=-1)
-      									n=$3->get_name()+st->get_Currid();
-      									else
-      									n=$3->get_name()+"1";
+      									string n=$3->get_name()+st->get_Currid();
+      									ScopeTable* sc=st->curr();
+      									while(true){
+      									
+      									if(isSubstring(n,data_seg)!=-1)
+      									{
+      										break;
+      									}
+      									sc=sc->get_parent();
+      									n=$3->get_name()+sc->get_cid();
+      									}
       									i = $$->begin();
 									(*i)->set_code("\nmov ax,"+n+"\ncall output");
  		  						}
@@ -1107,15 +1113,21 @@ expression_statement 	: SEMICOLON				{
 			| expression SEMICOLON 		{
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : expression SEMICOLON"<<endl<<endl;
 									$$=new vector<SymbolInfo*>();
+									
 									vector<SymbolInfo*>::iterator i;
 									for (i = $1->begin(); i != $1->end(); ++i) 
 										$$->push_back((*i));
       									$$->push_back(new SymbolInfo(";","SEMICOLON"));
       									$$->push_back(new SymbolInfo("\n","newline"));
+      									string cmd="\n\n;";
 									for (i = $$->begin(); i != $$->end(); ++i) 
+									{
 										cout<<(*i)->get_name();
+										cmd+=(*i)->get_name();
+									}
+									cmd+="\n";
 									i = $$->begin();
-									(*i)->set_code((*i)->get_code());
+									(*i)->set_code(cmd+(*i)->get_code());
       									cout<<endl<<endl;
       									$1->clear();
  		  						}
@@ -1152,11 +1164,17 @@ variable : id 							{
       									string temp=newTemp();
       									data_seg+=temp+" dw ?\n";
       									i = $$->begin();
-      									string n;
-      									if(isSubstring($1->get_name()+st->get_Currid(),data_seg)!=-1)
-      									n=$1->get_name()+st->get_Currid();
-      									else
-      									n=$1->get_name()+"1";
+      									string n=$1->get_name()+st->get_Currid();
+      									ScopeTable* sc=st->curr();
+      									while(true){
+      									
+      									if(isSubstring(n,data_seg)!=-1)
+      									{
+      										break;
+      									}
+      									sc=sc->get_parent();
+      									n=$1->get_name()+sc->get_cid();
+      									}
       									
       									
       									(*i)->set_code((*i)->get_code()+"\nmov ax,"+n+"\nmov "+temp+",ax");
@@ -1211,15 +1229,22 @@ variable : id 							{
       									cout<<endl<<endl;
       									i = $$->begin();
       									i1 = $3->begin();
-      									string n;
+      									
       									string temp=newTemp();
       									data_seg+=temp+" dw ?\n";
-      									if(isSubstring($1->get_name()+st->get_Currid(),data_seg)!=-1)
-      									n=$1->get_name()+st->get_Currid();
-      									else
-      									n=$1->get_name()+"1";
+      									string n=$1->get_name()+st->get_Currid();
+      									ScopeTable* sc=st->curr();
+      									while(true){
+      									
+      									if(isSubstring(n,data_seg)!=-1)
+      									{
+      										break;
+      									}
+      									sc=sc->get_parent();
+      									n=$1->get_name()+sc->get_cid();
+      									}
       									dummy=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+(*i1)->get_temp()+"\ninc bx\nmov ax,"+n+"[bx]\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+(*i1)->get_temp()+"\nsal bx,2\ninc bx\nmov ax,"+n+"[bx]\nmov "+temp+",ax");
       									(*i)->set_temp(temp);
   									//temp="ah";
       									$3->clear();
@@ -1304,17 +1329,23 @@ variable : id 							{
 									}
       									cout<<endl<<endl;
       									i = $1->begin();
-      									string n;
-      									if(isSubstring((*i)->get_name()+st->get_Currid(),data_seg)!=-1)
-      									n=(*i)->get_name()+st->get_Currid();
-      									else
-      									n=(*i)->get_name()+"1";
+      									string n=(*i)->get_name()+st->get_Currid();
+      									ScopeTable* sc=st->curr();
+      									while(true){
+      									
+      									if(isSubstring(n,data_seg)!=-1)
+      									{
+      										break;
+      									}
+      									sc=sc->get_parent();
+      									n=(*i)->get_name()+sc->get_cid();
+      									}
       									i = $$->begin();
       									i1 = $3->begin();
       									string temp=(*i)->get_temp();
       									string temp1=(*i1)->get_temp();
       									if($1->size()!=1)
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+dummy+"\ninc bx\nmov ax,"+temp1+"\nmov "+n+"[bx],ax\nmov "+temp+",1");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+dummy+"\nsal bx,2\ninc bx\nmov ax,"+temp1+"\nmov "+n+"[bx],ax\nmov "+temp+",1");
       									else
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp1+"\nmov "+n+",ax\nmov "+temp+",1");
       									//temp="bh";
@@ -1981,9 +2012,21 @@ factor	: variable 						{
 									}
 									
       									cout<<endl<<endl;
+      									i = $1->begin();
+      									string n=(*i)->get_name()+st->get_Currid();
+      									ScopeTable* sc=st->curr();
+      									while(true){
+      									
+      									if(isSubstring(n,data_seg)!=-1)
+      									{
+      										break;
+      									}
+      									sc=sc->get_parent();
+      									n=(*i)->get_name()+sc->get_cid();
+      									}
       									i = $$->begin();
       									string temp=(*i)->get_temp();
-      									(*i)->set_code((*i)->get_code()+"\ninc "+temp);
+      									(*i)->set_code((*i)->get_code()+"\ninc "+temp+"\ninc "+n);
       									$1->clear();
  		  						}
 	| variable DECOP					{
@@ -2013,9 +2056,21 @@ factor	: variable 						{
 									(*i)->set_dType("int");
 									}
       									cout<<endl<<endl;
+      									i = $1->begin();
+      									string n=(*i)->get_name()+st->get_Currid();
+      									ScopeTable* sc=st->curr();
+      									while(true){
+      									
+      									if(isSubstring(n,data_seg)!=-1)
+      									{
+      										break;
+      									}
+      									sc=sc->get_parent();
+      									n=(*i)->get_name()+sc->get_cid();
+      									}
       									i = $$->begin();
       									string temp=(*i)->get_temp();
-      									(*i)->set_code((*i)->get_code()+"\ninc "+temp);
+      									(*i)->set_code((*i)->get_code()+"\ndec "+temp+"\ndec "+n);
       									$1->clear();
  		  						}
 	;

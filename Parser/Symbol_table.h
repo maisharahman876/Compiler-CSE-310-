@@ -219,6 +219,18 @@ string get_id()
 {
     return this->id;
 }
+string get_cid()
+{
+    
+    string str=this->id;
+	for(int i=0;i<str.size();i++)
+	{
+		if(str[i]=='.')
+			str[i]='_';
+			
+	}
+	return str;
+}
 void set_parent(ScopeTable* s)
 {
     parentScope=s;
@@ -425,6 +437,10 @@ void exitScope()
     return;
 
 
+}
+ScopeTable* curr()
+{
+	return current;
 }
 string get_Currid()
 {

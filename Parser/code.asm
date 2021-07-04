@@ -1,16 +1,22 @@
 .model small
 .stack 100h
 .data
-ret_main dw ?
-c1_1 dw ?
-i1_1 dw ?
-j1_1 dw ?
-d1_1 dw ?
-e1_1 dw 4 dup (?)
+ret_max dw ?
+p0_max dw ?
+p1_max dw ?
+a1_1 dw ?
+b1_1 dw ?
 T0 dw ?
 T1 dw ?
 T2 dw ?
 T3 dw ?
+ret_main dw ?
+a1_2 dw ?
+c1_2 dw ?
+i1_2 dw ?
+j1_2 dw ?
+d1_2 dw ?
+e1_2 dw 4 dup (?)
 T4 dw ?
 T5 dw ?
 T6 dw ?
@@ -26,168 +32,181 @@ T15 dw ?
 T16 dw ?
 T17 dw ?
 T18 dw ?
+temp1_2_1 dw ?
 T19 dw ?
 T20 dw ?
 T21 dw ?
 T22 dw ?
 T23 dw ?
-T24 dw ?
-T25 dw ?
-T26 dw ?
-T27 dw ?
-T28 dw ?
-T29 dw ?
-T30 dw ?
 
-temp dw ?
 .code
 
+max proc
+push ax
+push bx
+push cx
+push dx
+mov cx,p0_max
+mov a1_1,cx
+mov cx,p1_max
+mov b1_1,cx
+mov ax,a1_1
+mov T0,ax
+mov ax,b1_1
+mov T1,ax
+mov ax,T0
+cmp ax,T1
+jl L0
+mov T0,1
+jmp L1
+L0:
+mov T0,0
+L1:
+cmp T0,1
+jne L2
+mov ax,a1_1
+mov T2,ax
+mov bx,T2
+mov ret_max,bx
+L2:
+mov ax,b1_1
+mov T3,ax
+mov bx,T3
+mov ret_max,bx
+pop dx
+pop cx
+pop bx
+pop ax
+ret
+max endp
 main proc
 mov  ax, @data
 mov  ds, ax
-mov T0,0
-mov bx,T0
-inc bx
-mov ax,e1_1[bx]
-mov T1,ax
-mov T2,2
-mov bx,T0
-inc bx
-mov ax,T2
-mov e1_1[bx],ax
-mov T1,1
-mov T3,1
-mov bx,T3
-inc bx
-mov ax,e1_1[bx]
+
+;d=4;
+
+
+mov ax,d1_2
 mov T4,ax
-mov T5,3
-mov bx,T3
-inc bx
+mov T5,4
 mov ax,T5
-mov e1_1[bx],ax
+mov d1_2,ax
 mov T4,1
-mov ax,j1_1
+
+;i=0;
+
+
+mov ax,i1_2
 mov T6,ax
-mov T7,1
-mov bx,T7
-inc bx
-mov ax,e1_1[bx]
+mov T7,0
+mov ax,T7
+mov i1_2,ax
+mov T6,1
+L5:
+
+
+;i<d;
+
+
+mov ax,i1_2
 mov T8,ax
-mov T9,5
+mov ax,d1_2
+mov T9,ax
 mov ax,T8
 cmp ax,T9
-jng L0
+jnl L3
 mov T8,1
-jmp L1
-L0:
+jmp L4
+L3:
 mov T8,0
-L1:
-mov ax,T8
-mov j1_1,ax
-mov T6,1
-mov ax,c1_1
-mov T10,ax
-mov T11,2
-mov ax,T11
-mov c1_1,ax
-mov T10,1
-mov ax,j1_1
+L4:
+cmp T8,1
+jne L6
+
+;e[i]=i*2;
+
+
+mov ax,i1_2
+mov T11,ax
+mov bx,T11
+sal bx,2
+inc bx
+mov ax,e1_2[bx]
 mov T12,ax
-mov T13,2
-mov T14,3
+mov ax,i1_2
+mov T13,ax
+mov T14,2
 mov ax, T13
 imul T14
 mov T13,ax
-mov T15,5
-mov T16,3
-mov ax,T15
-and ax,T16
-cmp ax,0
-je L2
-mov T15,1
-jmp L3
-L2:
-mov T15,0
-L3:
-mov ax,T15
-add T13,ax
-mov T17,2
-mov ax,T17
-add T13,ax
+mov bx,T11
+sal bx,2
+inc bx
 mov ax,T13
-mov j1_1,ax
+mov e1_2[bx],ax
 mov T12,1
-mov ax,d1_1
-mov T18,ax
-mov ax,i1_1
-mov T19,ax
-mov T20,1
-mov ax,T19
-cmp ax,T20
-jnl L4
-mov T19,1
+mov ax,i1_2
+mov T10,ax
+inc T10
+inc i1_2
 jmp L5
-L4:
-mov T19,0
-L5:
-mov ax,T19
-mov d1_1,ax
-mov T18,1
-mov ax,i1_1
-mov T21,ax
-mov ax,d1_1
-mov T22,ax
-mov T23,0
-mov ax,T22
-or ax,T23
-cmp ax,0
-je L6
-mov T22,1
-jmp L7
 L6:
-mov T22,0
-L7:
-mov ax,T22
-mov i1_1,ax
-mov T21,1
-mov ax,d1_1
-mov T24,ax
-mov ax,c1_1
-mov T25,ax
-mov ax,d1_1
-mov T26,ax
-mov T27,1
-mov ax,T26
-cmp ax,T27
-je L8
-mov T26,1
-jmp L9
-L8:
-mov T26,0
+
+;j=0;
+
+
+mov ax,j1_2
+mov T15,ax
+mov T16,0
+mov ax,T16
+mov j1_2,ax
+mov T15,1
 L9:
-mov ax,T25
-and ax,T26
-cmp ax,0
-je L10
-mov T25,1
-jmp L11
-L10:
-mov T25,0
-L11:
-mov ax,T25
-mov d1_1,ax
-mov T24,1
-mov ax,j1_1
-mov T28,ax
-mov T29,50
-mov ax,T29
-mov j1_1,ax
-mov T28,1
-mov ax,j1_1
+mov ax,d1_2
+mov T17,ax
+mov ax,j1_2
+mov T18,ax
+mov ax,T17
+cmp ax,T18
+jng L7
+mov T17,1
+jmp L8
+L7:
+mov T17,0
+L8:
+cmp T17,1
+jne L10
+
+
+;d--;
+
+
+mov ax,d1_2
+mov T19,ax
+dec T19
+dec d1_2
+
+;temp=e[d];
+
+
+mov ax,temp1_2_1
+mov T20,ax
+mov ax,d1_2
+mov T21,ax
+mov bx,T21
+sal bx,2
+inc bx
+mov ax,e1_2[bx]
+mov T22,ax
+mov ax,T22
+mov temp1_2_1,ax
+mov T20,1
+mov ax,temp1_2_1
 call output
-mov T30,0
-mov bx,T30
+jmp L9
+L10:
+mov T23,0
+mov bx,T23
 mov ret_main,bx
 mov ah,4ch
 int 21h
