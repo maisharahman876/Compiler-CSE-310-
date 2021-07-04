@@ -4,7 +4,7 @@
 
 using namespace std;
 ofstream error;
-ofstream code;
+ofstream code,ocode;
 string data_seg;
 int temp_count=0;
 string code_seg,dummy,func_init,func_name;
@@ -58,6 +58,50 @@ int isSubstring(string s1, string s2)
  
     return -1;
 }
+string optimize(string d_seg,string c_seg)
+{
+    string temp,cde;
+    stringstream ss(c_seg);
+    vector<string> tokens;
+
+    while(getline(ss, temp, '\n')) {
+        tokens.push_back(temp);
+    }
+   for (int i = 0; i < tokens.size(); i++)
+   {
+   	if(i == tokens.size()-1) {
+   	
+            continue;
+        }
+        if((tokens[i].length() < 7) || (tokens[i+1].length() < 7)) {
+            continue;
+        }
+   	if((tokens[i].substr(1,6) == "mov ax") && (tokens[i+1].substr(1,6) == "mov ax")) {
+   	tokens[i]="";
+   	}
+   	if((tokens[i].substr(1,6) == "mov ax") && (tokens[i+1].substr(1,3) ==
+   	"mov")&&(tokens[i+1].substr(tokens[i+1].size()-1,tokens[i+1].size()) == "ax")) {
+   	if((tokens[i].substr(7,tokens[i].size()) == tokens[i+1].substr(5,tokens[i+1].size()-3)))
+   	tokens[i+1]="";
+   	}
+   	if((tokens[i].substr(1,3) == "mov"))
+   	{
+   	string temp;
+   	if((tokens[i].substr(5,5) == "T")&&(tokens[i].substr(tokens[i].size()-1,tokens[i].size()) == "ax"))
+   	temp=tokens[i].substr(5,tokens[i].size()-2);
+   	else if((tokens[i].substr(5,5) == "T")&&(tokens[i].substr(tokens[i].size(),tokens[i].size()) == "1"))
+   	temp=tokens[i].substr(5,tokens[i].size()-1);
+   	
+   	}
+   	
+   }
+    for (int i = 0; i < tokens.size(); i++)
+   {
+    cde+=tokens[i]+"\n";
+   }
+  return cde;
+  
+}
 void yyerror(char *s)
 {
 	//write your code
@@ -65,6 +109,7 @@ void yyerror(char *s)
 	error<<"Error at line "<<getline()<<": Syntax Error"<<endl;
 	IncErr();
 }
+
 bool func=false,declared=false;
 int arg_count=0;
 string type,name,namef,typef;
@@ -2175,10 +2220,12 @@ int main(int argc,char *argv[])
 	cout<<"Total lines: "<<getline()<<endl;
 	cout<<"Total errors: "<<getErr()<<endl;
 	code.open("code.asm",ios::out);
+	ocode.open("optimized_code.asm",ios::out);
+	string s=optimize(data_seg,code_seg);
 	if(getErr()==0)
 	{
 		code<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<code_seg<<endl<<"end main";
-		
+		ocode<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<s<<endl<<"end main";
 	}
 	return 0;
 }
