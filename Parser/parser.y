@@ -61,9 +61,12 @@ int isSubstring(string s1, string s2)
 string optimize(string d_seg,string c_seg)
 {
     string temp,cde;
-    stringstream ss(c_seg);
-    vector<string> tokens;
+    stringstream ss(c_seg),ss1(d_seg);
+    vector<string> tokens,datas;
 
+    while(getline(ss1, temp, '\n')) {
+        datas.push_back(temp);
+    }
     while(getline(ss, temp, '\n')) {
         tokens.push_back(temp);
     }
@@ -73,32 +76,73 @@ string optimize(string d_seg,string c_seg)
    	
             continue;
         }
-        if((tokens[i].length() < 7) || (tokens[i+1].length() < 7)) {
+        if((tokens[i].length() < 4) ) {
+        	//ocode<<tokens[i]<<endl;
             continue;
         }
-   	if((tokens[i].substr(1,6) == "mov ax") && (tokens[i+1].substr(1,6) == "mov ax")) {
+        //ocode<<tokens[i].substr(0,3)<<endl;
+        if((tokens[i].substr(0,3) == "mov"))
+   	{
+   	//ocode<<"dhuke"<<endl;
+   	string temp1;
+   	//ocode<<tokens[i].substr(4,4)<<endl;
+   	//<<tokens[i].substr(tokens[i].size()-2,tokens[i].size())<<endl;
+   	if((tokens[i].substr(4,5) == "T")&&(tokens[i].substr(tokens[i].size()-2,tokens[i].size()) == "ax"))
+   	{
+   	
+   	temp1=tokens[i].substr(4,tokens[i].size()-5);
+   	
+   	}
+   	else if((tokens[i].substr(4,5) == "T")&&((tokens[i].substr(tokens[i].size()-1,tokens[i].size()) == "1")||(tokens[i].substr(tokens[i].size()-1,tokens[i].size()-1) == "0"))){
+   	temp1=tokens[i].substr(4,tokens[i].size()-4);
+   	}
+   	int count=0;
+   	
+   	for(int j=i+1;j<tokens.size(); j++)
+   	{
+   	 if(isSubstring(tokens[j],temp1)!=-1)
+   	 	count++;
+   	}
+   	if(count==0)
+   	{
+   	tokens[i]="";
+   	for(int k=0;k<datas.size();k++)
+   	{
+   	if(isSubstring(datas[k],temp1)!=-1)
+   	datas[k]="";
+   	}
+   	
+   	}
+   	
+   	}
+   	
+        if((tokens[i].length() < 4) || (tokens[i+1].length() < 4)) {
+        	//ocode<<tokens[i]<<endl;
+            continue;
+        }
+        
+   	if((tokens[i].substr(0,6) == "mov ax") && (tokens[i+1].substr(0,6) == "mov ax")) {
    	tokens[i]="";
    	}
-   	if((tokens[i].substr(1,6) == "mov ax") && (tokens[i+1].substr(1,3) ==
-   	"mov")&&(tokens[i+1].substr(tokens[i+1].size()-1,tokens[i+1].size()) == "ax")) {
-   	if((tokens[i].substr(7,tokens[i].size()) == tokens[i+1].substr(5,tokens[i+1].size()-3)))
+   	if((tokens[i].substr(0,6) == "mov ax") && (tokens[i+1].substr(0,3) ==
+   	"mov")&&(tokens[i+1].substr(tokens[i+1].size()-2,tokens[i+1].size()) == "ax")) {
+   	if((tokens[i].substr(8,tokens[i].size()) == tokens[i+1].substr(3,tokens[i+1].size()-4))) 
    	tokens[i+1]="";
    	}
-   	if((tokens[i].substr(1,3) == "mov"))
-   	{
-   	string temp;
-   	if((tokens[i].substr(5,5) == "T")&&(tokens[i].substr(tokens[i].size()-1,tokens[i].size()) == "ax"))
-   	temp=tokens[i].substr(5,tokens[i].size()-2);
-   	else if((tokens[i].substr(5,5) == "T")&&(tokens[i].substr(tokens[i].size(),tokens[i].size()) == "1"))
-   	temp=tokens[i].substr(5,tokens[i].size()-1);
    	
-   	}
    	
    }
+   cde=".model small\n.stack 100h\n.data\n";//<<endl<<data_seg<<endl<<".code"<<endl<<s<<endl<<"end main";
+    for (int i = 0; i < datas.size(); i++)
+   {
+    cde+=datas[i]+"\n";
+   }
+   cde+=".code\n";
     for (int i = 0; i < tokens.size(); i++)
    {
     cde+=tokens[i]+"\n";
    }
+   cde+="end main";
   return cde;
   
 }
@@ -463,7 +507,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
       											if($2->get_name()!="main")
 											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax\nret"+"\n"+$2->get_name()+" endp");
 											else
-											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmain endp");
+											(*i1)->set_code("\nmain proc\nmov  ax , @data\nmov  ds , ax"+(*i)->get_code()+"\nmain endp");
 											func_init="";
       											$5->clear();
       											$8->clear();
@@ -491,7 +535,7 @@ func_definition :   type_specifier id in_func LPAREN parameter_list RPAREN looku
 											if($2->get_name()!="main")
 											(*i1)->set_code("\n"+$2->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax\nret"+"\n"+$2->get_name()+" endp");
 											else
-											(*i1)->set_code("\nmain proc\nmov  ax, @data\nmov  ds, ax"+(*i)->get_code()+"\nmov ah,4ch\nint 21h\nmain endp");
+											(*i1)->set_code("\nmain proc\nmov  ax , @data\nmov  ds , ax"+(*i)->get_code()+"\nmov ah , 4ch\nint 21h\nmain endp");
 											}
  		;				
 
@@ -628,7 +672,7 @@ newScope : 	{
 			  	if(st->insert_symbol(si))
 			  	{
 			  		data_seg+=si->get_name()+st->get_Currid()+" dw ?\n";
-			  		func_init+="\nmov cx,p"+to_string(k)+"_"+namef+"\nmov "+si->get_name()+st->get_Currid()+",cx";
+			  		func_init+="\nmov cx , p"+to_string(k)+"_"+namef+"\nmov "+si->get_name()+st->get_Currid()+" , cx";
 			  		
 			  	}
 			  	else
@@ -1096,7 +1140,7 @@ statement : var_declaration					{
       									n=$3->get_name()+sc->get_cid();
       									}
       									i = $$->begin();
-									(*i)->set_code("\nmov ax,"+n+"\ncall output");
+									(*i)->set_code("\nmov ax , "+n+"\ncall output");
  		  						}
 	  | RETURN expression SEMICOLON			{
  		  							cout<<"Line "<<getline()<<":"<<" statement : RETURN expression SEMICOLON"<<endl;
@@ -1134,7 +1178,7 @@ statement : var_declaration					{
       									i = $$->begin();
       									i1 = $2->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\nmov bx,"+temp+"\nmov ret_"+namef+",bx");
+									(*i)->set_code((*i1)->get_code()+"\nmov bx , "+temp+"\nmov ret_"+namef+" , bx");
 									(*i)->set_temp(temp);
       									$2->clear();
  		  						}
@@ -1151,7 +1195,7 @@ expression_statement 	: SEMICOLON				{
 									i = $$->begin();
 									string temp=newTemp();
 									data_seg+=temp+" dw ?\n";
-									(*i)->set_code("\mov "+temp+",1");
+									(*i)->set_code("\mov "+temp+" , 1");
 									(*i)->set_temp(temp);
       									cout<<endl<<endl;
  		  						}
@@ -1222,7 +1266,7 @@ variable : id 							{
       									}
       									
       									
-      									(*i)->set_code((*i)->get_code()+"\nmov ax,"+n+"\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+"\nmov ax , "+n+"\nmov "+temp+" , ax");
       									(*i)->set_temp(temp);
       									//temp="ah";
  		  						}
@@ -1289,7 +1333,7 @@ variable : id 							{
       									n=$1->get_name()+sc->get_cid();
       									}
       									dummy=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+(*i1)->get_temp()+"\nsal bx,2\ninc bx\nmov ax,"+n+"[bx]\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx , "+(*i1)->get_temp()+"\nsal bx , 2\ninc bx\nmov ax , "+n+"[bx]\nmov "+temp+" , ax");
       									(*i)->set_temp(temp);
   									//temp="ah";
       									$3->clear();
@@ -1390,9 +1434,9 @@ variable : id 							{
       									string temp=(*i)->get_temp();
       									string temp1=(*i1)->get_temp();
       									if($1->size()!=1)
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx,"+dummy+"\nsal bx,2\ninc bx\nmov ax,"+temp1+"\nmov "+n+"[bx],ax\nmov "+temp+",1");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx , "+dummy+"\nsal bx , 2\ninc bx\nmov ax , "+temp1+"\nmov "+n+"[bx] , ax\nmov "+temp+" , 1");
       									else
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp1+"\nmov "+n+",ax\nmov "+temp+",1");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp1+"\nmov "+n+" , ax\nmov "+temp+" , 1");
       									//temp="bh";
       									$1->clear();
       									$3->clear();
@@ -1464,9 +1508,9 @@ logic_expression : rel_expression 				{
       									string label=newLabel();
       									string label1=newLabel();
       									if($2->get_name()=="&&")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nand ax,"+temp1+"\ncmp ax,0"+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nand ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()=="||")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nor ax,"+temp1+"\ncmp ax,0"+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nor ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									
       								
       									//temp="dl";
@@ -1544,17 +1588,17 @@ rel_expression	: simple_expression 				{
       									string label=newLabel();
       									string label1=newLabel();
       									if($2->get_name()=="<")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\njnl "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njnl "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()==">")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\njng "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njng "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()==">=")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\njl "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njl "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()=="<=")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\njg "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njg "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()=="==")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\njne "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njne "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()=="!=")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\ncmp ax,"+temp1+"\nje "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+",0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									//temp="bh";
       									
       									
@@ -1641,9 +1685,9 @@ simple_expression : term 					{
       									string temp=(*i)->get_temp();
       									string temp1=(*i1)->get_temp();
       									if($2->get_name()=="+")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp1+"\nadd "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp1+"\nadd "+temp+" , ax");
       									else if($2->get_name()=="-")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp1+"\nsub "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp1+"\nsub "+temp+" , ax");
       								
       									//temp="bl";
       									
@@ -1750,11 +1794,11 @@ term :	unary_expression					{
       									string temp=(*i)->get_temp();
       									string temp1=(*i1)->get_temp();
       									if($2->get_name()=="*")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax, "+temp+"\nimul "+temp1+"\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax ,  "+temp+"\nimul "+temp1+"\nmov "+temp+" , ax");
       									else if($2->get_name()=="/")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax, "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax ,  "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+" , ax");
       									else if($2->get_name()=="%")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax, "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+",dx");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax ,  "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+" , dx");
       									
       									//temp="cl";
       									(*i)->set_temp(temp);
@@ -1968,7 +2012,7 @@ factor	: variable 						{
       									i1 = $4->begin();
       									string temp=newTemp();
       									data_seg+=temp+" dw ?\n";
-      									(*i)->set_code((*i1)->get_code()+"\ncall "+func_name+"\nmov ax,ret_"+func_name+"\nmov "+temp+",ax");
+      									(*i)->set_code((*i1)->get_code()+"\ncall "+func_name+"\nmov ax , ret_"+func_name+"\nmov "+temp+" , ax");
       									(*i)->set_temp(temp);
       									$4->clear();
  		  						}
@@ -2009,7 +2053,7 @@ factor	: variable 						{
       									string temp=newTemp();
       									data_seg+=temp+" dw ?\n";
       									i = $$->begin();
-      									(*i)->set_code((*i)->get_code()+"\nmov "+temp+","+$1->get_name());
+      									(*i)->set_code((*i)->get_code()+"\nmov "+temp+" , "+$1->get_name());
       									(*i)->set_temp(temp);
       									//temp="al";
  		  						}
@@ -2025,7 +2069,7 @@ factor	: variable 						{
       									i = $$->begin();
       									string temp=newTemp();
       									data_seg+=temp+" dw ?\n";
-      									(*i)->set_code((*i)->get_code()+"\nmov "+temp+","+$1->get_name());
+      									(*i)->set_code((*i)->get_code()+"\nmov "+temp+" , "+$1->get_name());
       									(*i)->set_temp(temp);
  		  						}
 	| variable INCOP 					{
@@ -2172,7 +2216,7 @@ arguments : arguments COMMA logic_expression			{
       									i = $$->begin();
       									i1 = $3->begin();
       									string temp=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax,"+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+",ax");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+" , ax");
       									arg_count++;
       									$1->clear();
       									$3->clear();
@@ -2195,7 +2239,7 @@ arguments : arguments COMMA logic_expression			{
       									cout<<endl<<endl;
       									i = $$->begin();
       									string temp=(*i)->get_temp();
-      									(*i)->set_code((*i)->get_code()+"\nmov ax,"+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+",ax");
+      									(*i)->set_code((*i)->get_code()+"\nmov ax , "+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+" , ax");
       									arg_count++;
       									$1->clear();
  		  						}
@@ -2225,7 +2269,7 @@ int main(int argc,char *argv[])
 	if(getErr()==0)
 	{
 		code<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<code_seg<<endl<<"end main";
-		ocode<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<s<<endl<<"end main";
+		//ocode<<s;
 	}
 	return 0;
 }

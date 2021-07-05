@@ -7,7 +7,8 @@ int max(int a,int b)
 	return b;
 }
 int main(){
-	int a,c,i,j,d,e[4] ; 
+	int a,c,i,j,d,e[4] ;
+	j=i; 
 	d=4;
 	for(i=0;i<d;i++)
 	e[i]=i*2;
