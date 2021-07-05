@@ -66,17 +66,13 @@
 
 
 /* First part of user prologue.  */
-#line 1 "parser.y"
+#line 1 "1705060.y"
 
 #include<bits/stdc++.h>
 #include "Symbol_table.h"
 
 using namespace std;
 ofstream error;
-ofstream code,ocode;
-string data_seg;
-int temp_count=0;
-string code_seg,dummy,func_init,func_name;
 int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
@@ -85,7 +81,6 @@ SymbolTable *st = new SymbolTable(30);
 
 int line_count=1;
 int err=0;
-int label_count=0;
 void IncLine(){
 	line_count++;}
 int getline()
@@ -94,127 +89,7 @@ void IncErr(){
 	err++;}
 int getErr()
 	{return err;}
-string newLabel()
-{
-	string l="L"+to_string(label_count);
-	label_count++;
-	return l;
-}
-string newTemp()
-{
-	string l="T"+to_string(temp_count);
-	temp_count++;
-	return l;
-}
-int isSubstring(string s1, string s2)
-{
-    int M = s1.length();
-    int N = s2.length();
- 
-    /* A loop to slide pat[] one by one */
-    for (int i = 0; i <= N - M; i++) {
-        int j;
- 
-        /* For current index i, check for
- pattern match */
-        for (j = 0; j < M; j++)
-            if (s2[i + j] != s1[j])
-                break;
- 
-        if (j == M)
-            return i;
-    }
- 
-    return -1;
-}
-string optimize(string d_seg,string c_seg)
-{
-    string temp,cde;
-    stringstream ss(c_seg),ss1(d_seg);
-    vector<string> tokens,datas;
 
-    while(getline(ss1, temp, '\n')) {
-        datas.push_back(temp);
-    }
-    while(getline(ss, temp, '\n')) {
-        tokens.push_back(temp);
-    }
-   for (int i = 0; i < tokens.size(); i++)
-   {
-   	if(i == tokens.size()-1) {
-   	
-            continue;
-        }
-        if((tokens[i].length() < 4) ) {
-        	//ocode<<tokens[i]<<endl;
-            continue;
-        }
-        //ocode<<tokens[i].substr(0,3)<<endl;
-        if((tokens[i].substr(0,3) == "mov"))
-   	{
-   	//ocode<<"dhuke"<<endl;
-   	string temp1;
-   	//ocode<<tokens[i].substr(4,4)<<endl;
-   	//<<tokens[i].substr(tokens[i].size()-2,tokens[i].size())<<endl;
-   	if((tokens[i].substr(4,5) == "T")&&(tokens[i].substr(tokens[i].size()-2,tokens[i].size()) == "ax"))
-   	{
-   	
-   	temp1=tokens[i].substr(4,tokens[i].size()-5);
-   	
-   	}
-   	else if((tokens[i].substr(4,5) == "T")&&((tokens[i].substr(tokens[i].size()-1,tokens[i].size()) == "1")||(tokens[i].substr(tokens[i].size()-1,tokens[i].size()-1) == "0"))){
-   	temp1=tokens[i].substr(4,tokens[i].size()-4);
-   	}
-   	int count=0;
-   	
-   	for(int j=i+1;j<tokens.size(); j++)
-   	{
-   	 if(isSubstring(tokens[j],temp1)!=-1)
-   	 	count++;
-   	}
-   	if(count==0)
-   	{
-   	tokens[i]="";
-   	for(int k=0;k<datas.size();k++)
-   	{
-   	if(isSubstring(datas[k],temp1)!=-1)
-   	datas[k]="";
-   	}
-   	
-   	}
-   	
-   	}
-   	
-        if((tokens[i].length() < 4) || (tokens[i+1].length() < 4)) {
-        	//ocode<<tokens[i]<<endl;
-            continue;
-        }
-        
-   	if((tokens[i].substr(0,6) == "mov ax") && (tokens[i+1].substr(0,6) == "mov ax")) {
-   	tokens[i]="";
-   	}
-   	if((tokens[i].substr(0,6) == "mov ax") && (tokens[i+1].substr(0,3) ==
-   	"mov")&&(tokens[i+1].substr(tokens[i+1].size()-2,tokens[i+1].size()) == "ax")) {
-   	if((tokens[i].substr(8,tokens[i].size()) == tokens[i+1].substr(3,tokens[i+1].size()-4))) 
-   	tokens[i+1]="";
-   	}
-   	
-   	
-   }
-   cde=".model small\n.stack 100h\n.data\n";//<<endl<<data_seg<<endl<<".code"<<endl<<s<<endl<<"end main";
-    for (int i = 0; i < datas.size(); i++)
-   {
-    cde+=datas[i]+"\n";
-   }
-   cde+=".code\n";
-    for (int i = 0; i < tokens.size(); i++)
-   {
-    cde+=tokens[i]+"\n";
-   }
-   cde+="end main";
-  return cde;
-  
-}
 void yyerror(char *s)
 {
 	//write your code
@@ -222,15 +97,13 @@ void yyerror(char *s)
 	error<<"Error at line "<<getline()<<": Syntax Error"<<endl;
 	IncErr();
 }
-
-bool func=false,declared=false;
-int arg_count=0;
+bool func=false;
 string type,name,namef,typef;
 vector<param*>plist;
 vector<string>arglist;
 vector<SymbolInfo*>vlist;
 
-#line 234 "y.tab.c"
+#line 107 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -356,13 +229,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 164 "parser.y"
+#line 37 "1705060.y"
 
 int ival;
 SymbolInfo* siv;
 vector<SymbolInfo*>* vecv;
 
-#line 366 "y.tab.c"
+#line 239 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -681,16 +554,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  11
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   179
+#define YYLAST   164
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  38
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  30
+#define YYNNTS  29
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  70
+#define YYNRULES  69
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  126
+#define YYNSTATES  125
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   292
@@ -741,14 +614,13 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   182,   182,   200,   219,   236,   251,   266,   283,   324,
-     364,   370,   376,   418,   485,   515,   543,   565,   583,   600,
-     615,   639,   659,   694,   754,   763,   771,   781,   799,   822,
-     836,   855,   870,   892,   907,   922,   937,   986,  1022,  1067,
-    1106,  1145,  1187,  1202,  1225,  1273,  1343,  1364,  1446,  1467,
-    1525,  1547,  1610,  1631,  1699,  1720,  1810,  1855,  1894,  1919,
-    1943,  1943,  2019,  2044,  2060,  2075,  2121,  2167,  2181,  2195,
-    2224
+       0,    55,    55,    69,    85,   100,   113,   126,   141,   174,
+     208,   214,   220,   262,   324,   347,   369,   390,   408,   425,
+     440,   461,   481,   510,   565,   573,   581,   591,   607,   628,
+     640,   657,   670,   689,   702,   715,   728,   768,   798,   835,
+     866,   892,   929,   939,   954,   982,  1032,  1050,  1111,  1129,
+    1171,  1189,  1231,  1249,  1306,  1324,  1400,  1436,  1470,  1490,
+    1510,  1580,  1601,  1611,  1621,  1652,  1683,  1694,  1706,  1730
 };
 #endif
 
@@ -767,7 +639,7 @@ static const char *const yytname[] =
   "compound_statement", "newScope", "var_declaration", "type_specifier",
   "declaration_list", "statements", "statement", "expression_statement",
   "variable", "expression", "logic_expression", "rel_expression",
-  "simple_expression", "term", "unary_expression", "factor", "$@1",
+  "simple_expression", "term", "unary_expression", "factor",
   "argument_list", "arguments", YY_NULLPTR
 };
 #endif
@@ -784,12 +656,12 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-76)
+#define YYPACT_NINF (-75)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-61)
+#define YYTABLE_NINF (-14)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -798,19 +670,19 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      11,   -76,   -76,   -76,     9,    11,   -76,   -76,   -76,   -76,
-     -22,   -76,   -76,   -76,     8,    30,   -10,    10,   -22,   -76,
-      19,     6,    26,   -76,    50,    -9,   -22,    31,    47,    55,
-      50,    11,   -76,    53,   -76,   -76,   -76,    52,    55,   -22,
-     -76,    61,   -76,   -76,   -76,    65,    66,    67,   143,    75,
-     143,   143,   143,   -76,   -76,   -76,   -76,    21,   -76,   -76,
-     -22,    93,   -76,   -76,    38,    70,   -76,    64,    17,    84,
-     -76,   -76,   143,   130,   143,    73,   -22,    62,   -76,   -76,
-      83,   143,    86,    85,   -76,   -76,   -76,   -76,   143,   -76,
-     143,   143,   143,   143,    87,   130,    89,   -76,    90,   -76,
-      82,   143,   -76,   -76,    84,   102,   -76,   125,   143,   125,
-      91,   -76,   -76,    96,   101,   120,   108,   -76,   -76,   -76,
-     143,   125,   125,   -76,   -76,   -76
+      13,   -75,   -75,   -75,    12,    13,   -75,   -75,   -75,   -75,
+      22,   -75,   -75,   -75,   -16,     2,    25,    21,    22,   -75,
+      41,    10,    53,   -75,    59,    -1,    22,    46,    58,    66,
+      59,    13,   -75,    65,   -75,   -75,   -75,    62,    66,    22,
+     -75,    64,   -75,   -75,   -75,    78,    80,    82,   123,    83,
+     123,   123,   123,   -75,   -75,   -75,   -75,    27,   -75,   -75,
+      22,    96,   -75,   -75,    39,    84,   -75,    89,     9,    94,
+     -75,   -75,   123,    51,   123,    85,    22,    43,   -75,   -75,
+      92,   123,   123,    86,   -75,   -75,   -75,   -75,   123,   -75,
+     123,   123,   123,   123,    93,    51,    99,   -75,   100,   -75,
+     -75,   101,    91,   105,   -75,   -75,    94,   120,   -75,   128,
+     123,   128,   107,   -75,   123,   -75,   140,   124,   -75,   -75,
+     -75,   128,   128,   -75,   -75
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -823,22 +695,22 @@ static const yytype_int8 yydefact[] =
        0,     0,    27,    30,    12,     0,    19,     0,     0,     0,
       12,     0,    18,     0,     9,    22,    15,     0,     0,    17,
       28,     0,     8,    14,    16,     0,     0,     0,     0,     0,
-       0,     0,     0,    21,    42,    63,    64,    44,    35,    33,
+       0,     0,     0,    21,    42,    62,    63,    44,    35,    33,
        0,     0,    31,    34,    59,     0,    46,    48,    50,    52,
       54,    58,     0,     0,     0,     0,     0,    59,    56,    57,
-       0,     0,     0,    29,    20,    32,    65,    66,     0,    43,
-       0,     0,     0,     0,     0,     0,     0,    41,     0,    62,
-       0,    68,    47,    49,    53,    51,    55,     0,     0,     0,
-       0,    45,    70,     0,    67,    37,     0,    39,    40,    61,
-       0,     0,     0,    69,    38,    36
+       0,    67,     0,    29,    20,    32,    64,    65,     0,    43,
+       0,     0,     0,     0,     0,     0,     0,    41,     0,    61,
+      69,     0,    66,     0,    47,    49,    53,    51,    55,     0,
+       0,     0,     0,    60,     0,    45,    37,     0,    39,    40,
+      68,     0,     0,    38,    36
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -76,   -76,   -76,   131,   -76,    -8,   -76,   107,   111,   -76,
-     -76,   -23,   -76,    48,    23,   -76,   -76,   -49,   -65,   -50,
-     -45,   -75,    54,    51,    57,   -46,   -76,   -76,   -76,   -76
+     -75,   -75,   -75,   141,   -75,   -10,   -75,   119,   121,   -75,
+     -75,   -19,   -75,    49,    17,   -75,   -75,   -58,   -67,   -49,
+     -37,   -74,    68,    71,    63,   -46,   -75,   -75,   -75
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -846,7 +718,7 @@ static const yytype_int8 yydefgoto[] =
 {
       -1,     4,     5,     6,     7,    57,    17,    28,    29,     8,
       25,    58,    41,    59,    60,    15,    61,    62,    63,    64,
-      65,    66,    67,    68,    69,    70,    71,    82,   113,   114
+      65,    66,    67,    68,    69,    70,    71,   101,   102
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -854,46 +726,44 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      77,    77,    14,    75,    78,    79,    36,    80,    95,    11,
-      22,    13,    85,   102,     1,    43,     2,    30,    32,     1,
-       3,     2,    31,    10,    20,     3,   112,    94,    10,    96,
-     108,    44,    24,   -11,    91,    21,   100,    16,    77,    92,
-      77,    77,    77,    77,    26,   123,   -60,   106,     9,    23,
-      81,    77,    83,     9,    39,    27,    86,    87,   115,    88,
-     117,    18,    19,   116,    45,    33,    46,    47,    98,     1,
-      77,     2,   124,   125,    48,     3,    49,   -13,    50,    34,
-      86,    87,    35,    40,    42,    51,    52,    90,    35,    53,
-      72,    73,    74,    54,    13,    55,    45,    56,    46,    47,
-      76,     1,    89,     2,    93,    97,    48,     3,    49,    99,
-      50,   101,   111,   107,    16,   109,   110,    51,    52,    91,
-      35,    84,   119,   118,   121,    54,    13,    55,    45,    56,
-      46,    47,   120,     1,   122,     2,    12,    37,    48,     3,
-      49,    38,    50,   105,   103,     0,     0,    50,   104,    51,
-      52,     0,    35,     0,    51,    52,     0,    54,    13,    55,
-      50,    56,    54,    13,    55,     0,    56,    51,    52,     0,
-       0,     0,     0,     0,     0,     0,    13,    55,     0,    56
+      14,    77,    77,    85,    78,    79,    95,   100,    22,   -11,
+      36,    75,    11,    16,   104,    80,    32,    10,     1,    43,
+       2,     1,    10,     2,     3,    30,    91,     3,   110,    44,
+      31,    92,    77,    18,    19,    94,    24,    96,    26,    77,
+     120,    77,    77,    77,    77,   103,    21,   108,    39,     9,
+      83,   116,    81,   118,     9,    13,    82,    86,    87,    20,
+      88,    86,    87,   123,   124,    77,    98,    45,    50,    46,
+      47,    23,     1,   117,     2,    51,    52,    48,     3,    49,
+      33,    50,    27,    54,    13,    55,   -13,    56,    51,    52,
+      34,    35,    53,    35,    42,    40,    54,    13,    55,    45,
+      56,    46,    47,    72,     1,    73,     2,    74,    76,    48,
+       3,    49,    90,    50,    93,    16,    89,    97,    99,   109,
+      51,    52,   114,    35,    84,   111,   112,   113,    54,    13,
+      55,    45,    56,    46,    47,   115,     1,    91,     2,   119,
+      50,    48,     3,    49,   121,    50,    12,    51,    52,    37,
+     122,    38,    51,    52,   106,    35,    13,    55,   105,    56,
+      54,    13,    55,   107,    56
 };
 
 static const yytype_int8 yycheck[] =
 {
-      50,    51,    10,    48,    50,    51,    29,    52,    73,     0,
-      18,    33,    61,    88,     8,    38,    10,    26,    26,     8,
-      14,    10,    31,     0,    34,    14,   101,    72,     5,    74,
-      95,    39,    26,    25,    17,    25,    81,    29,    88,    22,
-      90,    91,    92,    93,    21,   120,    25,    93,     0,    30,
-      29,   101,    60,     5,    31,    29,    18,    19,   107,    21,
-     109,    31,    32,   108,     3,    34,     5,     6,    76,     8,
-     120,    10,   121,   122,    13,    14,    15,    27,    17,    32,
-      18,    19,    27,    30,    32,    24,    25,    23,    27,    28,
-      25,    25,    25,    32,    33,    34,     3,    36,     5,     6,
-      25,     8,    32,    10,    20,    32,    13,    14,    15,    26,
-      17,    25,    30,    26,    29,    26,    26,    24,    25,    17,
-      27,    28,    26,    32,     4,    32,    33,    34,     3,    36,
-       5,     6,    31,     8,    26,    10,     5,    30,    13,    14,
-      15,    30,    17,    92,    90,    -1,    -1,    17,    91,    24,
-      25,    -1,    27,    -1,    24,    25,    -1,    32,    33,    34,
-      17,    36,    32,    33,    34,    -1,    36,    24,    25,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    33,    34,    -1,    36
+      10,    50,    51,    61,    50,    51,    73,    81,    18,    25,
+      29,    48,     0,    29,    88,    52,    26,     0,     8,    38,
+      10,     8,     5,    10,    14,    26,    17,    14,    95,    39,
+      31,    22,    81,    31,    32,    72,    26,    74,    21,    88,
+     114,    90,    91,    92,    93,    82,    25,    93,    31,     0,
+      60,   109,    25,   111,     5,    33,    29,    18,    19,    34,
+      21,    18,    19,   121,   122,   114,    76,     3,    17,     5,
+       6,    30,     8,   110,    10,    24,    25,    13,    14,    15,
+      34,    17,    29,    32,    33,    34,    27,    36,    24,    25,
+      32,    27,    28,    27,    32,    30,    32,    33,    34,     3,
+      36,     5,     6,    25,     8,    25,    10,    25,    25,    13,
+      14,    15,    23,    17,    20,    29,    32,    32,    26,    26,
+      24,    25,    31,    27,    28,    26,    26,    26,    32,    33,
+      34,     3,    36,     5,     6,    30,     8,    17,    10,    32,
+      17,    13,    14,    15,     4,    17,     5,    24,    25,    30,
+      26,    30,    24,    25,    91,    27,    33,    34,    90,    36,
+      32,    33,    34,    92,    36
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -908,11 +778,11 @@ static const yytype_int8 yystos[] =
       17,    24,    25,    28,    32,    34,    36,    43,    49,    51,
       52,    54,    55,    56,    57,    58,    59,    60,    61,    62,
       63,    64,    25,    25,    25,    58,    25,    57,    63,    63,
-      58,    29,    65,    43,    28,    55,    18,    19,    21,    32,
+      58,    25,    29,    43,    28,    55,    18,    19,    21,    32,
       23,    17,    22,    20,    58,    56,    58,    32,    43,    26,
-      58,    25,    59,    60,    62,    61,    63,    26,    56,    26,
-      26,    30,    59,    66,    67,    55,    58,    55,    32,    26,
-      31,     4,    26,    59,    55,    55
+      59,    65,    66,    58,    59,    60,    62,    61,    63,    26,
+      56,    26,    26,    26,    31,    30,    55,    58,    55,    32,
+      59,     4,    26,    55,    55
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -924,8 +794,7 @@ static const yytype_int8 yyr1[] =
       53,    54,    54,    55,    55,    55,    55,    55,    55,    55,
       55,    55,    56,    56,    57,    57,    58,    58,    59,    59,
       60,    60,    61,    61,    62,    62,    63,    63,    63,    64,
-      65,    64,    64,    64,    64,    64,    64,    66,    66,    67,
-      67
+      64,    64,    64,    64,    64,    64,    65,    65,    66,    66
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -937,8 +806,7 @@ static const yytype_int8 yyr2[] =
        4,     1,     2,     1,     1,     1,     7,     5,     7,     5,
        5,     3,     1,     2,     1,     4,     1,     3,     1,     3,
        1,     3,     1,     3,     1,     3,     2,     2,     1,     1,
-       0,     5,     3,     1,     1,     2,     2,     1,     0,     3,
-       1
+       4,     3,     1,     1,     2,     2,     1,     0,     3,     1
 };
 
 
@@ -1634,7 +1502,7 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 183 "parser.y"
+#line 56 "1705060.y"
         {
 		(yyval.vecv)=new vector<SymbolInfo*>();
 		vector<SymbolInfo*>::iterator i;
@@ -1645,18 +1513,14 @@ yyreduce:
 		cout<<endl;
 		cout<<endl;
 		(yyvsp[0].vecv)->clear();
-		i = (yyval.vecv)->begin();
-		//data_seg+="\ntemp dw ?";
-		code_seg=(*i)->get_code()+"\noutput proc\nxor cx,cx \n ;count=0 and dx=0\nxor dx,dx\ncmp ax,0\nje printt \nbegin1:\ncmp ax,0\n; if ax is zero\nje repeat1\nmov bx,10 ; extract the last digit and push it to stack\ndiv bx\npush dx\ninc cx  \n;count++             \nxor dx,dx   \n; dx=0\njmp begin1\nrepeat1: \ncmp cx,0 \n;check if count>0 \nje return\npop dx   \n;pop the top of stack\nadd dx,48 \n;print the digit \nmov ah,2 \nint 21h  \ndec cx       \n;count--\njmp repeat1 \nreturn:\nret \nprintt:\nmov dx,48\nmov ah,2\nint 21h\njmp return\noutput endp";
-		//code<<full_code;
 	}
-#line 1654 "y.tab.c"
+#line 1518 "y.tab.c"
     break;
 
   case 3:
-#line 200 "parser.y"
+#line 69 "1705060.y"
                         {
-					vector<SymbolInfo*>::iterator i,i1;
+					vector<SymbolInfo*>::iterator i;
 					(yyval.vecv)=new vector<SymbolInfo*>();
 					for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 						(yyval.vecv)->push_back((*i));
@@ -1668,17 +1532,14 @@ yyreduce:
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
-					i = (yyval.vecv)->begin();
-					i1 = (yyvsp[0].vecv)->begin();
-					(*i)->set_code((*i)->get_code()+(*i1)->get_code());
 					(yyvsp[-1].vecv)->clear();
 					(yyvsp[0].vecv)->clear();
 				}
-#line 1678 "y.tab.c"
+#line 1539 "y.tab.c"
     break;
 
   case 4:
-#line 219 "parser.y"
+#line 85 "1705060.y"
                                 {
 					(yyval.vecv)=new vector<SymbolInfo*>();
 					vector<SymbolInfo*>::iterator i;
@@ -1690,15 +1551,13 @@ yyreduce:
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
-					i = (yyval.vecv)->begin();
-					(*i)->set_code((*i)->get_code());
 					(yyvsp[0].vecv)->clear();
 				}
-#line 1698 "y.tab.c"
+#line 1557 "y.tab.c"
     break;
 
   case 5:
-#line 236 "parser.y"
+#line 100 "1705060.y"
                                 {
 					(yyval.vecv)=new vector<SymbolInfo*>();
 					vector<SymbolInfo*>::iterator i;
@@ -1710,15 +1569,13 @@ yyreduce:
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
-					i = (yyval.vecv)->begin();
-					(*i)->set_code("");
 					(yyvsp[0].vecv)->clear();
 				}
-#line 1718 "y.tab.c"
+#line 1575 "y.tab.c"
     break;
 
   case 6:
-#line 251 "parser.y"
+#line 113 "1705060.y"
                         {
      					(yyval.vecv)=new vector<SymbolInfo*>();
 					vector<SymbolInfo*>::iterator i;
@@ -1730,15 +1587,13 @@ yyreduce:
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
-					i = (yyval.vecv)->begin();
-					(*i)->set_code("");
 					(yyvsp[0].vecv)->clear();
      				}
-#line 1738 "y.tab.c"
+#line 1593 "y.tab.c"
     break;
 
   case 7:
-#line 266 "parser.y"
+#line 126 "1705060.y"
                                 {
      					(yyval.vecv)=new vector<SymbolInfo*>();
 					vector<SymbolInfo*>::iterator i;
@@ -1750,15 +1605,13 @@ yyreduce:
 						cout<<(*i)->get_name();
 					cout<<endl;
 					cout<<endl;
-					i = (yyval.vecv)->begin();
-					(*i)->set_code((*i)->get_code());
 					(yyvsp[0].vecv)->clear();
      				}
-#line 1758 "y.tab.c"
+#line 1611 "y.tab.c"
     break;
 
   case 8:
-#line 283 "parser.y"
+#line 141 "1705060.y"
                                                                                                 {
 											cout<<"Line "<<getline()<<":"<<" func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON"<<endl;
 											cout<<endl;
@@ -1779,32 +1632,24 @@ yyreduce:
       											cout<<endl;
       											cout<<endl;
       											func=false;
-      											int k=0;
 											for (j = plist.begin(); j != plist.end(); ++j)
 											{
-											data_seg+="p"+to_string(k)+"_"+ (yyvsp[-6].siv)->get_name()+" dw ?\n";
 											delete (*j);
-											k++;
 											}
 											plist.clear();
-											if((yyvsp[-7].siv)->get_name()!="void")
-											data_seg+="ret"+ (yyvsp[-6].siv)->get_name()+" dw ?\n";
 											for (i= vlist.begin(); i != vlist.end(); ++i)
 											{
 											delete (*i);
 											}
 											vlist.clear();
-											i = (yyval.vecv)->begin();
-											declared=true;
-											//(*i)->set_code((*i)->get_code());
 											(yyvsp[-3].vecv)->clear();
 		
 										}
-#line 1804 "y.tab.c"
+#line 1649 "y.tab.c"
     break;
 
   case 9:
-#line 324 "parser.y"
+#line 174 "1705060.y"
                                                                                                 {
 											cout<<"Line "<<getline()<<":"<<" func_declaration : type_specifier ID LPAREN RPAREN SEMICOLON"<<endl;
 											cout<<endl;
@@ -1822,10 +1667,8 @@ yyreduce:
 											for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 											cout<<(*i)->get_name();
 											func=false;
-											//int j=0;
 											for (j = plist.begin(); j != plist.end(); ++j)
 											{
-											
 											delete (*j);
 											}
 											plist.clear();
@@ -1834,40 +1677,36 @@ yyreduce:
 											delete (*i);
 											}
 											vlist.clear();
-											if((yyvsp[-6].siv)->get_name()!="void")
-											data_seg+="ret_"+ (yyvsp[-5].siv)->get_name()+" dw ?\n";
+											
       											cout<<endl;
 											cout<<endl;
-											i = (yyval.vecv)->begin();
-											(*i)->set_code((*i)->get_code());
-											declared=true;
 		
 										}
-#line 1847 "y.tab.c"
+#line 1686 "y.tab.c"
     break;
 
   case 10:
-#line 364 "parser.y"
+#line 208 "1705060.y"
         {
 		(yyval.siv)=new SymbolInfo((yyvsp[0].siv)->get_name(),"ID");
 		name=(yyvsp[0].siv)->get_name();
 		//func=true;
 	}
-#line 1857 "y.tab.c"
+#line 1696 "y.tab.c"
     break;
 
   case 11:
-#line 370 "parser.y"
+#line 214 "1705060.y"
           {
 		func=true;
 		namef=name;
 		typef=type;	
 	  }
-#line 1867 "y.tab.c"
+#line 1706 "y.tab.c"
     break;
 
   case 12:
-#line 376 "parser.y"
+#line 220 "1705060.y"
         {
 		vector<param*>::iterator j;
 	 	if(st->lookup_symbol(namef)==NULL)
@@ -1909,26 +1748,23 @@ yyreduce:
 		}
 		
 	}
-#line 1913 "y.tab.c"
+#line 1752 "y.tab.c"
     break;
 
   case 13:
-#line 418 "parser.y"
+#line 262 "1705060.y"
          {
 	 	vector<param*>::iterator j;
 	 	if(st->lookup_symbol(namef)==NULL)
 		{
-		if(typef!="void")
-		data_seg+="ret_"+ namef+" dw ?\n";
 		SymbolInfo* si=new SymbolInfo(namef,"ID",typef);
 		si->set_func();
-		int h=0;
+		
 		for (j = plist.begin(); j != plist.end(); ++j)
 		{
 		si->addParam((*j)->get_ptype(),(*j)->get_pname());
-		data_seg+="p"+to_string(h)+"_"+ namef+" dw ?\n";
+		
 		delete (*j);
-		h++;
 		}
 		si->set_func();
 		//error<<namef<<" "<<si->get_listSize()<<endl;
@@ -1952,10 +1788,8 @@ yyreduce:
 		IncErr();
 		}
 		else {
-		
 		for(int k=0;k<plist.size();k++)
 		{
-		
 		if((f->getParam(k))->get_ptype()!=plist[k]->get_ptype())
 		{
 		cout<<"Error at line "<<getline()<<":  Argument mismatch with declaration in function "<<namef<<endl<<endl;
@@ -1980,11 +1814,11 @@ yyreduce:
 		}
 		
 	}
-#line 1984 "y.tab.c"
+#line 1818 "y.tab.c"
     break;
 
   case 14:
-#line 485 "parser.y"
+#line 324 "1705060.y"
                                                                                                         {
 												cout<<"Line "<<getline()<<":"<<" func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement"<<endl;
 											cout<<endl;
@@ -1994,7 +1828,7 @@ yyreduce:
 											(yyval.vecv)->push_back((yyvsp[-6].siv));
 											
 											(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
-											vector<SymbolInfo*>::iterator i,i1;
+											vector<SymbolInfo*>::iterator i;
 											for (i = (yyvsp[-3].vecv)->begin(); i != (yyvsp[-3].vecv)->end(); ++i) 
 												(yyval.vecv)->push_back((*i));
 											
@@ -2005,21 +1839,14 @@ yyreduce:
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
-      											i1 = (yyval.vecv)->begin();
-      											i = (yyvsp[0].vecv)->begin();
-      											if((yyvsp[-6].siv)->get_name()!="main")
-											(*i1)->set_code("\n"+(yyvsp[-6].siv)->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+func_init+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax\nret"+"\n"+(yyvsp[-6].siv)->get_name()+" endp");
-											else
-											(*i1)->set_code("\nmain proc\nmov  ax , @data\nmov  ds , ax"+(*i)->get_code()+"\nmain endp");
-											func_init="";
       											(yyvsp[-3].vecv)->clear();
       											(yyvsp[0].vecv)->clear();
 											}
-#line 2019 "y.tab.c"
+#line 1846 "y.tab.c"
     break;
 
   case 15:
-#line 515 "parser.y"
+#line 347 "1705060.y"
                                                                                                         {
 											cout<<"Line "<<getline()<<":"<<" func_definition : type_specifier ID LPAREN RPAREN compound_statement"<<endl;
 											cout<<endl;
@@ -2030,7 +1857,7 @@ yyreduce:
 											
 											(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
 											(yyval.vecv)->push_back(new SymbolInfo(")","RPAREN"));
-											vector<SymbolInfo*>::iterator i,i1;
+											vector<SymbolInfo*>::iterator i;
 											for (i = (yyvsp[0].vecv)->begin(); i != (yyvsp[0].vecv)->end(); ++i) 
 												(yyval.vecv)->push_back((*i));
 											(yyvsp[0].vecv)->clear();
@@ -2038,18 +1865,12 @@ yyreduce:
 												cout<<(*i)->get_name();
       											cout<<endl;
       											cout<<endl;
-      											i1 = (yyval.vecv)->begin();
-      											i = (yyvsp[0].vecv)->begin();
-											if((yyvsp[-5].siv)->get_name()!="main")
-											(*i1)->set_code("\n"+(yyvsp[-5].siv)->get_name()+" proc\npush ax\npush bx\npush cx\npush dx"+(*i)->get_code()+"\npop dx\npop cx\npop bx\npop ax\nret"+"\n"+(yyvsp[-5].siv)->get_name()+" endp");
-											else
-											(*i1)->set_code("\nmain proc\nmov  ax , @data\nmov  ds , ax"+(*i)->get_code()+"\nmov ah , 4ch\nint 21h\nmain endp");
 											}
-#line 2049 "y.tab.c"
+#line 1870 "y.tab.c"
     break;
 
   case 16:
-#line 543 "parser.y"
+#line 369 "1705060.y"
                                                                 {
 									cout<<"Line "<<getline()<<":"<<" parameter_list : parameter_list COMMA type_specifier ID"<<endl;
 									cout<<endl;
@@ -2069,14 +1890,13 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									
       									(yyvsp[-3].vecv)->clear();	
 								}
-#line 2076 "y.tab.c"
+#line 1896 "y.tab.c"
     break;
 
   case 17:
-#line 565 "parser.y"
+#line 390 "1705060.y"
                                                                 {
 									cout<<"Line "<<getline()<<":"<<" parameter_list : parameter_list COMMA type_specifier"<<endl;
 									cout<<endl;
@@ -2095,11 +1915,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
 										
 								}
-#line 2099 "y.tab.c"
+#line 1919 "y.tab.c"
     break;
 
   case 18:
-#line 583 "parser.y"
+#line 408 "1705060.y"
                                                                 {
 									cout<<"Line "<<getline()<<":"<<" parameter_list : type_specifier ID"<<endl;
 									cout<<endl;
@@ -2117,11 +1937,11 @@ yyreduce:
       									cout<<endl;
 									cout<<endl;
 								}
-#line 2121 "y.tab.c"
+#line 1941 "y.tab.c"
     break;
 
   case 19:
-#line 600 "parser.y"
+#line 425 "1705060.y"
                                                                 {
 									cout<<"Line "<<getline()<<":"<<" parameter_list : type_specifier"<<endl;
 									param* p=new param((yyvsp[0].siv)->get_name(),"");
@@ -2134,11 +1954,11 @@ yyreduce:
       									cout<<endl;
 										
 								}
-#line 2138 "y.tab.c"
+#line 1958 "y.tab.c"
     break;
 
   case 20:
-#line 615 "parser.y"
+#line 440 "1705060.y"
                                                                         {
 									cout<<"Line "<<getline()<<":"<<" compound_statement : LCURL statements RCURL"<<endl;
 									cout<<endl;
@@ -2146,7 +1966,7 @@ yyreduce:
 									(yyval.vecv)->push_back(new SymbolInfo("{","LCURL"));
 									
 									(yyval.vecv)->push_back(new SymbolInfo("\n","newline"));
-									vector<SymbolInfo*>::iterator i,i1;
+									vector<SymbolInfo*>::iterator i;
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 										(yyval.vecv)->push_back((*i));
       									(yyval.vecv)->push_back(new SymbolInfo("}","RCURL"));
@@ -2157,17 +1977,14 @@ yyreduce:
       									cout<<endl;
       									st->print_all();
       									st->exitScope();
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-1].vecv)->begin();
-									(*i)->set_code((*i1)->get_code());
       									(yyvsp[-1].vecv)->clear();
 										
 								}
-#line 2167 "y.tab.c"
+#line 1984 "y.tab.c"
     break;
 
   case 21:
-#line 639 "parser.y"
+#line 461 "1705060.y"
                                                                         {
 									cout<<"Line "<<getline()<<":"<<" compound_statement : LCURL  RCURL"<<endl;
 									cout<<endl;
@@ -2187,11 +2004,11 @@ yyreduce:
       									st->exitScope();
 										
 								}
-#line 2191 "y.tab.c"
+#line 2008 "y.tab.c"
     break;
 
   case 22:
-#line 659 "parser.y"
+#line 481 "1705060.y"
                 {
 			(yyval.ival)=-1;
 			st->enterScope();
@@ -2199,25 +2016,19 @@ yyreduce:
 			{
 		
 			  vector<SymbolInfo*>::iterator j;
-			  int k=0;
 			  for ( j=vlist.begin(); j !=vlist.end(); ++j) 
 			  {
 			  	
 			  	SymbolInfo* si=new SymbolInfo((*j)->get_name(),(*j)->get_type(),(*j)->get_dType());
 			  	
 			  	if(st->insert_symbol(si))
-			  	{
-			  		data_seg+=si->get_name()+st->get_Currid()+" dw ?\n";
-			  		func_init+="\nmov cx , p"+to_string(k)+"_"+namef+"\nmov "+si->get_name()+st->get_Currid()+" , cx";
-			  		
-			  	}
+			  	{}
 			  	else
 			  	{
 			  	cout<<"Error at line "<<getline()<<": Multiple declaration of "<<(*j)->get_name()<<" in parameter"<<endl<<endl;
 				error<<"Error at line "<<getline()<<": Multiple declaration of "<<(*j)->get_name()<<" in parameter"<<endl<<endl;
 				IncErr();
 			  	}
-			  	k++;
 			  	delete (*j);
 			  }
 			  vlist.clear();
@@ -2226,11 +2037,11 @@ yyreduce:
 			
 			
 		}
-#line 2230 "y.tab.c"
+#line 2041 "y.tab.c"
     break;
 
   case 23:
-#line 694 "parser.y"
+#line 510 "1705060.y"
                                                                 {
 									cout<<"Line "<<getline()<<":"<<" var_declaration : type_specifier declaration_list SEMICOLON"<<endl;
 									cout<<endl;
@@ -2261,12 +2072,7 @@ yyreduce:
 											if(st->insert_symbol(si))
 											{
 											if((*i)->get_varSize()!=-1)
-											{
 											   si->set_varSize((*i)->get_varSize());
-											   data_seg+=(*i)->get_name()+st->get_Currid()+" dw "+to_string((*i)->get_varSize())+" dup (?)\n";
-											 }
-											 else
-											   data_seg+=(*i)->get_name()+st->get_Currid()+" dw ?\n";
 											}
 											else
 											{
@@ -2289,11 +2095,11 @@ yyreduce:
       									(yyvsp[-1].vecv)->clear();
 										
 								}
-#line 2293 "y.tab.c"
+#line 2099 "y.tab.c"
     break;
 
   case 24:
-#line 754 "parser.y"
+#line 565 "1705060.y"
                                 {
 					cout<<"Line "<<getline()<<":"<<" type_specifier : INT"<<endl;
 					cout<<endl;
@@ -2301,13 +2107,12 @@ yyreduce:
 					cout<<(yyval.siv)->get_name()<<endl;
 					cout<<endl;
 					type="int";
-					
 				}
-#line 2307 "y.tab.c"
+#line 2112 "y.tab.c"
     break;
 
   case 25:
-#line 763 "parser.y"
+#line 573 "1705060.y"
                         {
 					cout<<"Line "<<getline()<<":"<<" type_specifier : FLOAT"<<endl;
 					cout<<endl;
@@ -2316,11 +2121,11 @@ yyreduce:
 					cout<<endl;
 					type="float";
 				}
-#line 2320 "y.tab.c"
+#line 2125 "y.tab.c"
     break;
 
   case 26:
-#line 771 "parser.y"
+#line 581 "1705060.y"
                                 {
 					cout<<"Line "<<getline()<<":"<<" type_specifier : VOID"<<endl;
 					cout<<endl;
@@ -2329,11 +2134,11 @@ yyreduce:
 					cout<<endl;
 					type="void";
 				}
-#line 2333 "y.tab.c"
+#line 2138 "y.tab.c"
     break;
 
   case 27:
-#line 781 "parser.y"
+#line 591 "1705060.y"
                                                                 {
 									cout<<"Line "<<getline()<<":"<<" declaration_list : declaration_list COMMA ID"<<endl;
 									cout<<endl;
@@ -2347,16 +2152,14 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = (yyval.vecv)->begin();
-									(*i)->set_code((*i)->get_code());
       									(yyvsp[-2].vecv)->clear();
 										
 								}
-#line 2356 "y.tab.c"
+#line 2159 "y.tab.c"
     break;
 
   case 28:
-#line 799 "parser.y"
+#line 607 "1705060.y"
                                                                         {
 										cout<<"Line "<<getline()<<":"<<" declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD"<<endl;
 										cout<<endl;
@@ -2375,16 +2178,14 @@ yyreduce:
 										cout<<(*i)->get_name();
       										cout<<endl;
       										cout<<endl;
-      										i = (yyval.vecv)->begin();
-										(*i)->set_code((*i)->get_code());
       										(yyvsp[-5].vecv)->clear();
 										
 										}
-#line 2384 "y.tab.c"
+#line 2185 "y.tab.c"
     break;
 
   case 29:
-#line 822 "parser.y"
+#line 628 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" declaration_list : ID"<<endl;
  		  							cout<<endl;
@@ -2396,14 +2197,12 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = (yyval.vecv)->begin();
-									(*i)->set_code((*i)->get_code());
  		  						}
-#line 2403 "y.tab.c"
+#line 2202 "y.tab.c"
     break;
 
   case 30:
-#line 836 "parser.y"
+#line 640 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" declaration_list : ID LTHIRD CONST_INT RTHIRD"<<endl;
  		  							cout<<endl;
@@ -2418,14 +2217,12 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = (yyval.vecv)->begin();
-									(*i)->set_code((*i)->get_code());
  		  						}
-#line 2425 "y.tab.c"
+#line 2222 "y.tab.c"
     break;
 
   case 31:
-#line 855 "parser.y"
+#line 657 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" statements : statement"<<endl;
  		  							cout<<endl;
@@ -2437,20 +2234,18 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = (yyval.vecv)->begin();
-									(*i)->set_code((*i)->get_code());
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2445 "y.tab.c"
+#line 2240 "y.tab.c"
     break;
 
   case 32:
-#line 870 "parser.y"
+#line 670 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" statements : statements statement"<<endl;
  		  							cout<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-									vector<SymbolInfo*>::iterator i,i1;
+									vector<SymbolInfo*>::iterator i;
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 										(yyval.vecv)->push_back((*i));
       									
@@ -2460,17 +2255,14 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-									(*i)->set_code((*i)->get_code()+(*i1)->get_code());
       									(yyvsp[-1].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2470 "y.tab.c"
+#line 2262 "y.tab.c"
     break;
 
   case 33:
-#line 892 "parser.y"
+#line 689 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" statement : var_declaration"<<endl;
  		  							cout<<endl;
@@ -2480,17 +2272,15 @@ yyreduce:
 										(yyval.vecv)->push_back((*i));
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
-									i = (yyval.vecv)->begin();
-									(*i)->set_code("");
       									cout<<endl;
       									cout<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2490 "y.tab.c"
+#line 2280 "y.tab.c"
     break;
 
   case 34:
-#line 907 "parser.y"
+#line 702 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" statement : expression_statement"<<endl;
  		  							cout<<endl;
@@ -2500,17 +2290,15 @@ yyreduce:
 										(yyval.vecv)->push_back((*i));
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
-									i = (yyval.vecv)->begin();
-									(*i)->set_code((*i)->get_code());
       									cout<<endl;
       									cout<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2510 "y.tab.c"
+#line 2298 "y.tab.c"
     break;
 
   case 35:
-#line 922 "parser.y"
+#line 715 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" statement : compound_statement"<<endl;
  		  							cout<<endl;
@@ -2520,24 +2308,22 @@ yyreduce:
 										(yyval.vecv)->push_back((*i));
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
-									i = (yyval.vecv)->begin();
-									(*i)->set_code((*i)->get_code());
       									cout<<endl;
       									cout<<endl;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2530 "y.tab.c"
+#line 2316 "y.tab.c"
     break;
 
   case 36:
-#line 937 "parser.y"
+#line 728 "1705060.y"
                                                                                                 {
 	  													cout<<"Line "<<getline()<<":"<<" statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement"<<endl;
 	  													cout<<endl;
 														(yyval.vecv)=new vector<SymbolInfo*>();
 														(yyval.vecv)->push_back(new SymbolInfo("for","FOR"));
 														(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
-														vector<SymbolInfo*>::iterator i,i1,i2,i3,i4;
+														vector<SymbolInfo*>::iterator i;
 														for (i = (yyvsp[-4].vecv)->begin(); i != (yyvsp[-4].vecv)->end(); ++i) 
 														if((*i)->get_name()!="\n")
 															(yyval.vecv)->push_back((*i));
@@ -2567,24 +2353,15 @@ yyreduce:
 														cout<<(*i)->get_name();
       														cout<<endl;
       														cout<<endl;
-      														string l=newLabel();
-      														string l2=newLabel();
-      														i = (yyval.vecv)->begin();
-      														i1 = (yyvsp[-4].vecv)->begin();
-      														i2 = (yyvsp[-3].vecv)->begin();
-      														i3 = (yyvsp[0].vecv)->begin();
-      														i4 = (yyvsp[-2].vecv)->begin();
-      														string temp=(*i2)->get_temp();
-														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\njne "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
       														(yyvsp[-4].vecv)->clear();
       														(yyvsp[-3].vecv)->clear();
       														(yyvsp[-2].vecv)->clear();	
 	  												}
-#line 2584 "y.tab.c"
+#line 2361 "y.tab.c"
     break;
 
   case 37:
-#line 986 "parser.y"
+#line 768 "1705060.y"
                                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" statement : IF LPAREN expression RPAREN statement"<<endl;
  		  							cout<<endl;
@@ -2592,7 +2369,7 @@ yyreduce:
 									(yyval.vecv)->push_back(new SymbolInfo("if","IF"));
 									(yyval.vecv)->push_back(new SymbolInfo(" ","newline"));
 									(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
-									vector<SymbolInfo*>::iterator i,i1,i2;
+									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
@@ -2612,20 +2389,14 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									string l=newLabel();
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-2].vecv)->begin();
-      									i2 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njne "+l+(*i2)->get_code()+"\n"+l+":");
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2625 "y.tab.c"
+#line 2396 "y.tab.c"
     break;
 
   case 38:
-#line 1022 "parser.y"
+#line 798 "1705060.y"
                                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" statement : IF LPAREN expression RPAREN statement ELSE statement"<<endl;
  		  							cout<<endl;
@@ -2633,7 +2404,7 @@ yyreduce:
 									(yyval.vecv)->push_back(new SymbolInfo("if","IF"));
 									(yyval.vecv)->push_back(new SymbolInfo(" ","newline"));
 									(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
-									vector<SymbolInfo*>::iterator i,i1,i3,i2;
+									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[-4].vecv)->begin(); i != (yyvsp[-4].vecv)->end(); ++i) 
 									{
@@ -2659,23 +2430,15 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									string l=newLabel();
-      									//string l2=newLable();
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-4].vecv)->begin();
-      									i2= (yyvsp[-2].vecv)->begin();
-      									i3 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njne "+l+(*i2)->get_code()+"\n"+l+":"+(*i3)->get_code());
       									(yyvsp[-4].vecv)->clear();
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  							}
-#line 2675 "y.tab.c"
+#line 2438 "y.tab.c"
     break;
 
   case 39:
-#line 1067 "parser.y"
+#line 835 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" statement : WHILE LPAREN expression RPAREN statement"<<endl;
  		  							cout<<endl;
@@ -2684,7 +2447,7 @@ yyreduce:
 									(yyval.vecv)->push_back(new SymbolInfo("while","WHILE"));
 									(yyval.vecv)->push_back(new SymbolInfo(" ","space"));
 									(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
-									vector<SymbolInfo*>::iterator i,i2,i1;
+									vector<SymbolInfo*>::iterator i;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
 										t=(*i)->get_dType();
@@ -2704,22 +2467,14 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									
-      									string l=newLabel();
-      									string l1=newLabel();
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-2].vecv)->begin();
-      									i2 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njne "+l1+"\n"+(*i2)->get_code()+"\njmp "+l+"\n"+l1+":");
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 2719 "y.tab.c"
+#line 2474 "y.tab.c"
     break;
 
   case 40:
-#line 1106 "parser.y"
+#line 866 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" statement : PRINTLN LPAREN ID RPAREN SEMICOLON"<<endl;
  		  							cout<<endl;
@@ -2745,32 +2500,19 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									string n=(yyvsp[-2].siv)->get_name()+st->get_Currid();
-      									ScopeTable* sc=st->curr();
-      									while(true){
-      									
-      									if(isSubstring(n,data_seg)!=-1)
-      									{
-      										break;
-      									}
-      									sc=sc->get_parent();
-      									n=(yyvsp[-2].siv)->get_name()+sc->get_cid();
-      									}
-      									i = (yyval.vecv)->begin();
-									(*i)->set_code("\nmov ax , "+n+"\ncall output");
  		  						}
-#line 2763 "y.tab.c"
+#line 2505 "y.tab.c"
     break;
 
   case 41:
-#line 1145 "parser.y"
+#line 892 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" statement : RETURN expression SEMICOLON"<<endl;
  		  							cout<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
 									(yyval.vecv)->push_back(new SymbolInfo("return","RETURN"));
 									(yyval.vecv)->push_back(new SymbolInfo(" ","space"));
-									vector<SymbolInfo*>::iterator i,i1;
+									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i)
 									{ 
@@ -2797,18 +2539,13 @@ yyreduce:
 										cout<<(*i)->get_name();
       									cout<<endl;
       									cout<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-1].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\nmov bx , "+temp+"\nmov ret_"+namef+" , bx");
-									(*i)->set_temp(temp);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2808 "y.tab.c"
+#line 2545 "y.tab.c"
     break;
 
   case 42:
-#line 1187 "parser.y"
+#line 929 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : SEMICOLON"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2817,44 +2554,31 @@ yyreduce:
       									(yyval.vecv)->push_back(new SymbolInfo("\n","newline"));
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
-									i = (yyval.vecv)->begin();
-									string temp=newTemp();
-									data_seg+=temp+" dw ?\n";
-									(*i)->set_code("\mov "+temp+" , 1");
-									(*i)->set_temp(temp);
       									cout<<endl<<endl;
  		  						}
-#line 2828 "y.tab.c"
+#line 2560 "y.tab.c"
     break;
 
   case 43:
-#line 1202 "parser.y"
+#line 939 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : expression SEMICOLON"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-									
 									vector<SymbolInfo*>::iterator i;
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 										(yyval.vecv)->push_back((*i));
       									(yyval.vecv)->push_back(new SymbolInfo(";","SEMICOLON"));
       									(yyval.vecv)->push_back(new SymbolInfo("\n","newline"));
-      									string cmd="\n\n;";
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
-									{
 										cout<<(*i)->get_name();
-										cmd+=(*i)->get_name();
-									}
-									cmd+="\n";
-									i = (yyval.vecv)->begin();
-									(*i)->set_code(cmd+(*i)->get_code());
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2854 "y.tab.c"
+#line 2578 "y.tab.c"
     break;
 
   case 44:
-#line 1225 "parser.y"
+#line 954 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2878,36 +2602,16 @@ yyreduce:
 									IncErr();
 									(yyvsp[0].siv)->set_dType("int");
       									}
-      									
       									(yyval.vecv)->push_back((yyvsp[0].siv));
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									string temp=newTemp();
-      									data_seg+=temp+" dw ?\n";
-      									i = (yyval.vecv)->begin();
-      									string n=(yyvsp[0].siv)->get_name()+st->get_Currid();
-      									ScopeTable* sc=st->curr();
-      									while(true){
-      									
-      									if(isSubstring(n,data_seg)!=-1)
-      									{
-      										break;
-      									}
-      									sc=sc->get_parent();
-      									n=(yyvsp[0].siv)->get_name()+sc->get_cid();
-      									}
-      									
-      									
-      									(*i)->set_code((*i)->get_code()+"\nmov ax , "+n+"\nmov "+temp+" , ax");
-      									(*i)->set_temp(temp);
-      									//temp="ah";
  		  						}
-#line 2907 "y.tab.c"
+#line 2611 "y.tab.c"
     break;
 
   case 45:
-#line 1273 "parser.y"
+#line 982 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID LTHIRD expression RTHIRD "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2936,7 +2640,7 @@ yyreduce:
       									
       									(yyval.vecv)->push_back((yyvsp[-3].siv));
       									(yyval.vecv)->push_back(new SymbolInfo("[","LTHIRD"));
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 									{
@@ -2954,33 +2658,13 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-1].vecv)->begin();
-      									
-      									string temp=newTemp();
-      									data_seg+=temp+" dw ?\n";
-      									string n=(yyvsp[-3].siv)->get_name()+st->get_Currid();
-      									ScopeTable* sc=st->curr();
-      									while(true){
-      									
-      									if(isSubstring(n,data_seg)!=-1)
-      									{
-      										break;
-      									}
-      									sc=sc->get_parent();
-      									n=(yyvsp[-3].siv)->get_name()+sc->get_cid();
-      									}
-      									dummy=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx , "+(*i1)->get_temp()+"\nsal bx , 2\ninc bx\nmov ax , "+n+"[bx]\nmov "+temp+" , ax");
-      									(*i)->set_temp(temp);
-  									//temp="ah";
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2980 "y.tab.c"
+#line 2664 "y.tab.c"
     break;
 
   case 46:
-#line 1343 "parser.y"
+#line 1032 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" expression : logic expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2997,20 +2681,17 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									//temp="bh";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3006 "y.tab.c"
+#line 2687 "y.tab.c"
     break;
 
   case 47:
-#line 1364 "parser.y"
+#line 1050 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" expression : variable ASSIGNOP logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
       									SymbolInfo* v;
       									SymbolInfo* e;
 									string t,t1;
@@ -3063,35 +2744,14 @@ yyreduce:
 									(*i)->set_dType("int");
 									}
       									cout<<endl<<endl;
-      									i = (yyvsp[-2].vecv)->begin();
-      									string n=(*i)->get_name()+st->get_Currid();
-      									ScopeTable* sc=st->curr();
-      									while(true){
-      									
-      									if(isSubstring(n,data_seg)!=-1)
-      									{
-      										break;
-      									}
-      									sc=sc->get_parent();
-      									n=(*i)->get_name()+sc->get_cid();
-      									}
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									string temp1=(*i1)->get_temp();
-      									if((yyvsp[-2].vecv)->size()!=1)
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov bx , "+dummy+"\nsal bx , 2\ninc bx\nmov ax , "+temp1+"\nmov "+n+"[bx] , ax\nmov "+temp+" , 1");
-      									else
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp1+"\nmov "+n+" , ax\nmov "+temp+" , 1");
-      									//temp="bh";
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3091 "y.tab.c"
+#line 2751 "y.tab.c"
     break;
 
   case 48:
-#line 1446 "parser.y"
+#line 1111 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" logic_expression : rel_expression "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3108,20 +2768,17 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									//temp="dl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3117 "y.tab.c"
+#line 2774 "y.tab.c"
     break;
 
   case 49:
-#line 1467 "parser.y"
+#line 1129 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" logic_expression : rel_expression LOGICOP rel_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t,t1;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
@@ -3155,28 +2812,14 @@ yyreduce:
 									(*i)->set_dType("int");
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									string temp1=(*i1)->get_temp();
-      									string label=newLabel();
-      									string label1=newLabel();
-      									if((yyvsp[-1].siv)->get_name()=="&&")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nand ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									else if((yyvsp[-1].siv)->get_name()=="||")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nor ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									
-      								
-      									//temp="dl";
-      									
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3176 "y.tab.c"
+#line 2819 "y.tab.c"
     break;
 
   case 50:
-#line 1525 "parser.y"
+#line 1171 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" rel_expression : simple_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3193,21 +2836,17 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									//temp="bh";
-      									//dummy1="";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3203 "y.tab.c"
+#line 2842 "y.tab.c"
     break;
 
   case 51:
-#line 1547 "parser.y"
+#line 1189 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" rel_expression : simple_expression RELOP simple_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t,t1;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
@@ -3241,35 +2880,14 @@ yyreduce:
 									(*i)->set_dType("int");
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									string temp1=(*i1)->get_temp();
-      									string label=newLabel();
-      									string label1=newLabel();
-      									if((yyvsp[-1].siv)->get_name()=="<")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njnl "+label+"\nmov "+temp+",1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									else if((yyvsp[-1].siv)->get_name()==">")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njng "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									else if((yyvsp[-1].siv)->get_name()==">=")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njl "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									else if((yyvsp[-1].siv)->get_name()=="<=")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njg "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									else if((yyvsp[-1].siv)->get_name()=="==")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\njne "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									else if((yyvsp[-1].siv)->get_name()=="!=")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\ncmp ax , "+temp1+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
-      									//temp="bh";
-      									
-      									
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3269 "y.tab.c"
+#line 2887 "y.tab.c"
     break;
 
   case 52:
-#line 1610 "parser.y"
+#line 1231 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" simple_expression : term "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3286,20 +2904,17 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									//temp="bl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3295 "y.tab.c"
+#line 2910 "y.tab.c"
     break;
 
   case 53:
-#line 1631 "parser.y"
+#line 1249 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" simple_expression : simple_expression ADDOP term "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t,t1,tf;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
@@ -3348,25 +2963,14 @@ yyreduce:
 									(*i)->set_dType(tf);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									string temp1=(*i1)->get_temp();
-      									if((yyvsp[-1].siv)->get_name()=="+")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp1+"\nadd "+temp+" , ax");
-      									else if((yyvsp[-1].siv)->get_name()=="-")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp1+"\nsub "+temp+" , ax");
-      								
-      									//temp="bl";
-      									
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3366 "y.tab.c"
+#line 2970 "y.tab.c"
     break;
 
   case 54:
-#line 1699 "parser.y"
+#line 1306 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" term : unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3383,20 +2987,17 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									//temp="cl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3392 "y.tab.c"
+#line 2993 "y.tab.c"
     break;
 
   case 55:
-#line 1720 "parser.y"
+#line 1324 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" term : term MULOP unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t,t1,tf;
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
 									{
@@ -3464,33 +3065,19 @@ yyreduce:
 									(*i)->set_dType(tf);
 									}
       									cout<<endl<<endl;
-      									//string tmp=newTemp();
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									string temp1=(*i1)->get_temp();
-      									if((yyvsp[-1].siv)->get_name()=="*")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax ,  "+temp+"\nimul "+temp1+"\nmov "+temp+" , ax");
-      									else if((yyvsp[-1].siv)->get_name()=="/")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax ,  "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+" , ax");
-      									else if((yyvsp[-1].siv)->get_name()=="%")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax ,  "+temp+"\ncwd\nidiv "+temp1+"\nmov "+temp+" , dx");
-      									
-      									//temp="cl";
-      									(*i)->set_temp(temp);
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3485 "y.tab.c"
+#line 3072 "y.tab.c"
     break;
 
   case 56:
-#line 1810 "parser.y"
+#line 1400 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : ADDOP unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
       									(yyval.vecv)->push_back((yyvsp[-1].siv));
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[0].vecv)->begin(); i != (yyvsp[0].vecv)->end(); ++i) 
 									{
@@ -3520,27 +3107,18 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-      									if((yyvsp[-1].siv)->get_name()=="-")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nneg "+temp);
-      									else
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code());
-      									(*i)->set_temp(temp);
-      									//temp="bl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3535 "y.tab.c"
+#line 3113 "y.tab.c"
     break;
 
   case 57:
-#line 1855 "parser.y"
+#line 1436 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : NOT unary expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
       									(yyval.vecv)->push_back(new SymbolInfo("!","NOT"));
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[0].vecv)->begin(); i != (yyvsp[0].vecv)->end(); ++i) 
 									{
@@ -3568,18 +3146,13 @@ yyreduce:
 									(*i)->set_dType("int");
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nnot "+temp);
-      									(*i)->set_temp(temp);
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3579 "y.tab.c"
+#line 3152 "y.tab.c"
     break;
 
   case 58:
-#line 1894 "parser.y"
+#line 1470 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : factor"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3596,17 +3169,13 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									(*i)->set_temp((*i)->get_temp());
-      									//temp="bl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3606 "y.tab.c"
+#line 3175 "y.tab.c"
     break;
 
   case 59:
-#line 1919 "parser.y"
+#line 1490 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3625,34 +3194,24 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
-      									(*i)->set_temp((*i)->get_temp());
-      									//temp="al";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3635 "y.tab.c"
+#line 3200 "y.tab.c"
     break;
 
   case 60:
-#line 1943 "parser.y"
-             {func_name=name;}
-#line 3641 "y.tab.c"
-    break;
-
-  case 61:
-#line 1943 "parser.y"
-                                                                                {
+#line 1510 "1705060.y"
+                                                                {
  		  							cout<<"Line "<<getline()<<":"<<" factor : ID LPAREN argument_list RPAREN"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-									(yyval.vecv)->push_back((yyvsp[-4].siv));
-									SymbolInfo* f=st->lookup_symbol((yyvsp[-4].siv)->get_name());
+									(yyval.vecv)->push_back((yyvsp[-3].siv));
+									SymbolInfo* f=st->lookup_symbol((yyvsp[-3].siv)->get_name());
 									string t;
 									t="int";
 									if(f==NULL)
 									{
-									cout<<"Error at line "<<getline()<<":  Undeclared function "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
-									error<<"Error at line "<<getline()<<": Undeclared function "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
+									cout<<"Error at line "<<getline()<<":  Undeclared function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
+									error<<"Error at line "<<getline()<<": Undeclared function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
 									IncErr();
 									
 									}
@@ -3664,8 +3223,8 @@ yyreduce:
 										{
 										//error<<f->get_name()<<" ";
 										//error<<f->get_listSize()<<" "<<arglist.size()<<endl;
-										cout<<"Error at line "<<getline()<<": Total number of arguments mismatch in function "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
-										error<<"Error at line "<<getline()<<": Total number of arguments mismatch in function "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
+										cout<<"Error at line "<<getline()<<": Total number of arguments mismatch in function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
+										error<<"Error at line "<<getline()<<": Total number of arguments mismatch in function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
 										IncErr();
 										}
 									
@@ -3674,8 +3233,8 @@ yyreduce:
 										for(int j=0;j<arglist.size();j++)
 										if((f->getParam(j))->get_ptype()!=arglist[j])
 										{
-										cout<<"Error at line "<<getline()<<":  Argument mismatch in function "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
-										error<<"Error at line "<<getline()<<":  Argument mismatch in function "<<(yyvsp[-4].siv)->get_name()<<endl<<endl;
+										cout<<"Error at line "<<getline()<<":  Argument mismatch in function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
+										error<<"Error at line "<<getline()<<":  Argument mismatch in function "<<(yyvsp[-3].siv)->get_name()<<endl<<endl;
 										
 										IncErr();
 										break;
@@ -3695,7 +3254,7 @@ yyreduce:
 									}
       									(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
 									
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
       									
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 										(yyval.vecv)->push_back((*i));
@@ -3710,25 +3269,19 @@ yyreduce:
 										arglist[j].clear();
 										arglist.clear();
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-1].vecv)->begin();
-      									string temp=newTemp();
-      									data_seg+=temp+" dw ?\n";
-      									(*i)->set_code((*i1)->get_code()+"\ncall "+func_name+"\nmov ax , ret_"+func_name+"\nmov "+temp+" , ax");
-      									(*i)->set_temp(temp);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3722 "y.tab.c"
+#line 3275 "y.tab.c"
     break;
 
-  case 62:
-#line 2019 "parser.y"
+  case 61:
+#line 1580 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : LPAREN expression RPAREN"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
       									(yyval.vecv)->push_back(new SymbolInfo("(","LPAREN"));
 									
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
 									string t;
 									for (i = (yyvsp[-1].vecv)->begin(); i != (yyvsp[-1].vecv)->end(); ++i) 
 									{
@@ -3742,17 +3295,13 @@ yyreduce:
 									(*i)->set_dType(t);
 									}
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[-1].vecv)->begin();
-      									(*i)->set_code((*i1)->get_code());
-      									(*i)->set_temp((*i1)->get_temp());
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3752 "y.tab.c"
+#line 3301 "y.tab.c"
     break;
 
-  case 63:
-#line 2044 "parser.y"
+  case 62:
+#line 1601 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_INT"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3762,18 +3311,12 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									string temp=newTemp();
-      									data_seg+=temp+" dw ?\n";
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code()+"\nmov "+temp+" , "+(yyvsp[0].siv)->get_name());
-      									(*i)->set_temp(temp);
-      									//temp="al";
  		  						}
-#line 3773 "y.tab.c"
+#line 3316 "y.tab.c"
     break;
 
-  case 64:
-#line 2060 "parser.y"
+  case 63:
+#line 1611 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_FLOAT "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3783,17 +3326,12 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									string temp=newTemp();
-      									data_seg+=temp+" dw ?\n";
-      									(*i)->set_code((*i)->get_code()+"\nmov "+temp+" , "+(yyvsp[0].siv)->get_name());
-      									(*i)->set_temp(temp);
  		  						}
-#line 3793 "y.tab.c"
+#line 3331 "y.tab.c"
     break;
 
-  case 65:
-#line 2075 "parser.y"
+  case 64:
+#line 1621 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable INCOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3821,30 +3359,15 @@ yyreduce:
 									cout<<(*i)->get_name();
 									(*i)->set_dType("int");
 									}
-									
+										
       									cout<<endl<<endl;
-      									i = (yyvsp[-1].vecv)->begin();
-      									string n=(*i)->get_name()+st->get_Currid();
-      									ScopeTable* sc=st->curr();
-      									while(true){
-      									
-      									if(isSubstring(n,data_seg)!=-1)
-      									{
-      										break;
-      									}
-      									sc=sc->get_parent();
-      									n=(*i)->get_name()+sc->get_cid();
-      									}
-      									i = (yyval.vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									(*i)->set_code((*i)->get_code()+"\ninc "+temp+"\ninc "+n);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3844 "y.tab.c"
+#line 3367 "y.tab.c"
     break;
 
-  case 66:
-#line 2121 "parser.y"
+  case 65:
+#line 1652 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable DECOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3872,28 +3395,13 @@ yyreduce:
 									(*i)->set_dType("int");
 									}
       									cout<<endl<<endl;
-      									i = (yyvsp[-1].vecv)->begin();
-      									string n=(*i)->get_name()+st->get_Currid();
-      									ScopeTable* sc=st->curr();
-      									while(true){
-      									
-      									if(isSubstring(n,data_seg)!=-1)
-      									{
-      										break;
-      									}
-      									sc=sc->get_parent();
-      									n=(*i)->get_name()+sc->get_cid();
-      									}
-      									i = (yyval.vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									(*i)->set_code((*i)->get_code()+"\ndec "+temp+"\ndec "+n);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3893 "y.tab.c"
+#line 3401 "y.tab.c"
     break;
 
-  case 67:
-#line 2167 "parser.y"
+  case 66:
+#line 1683 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : arguments"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3903,16 +3411,13 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									(*i)->set_code((*i)->get_code());
       									(yyvsp[0].vecv)->clear();
-      									arg_count=0;
  		  						}
-#line 3912 "y.tab.c"
+#line 3417 "y.tab.c"
     break;
 
-  case 68:
-#line 2181 "parser.y"
+  case 67:
+#line 1694 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3921,19 +3426,17 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									(*i)->set_code((*i)->get_code());
-      									
       									
  		  						}
-#line 3929 "y.tab.c"
+#line 3432 "y.tab.c"
     break;
 
-  case 69:
-#line 2195 "parser.y"
+  case 68:
+#line 1706 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
-      									vector<SymbolInfo*>::iterator i,i1;
+      									vector<SymbolInfo*>::iterator i;
       									string t;
       									
 									for (i = (yyvsp[-2].vecv)->begin(); i != (yyvsp[-2].vecv)->end(); ++i) 
@@ -3951,19 +3454,14 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									i1 = (yyvsp[0].vecv)->begin();
-      									string temp=(*i1)->get_temp();
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+" , ax");
-      									arg_count++;
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3963 "y.tab.c"
+#line 3461 "y.tab.c"
     break;
 
-  case 70:
-#line 2224 "parser.y"
+  case 69:
+#line 1730 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3975,22 +3473,17 @@ yyreduce:
 									(yyval.vecv)->push_back((*i));
 									t=(*i)->get_dType();
 									}
-									arglist.push_back(t);
-										
+									arglist.push_back(t);	
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									i = (yyval.vecv)->begin();
-      									string temp=(*i)->get_temp();
-      									(*i)->set_code((*i)->get_code()+"\nmov ax , "+temp+"\nmov p"+to_string(arg_count)+"_"+func_name+" , ax");
-      									arg_count++;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3990 "y.tab.c"
+#line 3483 "y.tab.c"
     break;
 
 
-#line 3994 "y.tab.c"
+#line 3487 "y.tab.c"
 
       default: break;
     }
@@ -4222,7 +3715,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2249 "parser.y"
+#line 1750 "1705060.y"
 
 int main(int argc,char *argv[])
 {
@@ -4240,14 +3733,8 @@ int main(int argc,char *argv[])
 	cout<<endl;
 	cout<<"Total lines: "<<getline()<<endl;
 	cout<<"Total errors: "<<getErr()<<endl;
-	code.open("code.asm",ios::out);
-	ocode.open("optimized_code.asm",ios::out);
-	string s=optimize(data_seg,code_seg);
-	if(getErr()==0)
-	{
-		code<<".model small"<<endl<<".stack 100h"<<endl<<".data"<<endl<<data_seg<<endl<<".code"<<endl<<code_seg<<endl<<"end main";
-		//ocode<<s;
-	}
+
+	
 	return 0;
 }
 

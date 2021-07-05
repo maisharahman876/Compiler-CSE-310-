@@ -127,7 +127,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 37 "1705060.y"
+#line 164 "1705060.y"
 
 int ival;
 SymbolInfo* siv;

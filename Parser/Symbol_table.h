@@ -36,7 +36,6 @@ private:
     string data_type;
     bool func;
     int size;
-    string code,temp;
     vector<param*> param_list;
     
 public:
@@ -47,8 +46,6 @@ SymbolInfo()
     next=NULL;
     func=false;
     data_type="";
-    code="";
-    temp="";
 }
 void set_func()
 {
@@ -67,8 +64,6 @@ SymbolInfo(string t,string n)
     next=NULL;
     func=false;
     data_type="";
-    code="";
-     temp="";
     
 }
 SymbolInfo(string t,string n,string d)
@@ -79,8 +74,6 @@ SymbolInfo(string t,string n,string d)
     func=false;
     data_type=d;
     next=NULL;
-    code="";
-     temp="";
     
     
 }
@@ -92,26 +85,8 @@ SymbolInfo(string t,string n,string d,int s)
     data_type=d;
     func=false;
     next=NULL;
-    code="";
-     temp="";
     
     
-}
-string get_temp()
-{
-    return temp;
-}
-void set_temp(string c)
-{
-    temp=c;
-}
-string get_code()
-{
-    return code;
-}
-void set_code(string c)
-{
-    code=c;
 }
 string get_type()
 {
@@ -179,7 +154,6 @@ void addParam(string param_type, string param_name) {
     name.clear();
     data_type.clear();
     param_list.clear();
-    code.clear();
 
 } 
 };
@@ -218,18 +192,6 @@ void set_id(string id)
 string get_id()
 {
     return this->id;
-}
-string get_cid()
-{
-    
-    string str=this->id;
-	for(int i=0;i<str.size();i++)
-	{
-		if(str[i]=='.')
-			str[i]='_';
-			
-	}
-	return str;
 }
 void set_parent(ScopeTable* s)
 {
@@ -438,21 +400,7 @@ void exitScope()
 
 
 }
-ScopeTable* curr()
-{
-	return current;
-}
-string get_Currid()
-{
-	string str=current->get_id();
-	for(int i=0;i<str.size();i++)
-	{
-		if(str[i]=='.')
-			str[i]='_';
-			
-	}
-	return str;
-}
+
 bool insert_symbol(SymbolInfo* s)
 {
     if(current->insertSymbol(s))
