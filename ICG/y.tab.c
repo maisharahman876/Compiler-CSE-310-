@@ -747,8 +747,8 @@ static const yytype_int16 yyrline[] =
      836,   855,   870,   892,   907,   922,   937,   986,  1022,  1067,
     1106,  1145,  1187,  1202,  1225,  1273,  1343,  1364,  1446,  1467,
     1525,  1547,  1610,  1631,  1699,  1720,  1810,  1855,  1894,  1919,
-    1943,  1943,  2019,  2044,  2060,  2075,  2121,  2167,  2181,  2195,
-    2224
+    1943,  1943,  2019,  2044,  2060,  2075,  2126,  2177,  2191,  2205,
+    2234
 };
 #endif
 
@@ -2575,7 +2575,7 @@ yyreduce:
       														i3 = (yyvsp[0].vecv)->begin();
       														i4 = (yyvsp[-2].vecv)->begin();
       														string temp=(*i2)->get_temp();
-														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\njne "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
+														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\njnge "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
       														(yyvsp[-4].vecv)->clear();
       														(yyvsp[-3].vecv)->clear();
       														(yyvsp[-2].vecv)->clear();	
@@ -2617,7 +2617,7 @@ yyreduce:
       									i1 = (yyvsp[-2].vecv)->begin();
       									i2 = (yyvsp[0].vecv)->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njne "+l+(*i2)->get_code()+"\n"+l+":");
+									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l+(*i2)->get_code()+"\n"+l+":");
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
@@ -2660,13 +2660,13 @@ yyreduce:
       									cout<<endl;
       									cout<<endl;
       									string l=newLabel();
-      									//string l2=newLable();
+      									string l2=newLabel();
       									i = (yyval.vecv)->begin();
       									i1 = (yyvsp[-4].vecv)->begin();
       									i2= (yyvsp[-2].vecv)->begin();
       									i3 = (yyvsp[0].vecv)->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njne "+l+(*i2)->get_code()+"\n"+l+":"+(*i3)->get_code());
+									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l+(*i2)->get_code()+"\njmp "+l2+"\n"+l+":"+(*i3)->get_code()+"\n"+l2+":");
       									(yyvsp[-4].vecv)->clear();
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
@@ -2711,7 +2711,7 @@ yyreduce:
       									i1 = (yyvsp[-2].vecv)->begin();
       									i2 = (yyvsp[0].vecv)->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njne "+l1+"\n"+(*i2)->get_code()+"\njmp "+l+"\n"+l1+":");
+									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l1+"\n"+(*i2)->get_code()+"\njmp "+l+"\n"+l1+":");
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
@@ -3837,14 +3837,19 @@ yyreduce:
       									}
       									i = (yyval.vecv)->begin();
       									string temp=(*i)->get_temp();
+      									if((yyvsp[-1].vecv)->size()!=1)
+      									(*i)->set_code((*i)->get_code()+"\nmov bx , "+dummy+"\nsal bx , 2\ninc bx\ninc "+temp+"\ninc "+n+"[bx]");
+      									
+      									else 
+      									
       									(*i)->set_code((*i)->get_code()+"\ninc "+temp+"\ninc "+n);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3844 "y.tab.c"
+#line 3849 "y.tab.c"
     break;
 
   case 66:
-#line 2121 "1705060.y"
+#line 2126 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable DECOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3886,14 +3891,19 @@ yyreduce:
       									}
       									i = (yyval.vecv)->begin();
       									string temp=(*i)->get_temp();
+      									if((yyvsp[-1].vecv)->size()!=1)
+      									(*i)->set_code((*i)->get_code()+"\nmov bx , "+dummy+"\nsal bx , 2\ninc bx\ndec "+temp+"\ndec "+n+"[bx]");
+      									
+      									else 
+      									
       									(*i)->set_code((*i)->get_code()+"\ndec "+temp+"\ndec "+n);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3893 "y.tab.c"
+#line 3903 "y.tab.c"
     break;
 
   case 67:
-#line 2167 "1705060.y"
+#line 2177 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : arguments"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3908,11 +3918,11 @@ yyreduce:
       									(yyvsp[0].vecv)->clear();
       									arg_count=0;
  		  						}
-#line 3912 "y.tab.c"
+#line 3922 "y.tab.c"
     break;
 
   case 68:
-#line 2181 "1705060.y"
+#line 2191 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3925,11 +3935,11 @@ yyreduce:
       									
       									
  		  						}
-#line 3929 "y.tab.c"
+#line 3939 "y.tab.c"
     break;
 
   case 69:
-#line 2195 "1705060.y"
+#line 2205 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3959,11 +3969,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3963 "y.tab.c"
+#line 3973 "y.tab.c"
     break;
 
   case 70:
-#line 2224 "1705060.y"
+#line 2234 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3986,11 +3996,11 @@ yyreduce:
       									arg_count++;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3990 "y.tab.c"
+#line 4000 "y.tab.c"
     break;
 
 
-#line 3994 "y.tab.c"
+#line 4004 "y.tab.c"
 
       default: break;
     }
@@ -4222,7 +4232,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2249 "1705060.y"
+#line 2259 "1705060.y"
 
 int main(int argc,char *argv[])
 {
@@ -4250,4 +4260,3 @@ int main(int argc,char *argv[])
 	}
 	return 0;
 }
-

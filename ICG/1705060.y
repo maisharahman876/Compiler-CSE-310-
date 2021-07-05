@@ -978,7 +978,7 @@ statement : var_declaration					{
       														i3 = $7->begin();
       														i4 = $5->begin();
       														string temp=(*i2)->get_temp();
-														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\njne "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
+														(*i)->set_code((*i1)->get_code()+"\n"+l+":\n"+(*i2)->get_code()+"\ncmp "+temp+",1\njnge "+l2+(*i3)->get_code()+(*i4)->get_code()+"\njmp "+l+"\n"+l2+":");
       														$3->clear();
       														$4->clear();
       														$5->clear();	
@@ -1015,7 +1015,7 @@ statement : var_declaration					{
       									i1 = $3->begin();
       									i2 = $5->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njne "+l+(*i2)->get_code()+"\n"+l+":");
+									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l+(*i2)->get_code()+"\n"+l+":");
       									$3->clear();
       									$5->clear();
  		  						}
@@ -1053,13 +1053,13 @@ statement : var_declaration					{
       									cout<<endl;
       									cout<<endl;
       									string l=newLabel();
-      									//string l2=newLable();
+      									string l2=newLabel();
       									i = $$->begin();
       									i1 = $3->begin();
       									i2= $5->begin();
       									i3 = $7->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njne "+l+(*i2)->get_code()+"\n"+l+":"+(*i3)->get_code());
+									(*i)->set_code((*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l+(*i2)->get_code()+"\njmp "+l2+"\n"+l+":"+(*i3)->get_code()+"\n"+l2+":");
       									$3->clear();
       									$5->clear();
       									$7->clear();
@@ -1099,7 +1099,7 @@ statement : var_declaration					{
       									i1 = $3->begin();
       									i2 = $5->begin();
       									string temp=(*i1)->get_temp();
-									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njne "+l1+"\n"+(*i2)->get_code()+"\njmp "+l+"\n"+l1+":");
+									(*i)->set_code("\n"+l+":"+(*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l1+"\n"+(*i2)->get_code()+"\njmp "+l+"\n"+l1+":");
       									$3->clear();
       									$5->clear();
  		  						}
@@ -2115,6 +2115,11 @@ factor	: variable 						{
       									}
       									i = $$->begin();
       									string temp=(*i)->get_temp();
+      									if($1->size()!=1)
+      									(*i)->set_code((*i)->get_code()+"\nmov bx , "+dummy+"\nsal bx , 2\ninc bx\ninc "+temp+"\ninc "+n+"[bx]");
+      									
+      									else 
+      									
       									(*i)->set_code((*i)->get_code()+"\ninc "+temp+"\ninc "+n);
       									$1->clear();
  		  						}
@@ -2159,6 +2164,11 @@ factor	: variable 						{
       									}
       									i = $$->begin();
       									string temp=(*i)->get_temp();
+      									if($1->size()!=1)
+      									(*i)->set_code((*i)->get_code()+"\nmov bx , "+dummy+"\nsal bx , 2\ninc bx\ndec "+temp+"\ndec "+n+"[bx]");
+      									
+      									else 
+      									
       									(*i)->set_code((*i)->get_code()+"\ndec "+temp+"\ndec "+n);
       									$1->clear();
  		  						}
@@ -2273,4 +2283,3 @@ int main(int argc,char *argv[])
 	}
 	return 0;
 }
-

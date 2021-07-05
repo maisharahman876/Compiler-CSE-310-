@@ -4,7 +4,8 @@
 ret_main dw ?
 a1_1 dw ?
 b1_1 dw ?
-c1_1 dw 3 dup (?)
+c1_1 dw ?
+i1_1 dw ?
 T0 dw ?
 T1 dw ?
 T2 dw ?
@@ -18,12 +19,6 @@ T9 dw ?
 T10 dw ?
 T11 dw ?
 T12 dw ?
-T13 dw ?
-T14 dw ?
-T15 dw ?
-T16 dw ?
-T17 dw ?
-T18 dw ?
 
 .code
 
@@ -31,35 +26,44 @@ main proc
 mov  ax , @data
 mov  ds , ax
 
-;a=1*(2+3)%3;
-
-
-mov ax , a1_1
-mov T0 , ax
-mov T1 , 1
-mov T2 , 2
-mov T3 , 3
-mov ax , T3
-add T2 , ax
-mov ax ,  T1
-imul T2
-mov T1 , ax
-mov T4 , 3
-mov ax ,  T1
-cwd
-idiv T4
-mov T1 , dx
-mov ax , T1
-mov a1_1 , ax
-mov T0 , 1
-
-;b=1<5;
+;b=0;
 
 
 mov ax , b1_1
-mov T5 , ax
-mov T6 , 1
-mov T7 , 5
+mov T0 , ax
+mov T1 , 0
+mov ax , T1
+mov b1_1 , ax
+mov T0 , 1
+
+;c=1;
+
+
+mov ax , c1_1
+mov T2 , ax
+mov T3 , 1
+mov ax , T3
+mov c1_1 , ax
+mov T2 , 1
+
+;i=0;
+
+
+mov ax , i1_1
+mov T4 , ax
+mov T5 , 0
+mov ax , T5
+mov i1_1 , ax
+mov T4 , 1
+L4:
+
+
+;i<4;
+
+
+mov ax , i1_1
+mov T6 , ax
+mov T7 , 4
 mov ax , T6
 cmp ax , T7
 jnl L0
@@ -68,79 +72,47 @@ jmp L1
 L0:
 mov T6 , 0
 L1:
-mov ax , T6
-mov b1_1 , ax
-mov T5 , 1
+cmp T6,1
+jnge L5
 
-;c[0]=2;
+;a=3;
 
 
-mov T8 , 0
-mov bx , T8
-sal bx , 2
-inc bx
-mov ax , c1_1[bx]
+mov ax , a1_1
 mov T9 , ax
-mov T10 , 2
-mov bx , T8
-sal bx , 2
-inc bx
+mov T10 , 3
 mov ax , T10
-mov c1_1[bx] , ax
+mov a1_1 , ax
 mov T9 , 1
+L2:
 mov ax , a1_1
 mov T11 , ax
+dec T11
+dec a1_1
+cmp T11,1
+jnge L3
+
+
+;b++;
+
+
 mov ax , b1_1
 mov T12 , ax
-mov ax , T11
-or ax , T12
-cmp ax , 0
-je L2
-mov T11 , 1
-jmp L3
-L2:
-mov T11 , 0
+inc T12
+inc b1_1
+jmp L2
 L3:
-cmp T11,1
-jne L4
-
-;c[0]++;
-
-
-mov T13 , 0
-mov bx , T13
-sal bx , 2
-inc bx
-mov ax , c1_1[bx]
-mov T14 , ax
-inc T14
-inc c1_1
-L4:
-
-;c[1]=c[0];
-
-
-mov T15 , 1
-mov bx , T15
-sal bx , 2
-inc bx
-mov ax , c1_1[bx]
-mov T16 , ax
-mov T17 , 0
-mov bx , T17
-sal bx , 2
-inc bx
-mov ax , c1_1[bx]
-mov T18 , ax
-mov bx , T17
-sal bx , 2
-inc bx
-mov ax , T18
-mov c1_1[bx] , ax
-mov T16 , 1
+mov ax , i1_1
+mov T8 , ax
+inc T8
+inc i1_1
+jmp L4
+L5:
 mov ax , a1_1
 call output
 mov ax , b1_1
+call output
+mov ax , c1_1
 call output
 mov ah , 4ch
 int 21h
