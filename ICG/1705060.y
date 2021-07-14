@@ -1140,7 +1140,9 @@ statement : var_declaration					{
       									n=$3->get_name()+sc->get_cid();
       									}
       									i = $$->begin();
-									(*i)->set_code("\nmov ax , "+n+"\ncall output");
+										  string L=newLabel();
+									//(*i)->set_code("\nmov ax , "+n+"\ncall output");
+									(*i)->set_code("\nmov ax , "+n+"\nmov bx,8000h\nand bx,ax\njz "+L+"\nneg ax\nmov "+n+",ax\nmov ah,2\nmov dl,'-'\nint 21h\n"+L+":\nmov bx,"+n+"\nmov ax,bx\ncall output\nmov ah,2\nmov dl,0dh\nint 21h\nmov dl,0ah\nint 21h");
  		  						}
 	  | RETURN expression SEMICOLON			{
  		  							cout<<"Line "<<getline()<<":"<<" statement : RETURN expression SEMICOLON"<<endl;
@@ -1507,8 +1509,12 @@ logic_expression : rel_expression 				{
       									string temp1=(*i1)->get_temp();
       									string label=newLabel();
       									string label1=newLabel();
+										string l=newLabel();
+										string l1=newLabel();
+										string l2=newLabel();
+										string l3=newLabel();
       									if($2->get_name()=="&&")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nor ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l+"\nmov "+temp+",1\njmp "+l1+"\n"+l+":\nmov "+temp+",0\n"+l1+":\n"+"\ncmp "+temp1+",1\njnge "+l2+"\nmov "+temp1+",1\njmp "+l3+"\n"+l2+":\nmov "+temp1+",0\n"+l3+":\n"+"mov ax , "+temp+"\nand ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if($2->get_name()=="||")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nor ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									
@@ -2196,7 +2202,9 @@ argument_list : arguments					{
 									for (i = $$->begin(); i != $$->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									(*i)->set_code((*i)->get_code());
+										i = $$->begin();
+      									(*i)->set_code("");
+										
       									
       									
  		  						}

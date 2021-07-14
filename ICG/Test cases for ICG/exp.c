@@ -7,6 +7,6 @@ int main(){
         c[0]++;
     else
         c[1]=c[0];
-    printf(a);
-    printf(b);
+    println(a);
+    println(b);
 }

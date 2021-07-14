@@ -43,7 +43,7 @@ newline (\n|\r\n)
 "return" {return RETURN;}
 "void" {return VOID;}
 "default"	{return DEFAULT;}
-"printf"	{return PRINTLN;}
+"println"	{return PRINTLN;}
 (\+\+)					{
 						string s=yytext;
 						SymbolInfo *si= new  SymbolInfo(s,"INCOP");

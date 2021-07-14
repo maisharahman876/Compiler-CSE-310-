@@ -745,10 +745,10 @@ static const yytype_int16 yyrline[] =
      364,   370,   376,   418,   485,   515,   543,   565,   583,   600,
      615,   639,   659,   694,   754,   763,   771,   781,   799,   822,
      836,   855,   870,   892,   907,   922,   937,   986,  1022,  1067,
-    1106,  1145,  1187,  1202,  1225,  1273,  1343,  1364,  1446,  1467,
-    1525,  1547,  1610,  1631,  1699,  1720,  1810,  1855,  1894,  1919,
-    1943,  1943,  2019,  2044,  2060,  2075,  2126,  2177,  2191,  2205,
-    2234
+    1106,  1147,  1189,  1204,  1227,  1275,  1345,  1366,  1448,  1469,
+    1531,  1553,  1616,  1637,  1705,  1726,  1816,  1861,  1900,  1925,
+    1949,  1949,  2025,  2050,  2066,  2081,  2132,  2183,  2197,  2213,
+    2242
 };
 #endif
 
@@ -2757,13 +2757,15 @@ yyreduce:
       									n=(yyvsp[-2].siv)->get_name()+sc->get_cid();
       									}
       									i = (yyval.vecv)->begin();
-									(*i)->set_code("\nmov ax , "+n+"\ncall output");
+										  string L=newLabel();
+									//(*i)->set_code("\nmov ax , "+n+"\ncall output");
+									(*i)->set_code("\nmov ax , "+n+"\nmov bx,8000h\nand bx,ax\njz "+L+"\nneg ax\nmov "+n+",ax\nmov ah,2\nmov dl,'-'\nint 21h\n"+L+":\nmov bx,"+n+"\nmov ax,bx\ncall output\nmov ah,2\nmov dl,0dh\nint 21h\nmov dl,0ah\nint 21h");
  		  						}
-#line 2763 "y.tab.c"
+#line 2765 "y.tab.c"
     break;
 
   case 41:
-#line 1145 "1705060.y"
+#line 1147 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" statement : RETURN expression SEMICOLON"<<endl;
  		  							cout<<endl;
@@ -2804,11 +2806,11 @@ yyreduce:
 									(*i)->set_temp(temp);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2808 "y.tab.c"
+#line 2810 "y.tab.c"
     break;
 
   case 42:
-#line 1187 "1705060.y"
+#line 1189 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : SEMICOLON"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2824,11 +2826,11 @@ yyreduce:
 									(*i)->set_temp(temp);
       									cout<<endl<<endl;
  		  						}
-#line 2828 "y.tab.c"
+#line 2830 "y.tab.c"
     break;
 
   case 43:
-#line 1202 "1705060.y"
+#line 1204 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" expression_statement : expression SEMICOLON"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2850,11 +2852,11 @@ yyreduce:
       									cout<<endl<<endl;
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2854 "y.tab.c"
+#line 2856 "y.tab.c"
     break;
 
   case 44:
-#line 1225 "1705060.y"
+#line 1227 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2903,11 +2905,11 @@ yyreduce:
       									(*i)->set_temp(temp);
       									//temp="ah";
  		  						}
-#line 2907 "y.tab.c"
+#line 2909 "y.tab.c"
     break;
 
   case 45:
-#line 1273 "1705060.y"
+#line 1275 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" variable : ID LTHIRD expression RTHIRD "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -2976,11 +2978,11 @@ yyreduce:
   									//temp="ah";
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 2980 "y.tab.c"
+#line 2982 "y.tab.c"
     break;
 
   case 46:
-#line 1343 "1705060.y"
+#line 1345 "1705060.y"
                                                         {
  		  							cout<<"Line "<<getline()<<":"<<" expression : logic expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3002,11 +3004,11 @@ yyreduce:
       									//temp="bh";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3006 "y.tab.c"
+#line 3008 "y.tab.c"
     break;
 
   case 47:
-#line 1364 "1705060.y"
+#line 1366 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" expression : variable ASSIGNOP logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3087,11 +3089,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3091 "y.tab.c"
+#line 3093 "y.tab.c"
     break;
 
   case 48:
-#line 1446 "1705060.y"
+#line 1448 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" logic_expression : rel_expression "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3113,11 +3115,11 @@ yyreduce:
       									//temp="dl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3117 "y.tab.c"
+#line 3119 "y.tab.c"
     break;
 
   case 49:
-#line 1467 "1705060.y"
+#line 1469 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" logic_expression : rel_expression LOGICOP rel_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3161,8 +3163,12 @@ yyreduce:
       									string temp1=(*i1)->get_temp();
       									string label=newLabel();
       									string label1=newLabel();
+										string l=newLabel();
+										string l1=newLabel();
+										string l2=newLabel();
+										string l3=newLabel();
       									if((yyvsp[-1].siv)->get_name()=="&&")
-      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nor ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
+      									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\ncmp "+temp+",1\njnge "+l+"\nmov "+temp+",1\njmp "+l1+"\n"+l+":\nmov "+temp+",0\n"+l1+":\n"+"\ncmp "+temp1+",1\njnge "+l2+"\nmov "+temp1+",1\njmp "+l3+"\n"+l2+":\nmov "+temp1+",0\n"+l3+":\n"+"mov ax , "+temp+"\nand ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									else if((yyvsp[-1].siv)->get_name()=="||")
       									(*i)->set_code((*i)->get_code()+(*i1)->get_code()+"\nmov ax , "+temp+"\nor ax , "+temp1+"\ncmp ax , 0"+"\nje "+label+"\nmov "+temp+" , 1\njmp "+label1+"\n"+label+":\nmov "+temp+" , 0\n"+label1+":");
       									
@@ -3172,11 +3178,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3176 "y.tab.c"
+#line 3182 "y.tab.c"
     break;
 
   case 50:
-#line 1525 "1705060.y"
+#line 1531 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" rel_expression : simple_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3199,11 +3205,11 @@ yyreduce:
       									//dummy1="";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3203 "y.tab.c"
+#line 3209 "y.tab.c"
     break;
 
   case 51:
-#line 1547 "1705060.y"
+#line 1553 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" rel_expression : simple_expression RELOP simple_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3265,11 +3271,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3269 "y.tab.c"
+#line 3275 "y.tab.c"
     break;
 
   case 52:
-#line 1610 "1705060.y"
+#line 1616 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" simple_expression : term "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3291,11 +3297,11 @@ yyreduce:
       									//temp="bl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3295 "y.tab.c"
+#line 3301 "y.tab.c"
     break;
 
   case 53:
-#line 1631 "1705060.y"
+#line 1637 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" simple_expression : simple_expression ADDOP term "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3362,11 +3368,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3366 "y.tab.c"
+#line 3372 "y.tab.c"
     break;
 
   case 54:
-#line 1699 "1705060.y"
+#line 1705 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" term : unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3388,11 +3394,11 @@ yyreduce:
       									//temp="cl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3392 "y.tab.c"
+#line 3398 "y.tab.c"
     break;
 
   case 55:
-#line 1720 "1705060.y"
+#line 1726 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" term : term MULOP unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3481,11 +3487,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3485 "y.tab.c"
+#line 3491 "y.tab.c"
     break;
 
   case 56:
-#line 1810 "1705060.y"
+#line 1816 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : ADDOP unary_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3531,11 +3537,11 @@ yyreduce:
       									//temp="bl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3535 "y.tab.c"
+#line 3541 "y.tab.c"
     break;
 
   case 57:
-#line 1855 "1705060.y"
+#line 1861 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : NOT unary expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3575,11 +3581,11 @@ yyreduce:
       									(*i)->set_temp(temp);
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3579 "y.tab.c"
+#line 3585 "y.tab.c"
     break;
 
   case 58:
-#line 1894 "1705060.y"
+#line 1900 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" unary_expression : factor"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3602,11 +3608,11 @@ yyreduce:
       									//temp="bl";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3606 "y.tab.c"
+#line 3612 "y.tab.c"
     break;
 
   case 59:
-#line 1919 "1705060.y"
+#line 1925 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3631,17 +3637,17 @@ yyreduce:
       									//temp="al";
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3635 "y.tab.c"
-    break;
-
-  case 60:
-#line 1943 "1705060.y"
-             {func_name=name;}
 #line 3641 "y.tab.c"
     break;
 
+  case 60:
+#line 1949 "1705060.y"
+             {func_name=name;}
+#line 3647 "y.tab.c"
+    break;
+
   case 61:
-#line 1943 "1705060.y"
+#line 1949 "1705060.y"
                                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : ID LPAREN argument_list RPAREN"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3718,11 +3724,11 @@ yyreduce:
       									(*i)->set_temp(temp);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3722 "y.tab.c"
+#line 3728 "y.tab.c"
     break;
 
   case 62:
-#line 2019 "1705060.y"
+#line 2025 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : LPAREN expression RPAREN"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3748,11 +3754,11 @@ yyreduce:
       									(*i)->set_temp((*i1)->get_temp());
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3752 "y.tab.c"
+#line 3758 "y.tab.c"
     break;
 
   case 63:
-#line 2044 "1705060.y"
+#line 2050 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_INT"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3769,11 +3775,11 @@ yyreduce:
       									(*i)->set_temp(temp);
       									//temp="al";
  		  						}
-#line 3773 "y.tab.c"
+#line 3779 "y.tab.c"
     break;
 
   case 64:
-#line 2060 "1705060.y"
+#line 2066 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : CONST_FLOAT "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3789,11 +3795,11 @@ yyreduce:
       									(*i)->set_code((*i)->get_code()+"\nmov "+temp+" , "+(yyvsp[0].siv)->get_name());
       									(*i)->set_temp(temp);
  		  						}
-#line 3793 "y.tab.c"
+#line 3799 "y.tab.c"
     break;
 
   case 65:
-#line 2075 "1705060.y"
+#line 2081 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable INCOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3845,11 +3851,11 @@ yyreduce:
       									(*i)->set_code((*i)->get_code()+"\ninc "+temp+"\ninc "+n);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3849 "y.tab.c"
+#line 3855 "y.tab.c"
     break;
 
   case 66:
-#line 2126 "1705060.y"
+#line 2132 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" factor : variable DECOP"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3899,11 +3905,11 @@ yyreduce:
       									(*i)->set_code((*i)->get_code()+"\ndec "+temp+"\ndec "+n);
       									(yyvsp[-1].vecv)->clear();
  		  						}
-#line 3903 "y.tab.c"
+#line 3909 "y.tab.c"
     break;
 
   case 67:
-#line 2177 "1705060.y"
+#line 2183 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : arguments"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3918,11 +3924,11 @@ yyreduce:
       									(yyvsp[0].vecv)->clear();
       									arg_count=0;
  		  						}
-#line 3922 "y.tab.c"
+#line 3928 "y.tab.c"
     break;
 
   case 68:
-#line 2191 "1705060.y"
+#line 2197 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" argument_list : "<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3931,15 +3937,17 @@ yyreduce:
 									for (i = (yyval.vecv)->begin(); i != (yyval.vecv)->end(); ++i) 
 										cout<<(*i)->get_name();
       									cout<<endl<<endl;
-      									(*i)->set_code((*i)->get_code());
+										//i = $$->begin();
+      									(*i)->set_code("");
+										
       									
       									
  		  						}
-#line 3939 "y.tab.c"
+#line 3947 "y.tab.c"
     break;
 
   case 69:
-#line 2205 "1705060.y"
+#line 2213 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : arguments COMMA logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3969,11 +3977,11 @@ yyreduce:
       									(yyvsp[-2].vecv)->clear();
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 3973 "y.tab.c"
+#line 3981 "y.tab.c"
     break;
 
   case 70:
-#line 2234 "1705060.y"
+#line 2242 "1705060.y"
                                                                 {
  		  							cout<<"Line "<<getline()<<":"<<" arguments : logic_expression"<<endl<<endl;
 									(yyval.vecv)=new vector<SymbolInfo*>();
@@ -3996,11 +4004,11 @@ yyreduce:
       									arg_count++;
       									(yyvsp[0].vecv)->clear();
  		  						}
-#line 4000 "y.tab.c"
+#line 4008 "y.tab.c"
     break;
 
 
-#line 4004 "y.tab.c"
+#line 4012 "y.tab.c"
 
       default: break;
     }
@@ -4232,7 +4240,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2259 "1705060.y"
+#line 2267 "1705060.y"
 
 int main(int argc,char *argv[])
 {
